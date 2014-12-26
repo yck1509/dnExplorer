@@ -13,10 +13,22 @@ namespace dnExplorer.Controls {
 			public readonly bool IsLabel;
 			public readonly int Width;
 
-			public Column(string header, bool isLabel, int width = 150) {
+			public Column(string header, bool isLabel, int width = 100) {
 				Header = header;
 				IsLabel = isLabel;
 				Width = width;
+			}
+		}
+
+		public struct Cell {
+			public readonly object Value;
+			public readonly Color? BackColor;
+			public readonly Color? ForeColor;
+
+			public Cell(object value, Color? back = null, Color? fore = null) {
+				Value = value;
+				BackColor = back;
+				ForeColor = fore;
 			}
 		}
 
@@ -158,7 +170,25 @@ namespace dnExplorer.Controls {
 				AddHeaderRow();
 
 			var dvRow = new DataGridViewRow { Height = RowHeight };
-			dvRow.CreateCells(this, row);
+			for (int i = 0; i < cols.Count; i++) {
+				var value = row[i];
+				var cell = (DataGridViewCell)Columns[i].CellTemplate.Clone();
+				if (value is Cell) {
+					var rawCell = (Cell)value;
+					cell.Value = rawCell.Value;
+					if (rawCell.BackColor != null || rawCell.ForeColor != null) {
+						var style = cell.Style;
+						if (rawCell.BackColor != null)
+							style.BackColor = style.SelectionBackColor = rawCell.BackColor.Value;
+						if (rawCell.ForeColor != null)
+							style.ForeColor = style.SelectionForeColor = rawCell.ForeColor.Value;
+						cell.Style = style;
+					}
+				}
+				else
+					cell.Value = value;
+				dvRow.Cells.Add(cell);
+			}
 			Rows.Add(dvRow);
 		}
 
@@ -191,7 +221,7 @@ namespace dnExplorer.Controls {
 			if (isMouseDown) {
 				var row = e.RowIndex;
 				var col = e.ColumnIndex;
-				if (this[col, row] == SelectedCells[0])
+				if (SelectedCells.Count > 0 && this[col, row] == SelectedCells[0])
 					return;
 
 				if (this[col, row] is GridViewTextBox)

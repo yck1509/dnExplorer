@@ -27,6 +27,7 @@ namespace dnExplorer.Nodes {
 
 		protected override IEnumerable<IDataModel> PopulateChildren() {
 			yield return new PESectionsModel(Image);
+			yield return new PEDDModel(Image);
 		}
 
 		public override bool HasIcon {

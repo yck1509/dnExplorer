@@ -8,7 +8,7 @@ namespace dnExplorer.Views {
 
 		public PEImageView() {
 			view = new GridView();
-			view.AddColumn(new GridView.Column("Name", true));
+			view.AddColumn(new GridView.Column("Name", true, 150));
 			view.AddColumn(new GridView.Column("Value", false, 450));
 			Controls.Add(view);
 		}

@@ -16,6 +16,8 @@ namespace dnExplorer.Views {
 					view = new PESectionsView();
 				else if (model is PESectionModel)
 					view = new PESectionView();
+				else if (model is PEDDModel)
+					view = new PEDDView();
 				else
 					view = null;
 				views[model.GetType()] = view;
