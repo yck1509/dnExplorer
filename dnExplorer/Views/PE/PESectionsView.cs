@@ -38,7 +38,6 @@ namespace dnExplorer.Views {
 						section.NumberOfRelocations,
 						section.Characteristics);
 			}
-			view.LayoutGrid();
 		}
 	}
 }

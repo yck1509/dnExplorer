@@ -26,7 +26,6 @@ namespace dnExplorer.Views {
 				view.AddRow("DllCharacteristics", model.Image.ImageNTHeaders.OptionalHeader.DllCharacteristics);
 				view.AddRow("NumberOfRvaAndSizes", model.Image.ImageNTHeaders.OptionalHeader.NumberOfRvaAndSizes);
 			}
-			view.LayoutGrid();
 		}
 	}
 }
