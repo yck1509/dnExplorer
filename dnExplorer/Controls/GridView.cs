@@ -128,7 +128,7 @@ namespace dnExplorer.Controls {
 			if (value is RVA || value is FileOffset)
 				return ((Enum)value).ToString("X");
 			if (value is Enum)
-				return ((Enum)value).ToString();
+				return string.Format("({0:X}) {0}", value);
 			if (value is ulong)
 				return ((ulong)value).ToString("X16");
 			if (value is uint)

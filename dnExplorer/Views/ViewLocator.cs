@@ -18,6 +18,8 @@ namespace dnExplorer.Views {
 					view = new PESectionView();
 				else if (model is PEDDModel)
 					view = new PEDDView();
+				else if (model is PECLIModel)
+					view = new PECLIView();
 				else
 					view = null;
 				views[model.GetType()] = view;

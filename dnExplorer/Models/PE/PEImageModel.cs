@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using dnExplorer.Trees;
+using dnlib.DotNet.MD;
 using dnlib.PE;
 
 namespace dnExplorer.Nodes {
 	public class PEImageModel : LazyModel {
 		public IPEImage Image { get; set; }
+		public ImageCor20Header CLIHeader { get; set; }
 
-		public PEImageModel(IPEImage peImage, bool metadataParent) {
+		public PEImageModel(IPEImage peImage, ImageCor20Header cliHeader) {
 			Image = peImage;
-			if (metadataParent)
+			CLIHeader = cliHeader;
+			if (CLIHeader != null)
 				Text = "PE Image";
 			else
 				Text = Path.GetFileName(peImage.FileName);
@@ -28,6 +31,8 @@ namespace dnExplorer.Nodes {
 		protected override IEnumerable<IDataModel> PopulateChildren() {
 			yield return new PESectionsModel(Image);
 			yield return new PEDDModel(Image);
+			if (CLIHeader != null)
+				yield return new PECLIModel(CLIHeader);
 		}
 
 		public override bool HasIcon {
