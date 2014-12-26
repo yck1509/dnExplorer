@@ -17,7 +17,7 @@ namespace dnExplorer {
 		}
 
 		void Initialize() {
-			Size = new Size(600, 450);
+			Size = new Size(800, 650);
 			Text = "dnExplorer";
 			AllowDrop = true;
 
@@ -73,8 +73,6 @@ namespace dnExplorer {
 			else
 				newView = ViewLocator.LocateView(newNode.Model);
 
-			SuspendLayout();
-
 			if (newView != currentView) {
 				if (currentView != null) {
 					content.Controls.Remove(currentView);
@@ -88,8 +86,6 @@ namespace dnExplorer {
 			}
 			else if (currentView != null)
 				currentView.Model = newNode.Model;
-
-			ResumeLayout();
 		}
 	}
 }

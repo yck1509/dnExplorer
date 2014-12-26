@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
 using dnExplorer.Controls;
 using dnExplorer.Nodes;
 using dnlib.IO;
@@ -10,10 +8,7 @@ namespace dnExplorer.Views {
 		HexViewer viewer;
 
 		public PESectionView() {
-			viewer = new HexViewer {
-				Dock = DockStyle.Fill,
-				Font = new Font("Consolas", 10)
-			};
+			viewer = new HexViewer();
 			Controls.Add(viewer);
 		}
 

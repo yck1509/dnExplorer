@@ -23,7 +23,7 @@ namespace dnExplorer.Nodes {
 		}
 
 		protected override IEnumerable<IDataModel> PopulateChildren() {
-			yield return new PEModel(Metadata.PEImage, true);
+			yield return new PEImageModel(Metadata.PEImage, true);
 		}
 
 		public override bool HasIcon {

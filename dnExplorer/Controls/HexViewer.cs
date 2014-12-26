@@ -32,7 +32,9 @@ namespace dnExplorer.Controls {
 					stream = value;
 
 					scrollBar.Minimum = 0;
-					scrollBar.Maximum = stream == null ? 0 : (int)stream.Length / 0x10;
+					var max = stream == null ? 0 : (int)stream.Length / 0x10;
+					max = Math.Max(max - 8, 0);
+					scrollBar.Maximum = max;
 					scrollBar.Value = 0;
 					selStart = selEnd = null;
 					Invalidate();
@@ -50,13 +52,16 @@ namespace dnExplorer.Controls {
 			SetStyle(ControlStyles.Selectable | ControlStyles.OptimizedDoubleBuffer |
 			         ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint |
 			         ControlStyles.ResizeRedraw, true);
-			SetStyle(ControlStyles.ContainerControl, false);
+
 			BackColor = SystemColors.Window;
 			ForeColor = SystemColors.WindowText;
 			BorderColor = SystemColors.ControlText;
 			HeaderColor = SystemColors.HotTrack;
 			SelectedForeColor = SystemColors.HighlightText;
 			SelectedBackColor = SystemColors.Highlight;
+
+			Font = new Font("Consolas", 10);
+			Dock = DockStyle.Fill;
 		}
 
 		void OnScroll(object sender, ScrollEventArgs e) {
@@ -261,9 +266,10 @@ namespace dnExplorer.Controls {
 			lineTxt.Length--;
 			if (selected)
 				TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), SelectedForeColor,
-					SelectedBackColor);
+					SelectedBackColor, TextFormatFlags.NoPrefix);
 			else
-				TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), ForeColor);
+				TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), ForeColor,
+					TextFormatFlags.NoPrefix);
 
 			currentX += (16 * 3 + 2) * charSize.Width;
 
@@ -271,7 +277,7 @@ namespace dnExplorer.Controls {
 			for (int i = 0; i < 0x10; i++) {
 				if (offset + i < data.Length) {
 					byte dat = data[offset + i];
-					if (dat <= 32 || dat >= 127)
+					if (dat <= 32 || (dat >= 127 && dat < 160))
 						lineTxt.Append(".");
 					else
 						lineTxt.Append((char)dat);
@@ -282,9 +288,10 @@ namespace dnExplorer.Controls {
 
 			if (selected)
 				TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), SelectedForeColor,
-					SelectedBackColor);
+					SelectedBackColor, TextFormatFlags.NoPrefix);
 			else
-				TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), ForeColor);
+				TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), ForeColor,
+					TextFormatFlags.NoPrefix);
 		}
 
 		void PaintLineSegmented(Graphics g, byte[] data, long index, int offset, int currentX, int currentY) {
@@ -298,9 +305,10 @@ namespace dnExplorer.Controls {
 					lineTxt.Length--;
 					if (prevSel)
 						TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), SelectedForeColor,
-							SelectedBackColor);
+							SelectedBackColor, TextFormatFlags.NoPrefix);
 					else
-						TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), ForeColor);
+						TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), ForeColor,
+							TextFormatFlags.NoPrefix);
 					currentX += (lineTxt.Length + 1) * charSize.Width;
 					lineTxt.Length = 0;
 					prevSel = currentSel;
@@ -324,9 +332,10 @@ namespace dnExplorer.Controls {
 				if (currentSel != prevSel || i == 0x10) {
 					if (prevSel)
 						TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), SelectedForeColor,
-							SelectedBackColor);
+							SelectedBackColor, TextFormatFlags.NoPrefix);
 					else
-						TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), ForeColor);
+						TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), ForeColor,
+							TextFormatFlags.NoPrefix);
 					currentX += lineTxt.Length * charSize.Width;
 					lineTxt.Length = 0;
 					prevSel = currentSel;
@@ -336,7 +345,7 @@ namespace dnExplorer.Controls {
 
 				if (offset + i < data.Length) {
 					byte dat = data[offset + i];
-					if (dat <= 32 || dat >= 127)
+					if (dat <= 32 || (dat >= 127 && dat < 160))
 						lineTxt.Append(".");
 					else
 						lineTxt.Append((char)dat);

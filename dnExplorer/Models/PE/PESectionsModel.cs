@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using dnExplorer.Trees;
 using dnlib.PE;
 
 namespace dnExplorer.Nodes {
-	public class PEModel : LazyModel {
+	public class PESectionsModel : LazyModel {
 		public IPEImage Image { get; set; }
 
-		public PEModel(IPEImage peImage, bool metadataParent) {
+		public PESectionsModel(IPEImage peImage) {
 			Image = peImage;
-			if (metadataParent)
-				Text = "PE Image";
-			else
-				Text = Path.GetFileName(peImage.FileName);
+			Text = "Sections";
 		}
 
 		protected override bool HasChildren {
