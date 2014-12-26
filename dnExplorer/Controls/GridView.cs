@@ -250,7 +250,7 @@ namespace dnExplorer.Controls {
 		DataGridViewCell prevCurrentCell;
 
 		DataGridViewCell SearchCorrectCell(DataGridViewCell newCell, DataGridViewCell prevCell) {
-			if (newCell.RowIndex != 0 && !inMouseDown) {
+			if (newCell.RowIndex != 0) {
 				// Header row
 				int row = newCell.RowIndex, col = newCell.ColumnIndex;
 
@@ -286,6 +286,11 @@ namespace dnExplorer.Controls {
 			if (selected) {
 				var newCell = this[columnIndex, rowIndex];
 				if (newCell is GridViewHeader) {
+					if (inMouseDown) {
+						if (SelectedCells.Count > 0)
+							base.SetSelectedCellCore(SelectedCells[0].ColumnIndex, SelectedCells[0].RowIndex, false);
+						return;
+					}
 					var correctCell = SearchCorrectCell(newCell, prevSelectedCell);
 					if (correctCell != null) {
 						newCell = correctCell;
@@ -306,8 +311,9 @@ namespace dnExplorer.Controls {
 			if (columnIndex >= 0 && rowIndex >= 0) {
 				var newCell = this[columnIndex, rowIndex];
 				if (newCell is GridViewHeader) {
-					if (throughMouseClick)
-						return false;
+					if (throughMouseClick) {
+						return base.SetCurrentCellAddressCore(-1, -1, setAnchorCellAddress, validateCurrentCell, throughMouseClick);
+					}
 
 					var correctCell = SearchCorrectCell(newCell, prevCurrentCell);
 					if (correctCell != null) {
