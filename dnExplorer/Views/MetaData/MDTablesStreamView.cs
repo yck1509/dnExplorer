@@ -62,7 +62,7 @@ namespace dnExplorer.Views {
 					tbls.SortedMask);
 
 				var rowSizeBegin = offset;
-				var numTbls = Math.Min(Utils.GetNumOfSetBits(tbls.ValidMask), 0x40);
+				var numTbls = Math.Min(Utils.GetNumOfSetBits(tbls.ValidMask), 0x3f);
 				var rowSizeEnd = rowSizeBegin + numTbls * 4;
 				hexView.AddHighLight(new HexViewer.HighLight(Color.Green, rowSizeBegin, rowSizeEnd));
 

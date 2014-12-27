@@ -57,7 +57,10 @@
     </Compile>
     <Compile Include="Models\MetaData\MDStreamModel.cs" />
     <Compile Include="Models\MetaData\MetaDataModel.cs" />
+    <Compile Include="Models\MetaData\Streams\MDTableHeapModel.cs" />
     <Compile Include="Models\MetaData\Streams\MDTablesStreamModel.cs" />
+    <Compile Include="Models\MetaData\Tables\MDRowModel.cs" />
+    <Compile Include="Models\MetaData\Tables\MDTableModel.cs" />
     <Compile Include="Models\ModuleModel.cs" />
     <Compile Include="Models\PE\PECLIModel.cs" />
     <Compile Include="Models\PE\PEDDModel.cs" />
@@ -79,6 +82,9 @@
     </Compile>
     <Compile Include="Trees\Utils.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="Views\MetaData\MDTableHeapView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Views\MetaData\MDTablesStreamView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -128,7 +134,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\Icons\code.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Icons\table.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Icons\entry.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

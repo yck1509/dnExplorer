@@ -5,16 +5,20 @@ using dnExplorer.Trees;
 using dnlib.DotNet.MD;
 
 namespace dnExplorer.Nodes {
-	public class MetaDataModel : LazyModel {
+	public class MDTableModel : LazyModel {
 		public IMetaData MetaData { get; set; }
+		public MDTable Table { get; set; }
+		public TablesStream Stream { get; set; }
 
-		public MetaDataModel(IMetaData metadata) {
+		public MDTableModel(IMetaData metadata, TablesStream stream, MDTable table) {
 			MetaData = metadata;
-			Text = "Metadata";
+			Stream = stream;
+			Table = table;
+			Text = string.Format("{0} (0x{1:x})", table.Name, table.Rows);
 		}
 
 		protected override bool HasChildren {
-			get { return MetaData.AllStreams.Count > 0; }
+			get { return Table.Rows > 0; }
 		}
 
 		protected override bool IsVolatile {
@@ -22,12 +26,8 @@ namespace dnExplorer.Nodes {
 		}
 
 		protected override IEnumerable<IDataModel> PopulateChildren() {
-			foreach (var stream in MetaData.AllStreams) {
-				if (stream is TablesStream)
-					yield return new MDTablesStreamModel(MetaData, (TablesStream)stream);
-				else
-					yield return new MDStreamModel(stream);
-			}
+			for (uint i = 1; i <= Table.Rows; i++)
+				yield return new MDRowModel(MetaData, Stream, Table, i);
 		}
 
 		public override bool HasIcon {
@@ -35,7 +35,7 @@ namespace dnExplorer.Nodes {
 		}
 
 		public override void DrawIcon(Graphics g, Rectangle bounds) {
-			g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.folder.png"), bounds);
+			g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.table.png"), bounds);
 		}
 	}
 }

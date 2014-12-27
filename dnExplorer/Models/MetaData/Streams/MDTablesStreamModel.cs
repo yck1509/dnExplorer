@@ -6,15 +6,17 @@ using dnlib.DotNet.MD;
 
 namespace dnExplorer.Nodes {
 	public class MDTablesStreamModel : LazyModel {
+		public IMetaData MetaData { get; set; }
 		public TablesStream Stream { get; set; }
 
-		public MDTablesStreamModel(TablesStream stream) {
+		public MDTablesStreamModel(IMetaData metadata, TablesStream stream) {
+			MetaData = metadata;
 			Stream = stream;
 			Text = stream.Name;
 		}
 
 		protected override bool HasChildren {
-			get { return false; }
+			get { return true; }
 		}
 
 		protected override bool IsVolatile {
@@ -22,7 +24,7 @@ namespace dnExplorer.Nodes {
 		}
 
 		protected override IEnumerable<IDataModel> PopulateChildren() {
-			yield break;
+			yield return new MDTableHeapModel(MetaData, Stream);
 		}
 
 		public override bool HasIcon {

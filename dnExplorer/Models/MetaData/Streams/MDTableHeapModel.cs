@@ -5,16 +5,18 @@ using dnExplorer.Trees;
 using dnlib.DotNet.MD;
 
 namespace dnExplorer.Nodes {
-	public class MetaDataModel : LazyModel {
+	public class MDTableHeapModel : LazyModel {
 		public IMetaData MetaData { get; set; }
+		public TablesStream Stream { get; set; }
 
-		public MetaDataModel(IMetaData metadata) {
+		public MDTableHeapModel(IMetaData metadata, TablesStream stream) {
 			MetaData = metadata;
-			Text = "Metadata";
+			Stream = stream;
+			Text = "Tables";
 		}
 
 		protected override bool HasChildren {
-			get { return MetaData.AllStreams.Count > 0; }
+			get { return false; }
 		}
 
 		protected override bool IsVolatile {
@@ -22,12 +24,7 @@ namespace dnExplorer.Nodes {
 		}
 
 		protected override IEnumerable<IDataModel> PopulateChildren() {
-			foreach (var stream in MetaData.AllStreams) {
-				if (stream is TablesStream)
-					yield return new MDTablesStreamModel(MetaData, (TablesStream)stream);
-				else
-					yield return new MDStreamModel(stream);
-			}
+			yield break;
 		}
 
 		public override bool HasIcon {
@@ -35,7 +32,7 @@ namespace dnExplorer.Nodes {
 		}
 
 		public override void DrawIcon(Graphics g, Rectangle bounds) {
-			g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.folder.png"), bounds);
+			g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.table.png"), bounds);
 		}
 	}
 }
