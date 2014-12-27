@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
@@ -97,6 +98,11 @@ namespace dnExplorer.Controls {
 		public struct HitTestResult {
 			public HitType Type;
 			public long Index;
+
+			internal HitTestResult(HitType type, long index) {
+				Type = type;
+				Index = index;
+			}
 		}
 
 		public HitTestResult HitTest(Point pt) {
@@ -105,22 +111,60 @@ namespace dnExplorer.Controls {
 			var visibleLines = (ClientSize.Height - PAD_Y * 2 - 2) / charSize.Height;
 			var currentLine = (pt.Y - PAD_Y - 1) / charSize.Height - 1;
 			if (currentLine < 0 || currentLine >= visibleLines - 1)
-				return new HitTestResult();
+				return new HitTestResult(HitType.None, 0);
 
 			var currentIndexBase = (scrollBar.Value + currentLine) * 0x10L;
 
 			int gridX = (pt.X - PAD_X - 3) / charSize.Width;
-			if (gridX > 9 && gridX <= 9 + 16 * 3) // Hex area
-				return new HitTestResult {
-					Index = currentIndexBase + (gridX - 9) / 3,
-					Type = (gridX - 9) % 3 != 0 ? HitType.Hex : HitType.Space
-				};
-			if (gridX > 11 + 16 * 3 && gridX <= 11 + 16 * 3 + 16) // Ascii area
-				return new HitTestResult {
-					Index = currentIndexBase + (gridX - 12 - 16 * 3),
-					Type = HitType.Ascii
-				};
-			return new HitTestResult();
+			long resultIndex;
+			HitType hitType;
+			if (gridX > 9 && gridX < 9 + 16 * 3) {
+				// Hex area
+				resultIndex = currentIndexBase + (gridX - 9) / 3;
+				hitType = (gridX - 9) % 3 == 0 ? HitType.Space : HitType.Hex;
+			}
+			else if (gridX > 11 + 16 * 3 && gridX <= 11 + 16 * 3 + 16) {
+				// Ascii area
+				resultIndex = currentIndexBase + (gridX - 12 - 16 * 3);
+				hitType = HitType.Ascii;
+			}
+			else
+				return new HitTestResult(HitType.None, 0);
+
+			if (resultIndex < 0) {
+				hitType = HitType.Space;
+				resultIndex = 0;
+			}
+			else if (resultIndex >= stream.Length) {
+				hitType = HitType.Space;
+				resultIndex = stream.Length - 1;
+			}
+
+			return new HitTestResult(hitType, resultIndex);
+		}
+
+		public struct HighLight {
+			public readonly Color Color;
+			public readonly long Start;
+			public readonly long End;
+
+			public HighLight(Color color, long start, long end) {
+				Color = color;
+				Start = start;
+				End = end;
+			}
+		}
+
+		List<HighLight> highLights = new List<HighLight>();
+
+		public void AddHighLight(HighLight hl) {
+			highLights.Add(hl);
+			Invalidate();
+		}
+
+		public void ClearHighLight() {
+			highLights.Clear();
+			Invalidate();
 		}
 
 		protected override void OnMouseDown(MouseEventArgs e) {
@@ -178,13 +222,17 @@ namespace dnExplorer.Controls {
 			if (stream != null) {
 				var currentIndexBase = scrollBar.Value * 0x10L;
 
-				var currentX = PAD_X;
+				// https://stackoverflow.com/questions/4428335/how-to-get-the-exact-text-margins-used-by-textrenderer
+				var gdiHeight = TextRenderer.MeasureText(e.Graphics, "W", Font, Size.Empty).Height;
+				var padding = (int)Math.Ceiling(gdiHeight / 6f);
+				var currentX = PAD_X + padding;
 				var currentY = PAD_Y;
 
 				int visibleLines = (ClientSize.Height - PAD_Y * 2 - 2) / charSize.Height;
 
 				const string Header = " Offset    0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F    Ascii";
-				TextRenderer.DrawText(e.Graphics, Header, Font, new Point(currentX, currentY), HeaderColor);
+				TextRenderer.DrawText(e.Graphics, Header, Font, new Point(currentX, currentY), HeaderColor,
+					TextFormatFlags.NoPadding);
 				currentY += charSize.Height + 2;
 				visibleLines--;
 
@@ -195,15 +243,17 @@ namespace dnExplorer.Controls {
 
 				int offset = 0;
 				for (int i = 0; i < visibleLines; i++) {
+					currentX = PAD_X + padding;
+
 					if (offset >= data.Length)
 						continue;
 
-					TextRenderer.DrawText(e.Graphics, currentIndexBase.ToString("X8"), Font, new Point(currentX, currentY), HeaderColor);
+					TextRenderer.DrawText(e.Graphics, currentIndexBase.ToString("X8"), Font, new Point(currentX, currentY), HeaderColor,
+						TextFormatFlags.NoPadding);
 					currentX += charSize.Width * 10;
 
-					PaintLine(e.Graphics, data, currentIndexBase, offset, currentX, currentY);
+					PaintLine(e.Graphics, data, currentIndexBase, offset, currentX, currentY, padding);
 
-					currentX = PAD_X;
 					currentY += charSize.Height;
 					currentIndexBase += 0x10;
 					offset += 0x10;
@@ -237,7 +287,10 @@ namespace dnExplorer.Controls {
 			return value >= aBegin && aEnd >= value;
 		}
 
-		void PaintLine(Graphics g, byte[] data, long index, int offset, int currentX, int currentY) {
+		void PaintLine(Graphics g, byte[] data, long index, int offset, int currentX, int currentY, int txtPadding) {
+			if (highLights.Count > 0)
+				PaintHighLight(g, index, currentX, currentY, txtPadding);
+
 			if (selStart == null || selEnd == null) {
 				PaintLineFast(g, data, offset, currentX, currentY, false);
 				return;
@@ -266,10 +319,10 @@ namespace dnExplorer.Controls {
 			lineTxt.Length--;
 			if (selected)
 				TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), SelectedForeColor,
-					SelectedBackColor, TextFormatFlags.NoPrefix);
+					SelectedBackColor, TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
 			else
 				TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), ForeColor,
-					TextFormatFlags.NoPrefix);
+					TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
 
 			currentX += (16 * 3 + 2) * charSize.Width;
 
@@ -288,10 +341,10 @@ namespace dnExplorer.Controls {
 
 			if (selected)
 				TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), SelectedForeColor,
-					SelectedBackColor, TextFormatFlags.NoPrefix);
+					SelectedBackColor, TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
 			else
 				TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), ForeColor,
-					TextFormatFlags.NoPrefix);
+					TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
 		}
 
 		void PaintLineSegmented(Graphics g, byte[] data, long index, int offset, int currentX, int currentY) {
@@ -305,10 +358,10 @@ namespace dnExplorer.Controls {
 					lineTxt.Length--;
 					if (prevSel)
 						TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), SelectedForeColor,
-							SelectedBackColor, TextFormatFlags.NoPrefix);
+							SelectedBackColor, TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
 					else
 						TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), ForeColor,
-							TextFormatFlags.NoPrefix);
+							TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
 					currentX += (lineTxt.Length + 1) * charSize.Width;
 					lineTxt.Length = 0;
 					prevSel = currentSel;
@@ -332,10 +385,10 @@ namespace dnExplorer.Controls {
 				if (currentSel != prevSel || i == 0x10) {
 					if (prevSel)
 						TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), SelectedForeColor,
-							SelectedBackColor, TextFormatFlags.NoPrefix);
+							SelectedBackColor, TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
 					else
 						TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), ForeColor,
-							TextFormatFlags.NoPrefix);
+							TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
 					currentX += lineTxt.Length * charSize.Width;
 					lineTxt.Length = 0;
 					prevSel = currentSel;
@@ -352,6 +405,30 @@ namespace dnExplorer.Controls {
 				}
 				else
 					lineTxt.Append(" ");
+			}
+		}
+
+		void PaintHighLight(Graphics g, long index, int currentX, int currentY, int txtPadding) {
+			foreach (var hl in highLights) {
+				var startOffset = hl.Start - index;
+				if (startOffset < 0 || startOffset >= 0x10)
+					continue;
+				var endOffset = hl.End - index;
+				if (endOffset > 0x10)
+					endOffset = 0x10;
+
+				var hexStartX = currentX + (startOffset * 3) * charSize.Width;
+				var hexEndX = currentX + (endOffset * 3 - 1) * charSize.Width;
+				hexStartX -= charSize.Width / 2;
+				hexEndX += (charSize.Width + 1) / 2;
+
+				var ascStartX = currentX + (16 * 3 + 2 + startOffset) * charSize.Width;
+				var ascEndX = currentX + (16 * 3 + 2 + endOffset) * charSize.Width;
+
+				using (var brush = new SolidBrush(Color.FromArgb(0x40, hl.Color))) {
+					g.FillRectangle(brush, hexStartX, currentY, hexEndX - hexStartX, charSize.Height);
+					g.FillRectangle(brush, ascStartX, currentY, ascEndX - ascStartX, charSize.Height);
+				}
 			}
 		}
 	}

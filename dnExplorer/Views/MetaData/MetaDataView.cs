@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using dnExplorer.Controls;
 using dnExplorer.Nodes;
@@ -27,38 +28,50 @@ namespace dnExplorer.Views {
 			PerformLayout();
 		}
 
+		Color nextHLColor;
+
+		void AddHighLight(MetaDataModel model, ref uint offset, uint increment) {
+			var viewOffset = offset - (uint)model.MetaData.MetaDataHeader.StartOffset;
+			hexView.AddHighLight(new HexViewer.HighLight(nextHLColor, viewOffset, viewOffset + increment));
+			offset += increment;
+			nextHLColor = (nextHLColor == Color.Red ? Color.Blue : Color.Red);
+		}
+
 		protected override void OnModelUpdated() {
 			var model = (MetaDataModel)Model;
 			gridView.Clear();
 			if (model != null) {
+				hexView.ClearHighLight();
+				nextHLColor = Color.Red;
+
 				uint offset = (uint)model.MetaData.MetaDataHeader.StartOffset;
 
 				gridView.AddRow("Signature", offset, model.MetaData.MetaDataHeader.Signature);
-				offset += 4;
+				AddHighLight(model, ref offset, 4);
 
 				gridView.AddRow("MajorVersion", offset, model.MetaData.MetaDataHeader.MajorVersion);
-				offset += 2;
+				AddHighLight(model, ref offset, 2);
 
 				gridView.AddRow("MinorVersion", offset, model.MetaData.MetaDataHeader.MinorVersion);
-				offset += 2;
+				AddHighLight(model, ref offset, 2);
 
 				gridView.AddRow("Reserved", offset, model.MetaData.MetaDataHeader.Reserved1);
-				offset += 4;
+				AddHighLight(model, ref offset, 4);
 
 				gridView.AddRow("VersionLength", offset, model.MetaData.MetaDataHeader.StringLength);
-				offset += 4;
+				AddHighLight(model, ref offset, 4);
 
 				gridView.AddRow("VersionString", offset, model.MetaData.MetaDataHeader.VersionString);
-				offset += model.MetaData.MetaDataHeader.StringLength;
+				AddHighLight(model, ref offset, model.MetaData.MetaDataHeader.StringLength);
 
 				gridView.AddRow("Flags", offset, model.MetaData.MetaDataHeader.Flags);
-				offset++;
+				AddHighLight(model, ref offset, 1);
 
 				gridView.AddRow("Reserved", offset, model.MetaData.MetaDataHeader.Reserved2);
-				offset++;
+				AddHighLight(model, ref offset, 1);
 
 				gridView.AddRow("NumberOfStreams", offset, model.MetaData.MetaDataHeader.Streams);
-				offset += 2;
+				AddHighLight(model, ref offset, 2);
 
 				hexView.Stream = model.MetaData.PEImage.CreateStream(model.MetaData.MetaDataHeader);
 			}
