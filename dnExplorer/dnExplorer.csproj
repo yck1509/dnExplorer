@@ -57,6 +57,7 @@
     </Compile>
     <Compile Include="Models\MetaData\MDStreamModel.cs" />
     <Compile Include="Models\MetaData\MetaDataModel.cs" />
+    <Compile Include="Models\MetaData\Streams\MDTablesStreamModel.cs" />
     <Compile Include="Models\ModuleModel.cs" />
     <Compile Include="Models\PE\PECLIModel.cs" />
     <Compile Include="Models\PE\PEDDModel.cs" />
@@ -77,6 +78,10 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Trees\Utils.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="Views\MetaData\MDTablesStreamView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Views\MetaData\MetaDataView.cs">
       <SubType>Component</SubType>
     </Compile>

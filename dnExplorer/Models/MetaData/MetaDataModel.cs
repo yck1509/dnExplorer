@@ -22,8 +22,12 @@ namespace dnExplorer.Nodes {
 		}
 
 		protected override IEnumerable<IDataModel> PopulateChildren() {
-			foreach (var stream in MetaData.AllStreams)
-				yield return new MDStreamModel(stream);
+			foreach (var stream in MetaData.AllStreams) {
+				if (stream is TablesStream)
+					yield return new MDTablesStreamModel((TablesStream)stream);
+				else
+					yield return new MDStreamModel(stream);
+			}
 		}
 
 		public override bool HasIcon {
