@@ -2,22 +2,19 @@
 using System.Collections.Generic;
 using System.Drawing;
 using dnExplorer.Trees;
-using dnlib.DotNet;
 using dnlib.DotNet.MD;
 
 namespace dnExplorer.Nodes {
-	public class ModuleModel : LazyModel {
+	public class MetaDataModel : LazyModel {
 		public IMetaData MetaData { get; set; }
-		public ModuleDefMD Module { get; set; }
 
-		public ModuleModel(ModuleDefMD module) {
-			Module = module;
-			MetaData = module.MetaData;
-			Text = module.Name;
+		public MetaDataModel(IMetaData metadata) {
+			MetaData = metadata;
+			Text = "Metadata";
 		}
 
 		protected override bool HasChildren {
-			get { return true; }
+			get { return MetaData.AllStreams.Count > 0; }
 		}
 
 		protected override bool IsVolatile {
@@ -25,9 +22,7 @@ namespace dnExplorer.Nodes {
 		}
 
 		protected override IEnumerable<IDataModel> PopulateChildren() {
-			yield return new PEImageModel(MetaData.PEImage, MetaData.ImageCor20Header);
-			if (MetaData != null)
-				yield return new MetaDataModel(MetaData);
+			yield break;
 		}
 
 		public override bool HasIcon {
@@ -35,7 +30,7 @@ namespace dnExplorer.Nodes {
 		}
 
 		public override void DrawIcon(Graphics g, Rectangle bounds) {
-			g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.module.png"), bounds);
+			g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.folder.png"), bounds);
 		}
 	}
 }

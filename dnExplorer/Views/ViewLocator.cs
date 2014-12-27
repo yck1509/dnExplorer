@@ -12,6 +12,7 @@ namespace dnExplorer.Views {
 			if (!views.TryGetValue(model.GetType(), out view)) {
 				if (model is ModuleModel)
 					view = new ModuleView();
+
 				else if (model is PEImageModel)
 					view = new PEImageView();
 				else if (model is PESectionsModel)
@@ -22,6 +23,10 @@ namespace dnExplorer.Views {
 					view = new PEDDView();
 				else if (model is PECLIModel)
 					view = new PECLIView();
+
+				else if (model is MetaDataModel)
+					view = new MetaDataView();
+
 				else
 					view = null;
 				views[model.GetType()] = view;
