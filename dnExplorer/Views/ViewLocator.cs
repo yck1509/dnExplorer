@@ -26,6 +26,8 @@ namespace dnExplorer.Views {
 
 				else if (model is MetaDataModel)
 					view = new MetaDataView();
+				else if (model is MDStreamModel)
+					view = new MDStreamView();
 
 				else
 					view = null;

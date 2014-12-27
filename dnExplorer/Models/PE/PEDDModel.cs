@@ -16,7 +16,7 @@ namespace dnExplorer.Nodes {
 		}
 
 		public override void DrawIcon(Graphics g, Rectangle bounds) {
-			g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.folder.png"), bounds);
+			g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.code.png"), bounds);
 		}
 
 		public override void Refresh(bool refreshChildren) {
