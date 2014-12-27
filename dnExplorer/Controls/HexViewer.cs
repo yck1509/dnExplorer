@@ -410,12 +410,17 @@ namespace dnExplorer.Controls {
 
 		void PaintHighLight(Graphics g, long index, int currentX, int currentY, int txtPadding) {
 			foreach (var hl in highLights) {
-				var startOffset = hl.Start - index;
-				if (startOffset < 0 || startOffset >= 0x10)
-					continue;
 				var endOffset = hl.End - index;
+				if (endOffset < 0)
+					continue;
 				if (endOffset > 0x10)
 					endOffset = 0x10;
+
+				var startOffset = hl.Start - index;
+				if (startOffset >= 0x10)
+					continue;
+				if (startOffset < 0)
+					startOffset = 0;
 
 				var hexStartX = currentX + (startOffset * 3) * charSize.Width;
 				var hexEndX = currentX + (endOffset * 3 - 1) * charSize.Width;
@@ -425,7 +430,7 @@ namespace dnExplorer.Controls {
 				var ascStartX = currentX + (16 * 3 + 2 + startOffset) * charSize.Width;
 				var ascEndX = currentX + (16 * 3 + 2 + endOffset) * charSize.Width;
 
-				using (var brush = new SolidBrush(Color.FromArgb(0x40, hl.Color))) {
+				using (var brush = new SolidBrush(Color.FromArgb(0x28, hl.Color))) {
 					g.FillRectangle(brush, hexStartX, currentY, hexEndX - hexStartX, charSize.Height);
 					g.FillRectangle(brush, ascStartX, currentY, ascEndX - ascStartX, charSize.Height);
 				}

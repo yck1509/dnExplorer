@@ -46,11 +46,11 @@ namespace dnExplorer.Views {
 
 					GridView.Cell sectionCell;
 					if (dir.VirtualAddress != 0 && section == null)
-						sectionCell = new GridView.Cell("Invalid", ControlPaint.Light(Color.Red));
+						sectionCell = new GridView.Cell("Invalid", back: ControlPaint.Light(Color.Red));
 					else if (section != null)
-						sectionCell = new GridView.Cell(section.DisplayName, SystemColors.ControlLight);
+						sectionCell = new GridView.Cell(section.DisplayName, back: SystemColors.ControlLight);
 					else
-						sectionCell = new GridView.Cell("", SystemColors.ControlLight);
+						sectionCell = new GridView.Cell("", back: SystemColors.ControlLight);
 
 					view.AddRow(DirectoryNames[i], dir.VirtualAddress, dir.Size, sectionCell);
 				}

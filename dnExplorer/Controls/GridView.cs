@@ -22,11 +22,13 @@ namespace dnExplorer.Controls {
 
 		public struct Cell {
 			public readonly object Value;
+			public readonly bool? IsLabel;
 			public readonly Color? BackColor;
 			public readonly Color? ForeColor;
 
-			public Cell(object value, Color? back = null, Color? fore = null) {
+			public Cell(object value, bool? isLabel = null, Color? back = null, Color? fore = null) {
 				Value = value;
+				IsLabel = isLabel;
 				BackColor = back;
 				ForeColor = fore;
 			}
@@ -172,9 +174,17 @@ namespace dnExplorer.Controls {
 			var dvRow = new DataGridViewRow { Height = RowHeight };
 			for (int i = 0; i < cols.Count; i++) {
 				var value = row[i];
-				var cell = (DataGridViewCell)Columns[i].CellTemplate.Clone();
+				DataGridViewCell cell;
 				if (value is Cell) {
 					var rawCell = (Cell)value;
+
+					if (rawCell.IsLabel == null)
+						cell = (DataGridViewCell)Columns[i].CellTemplate.Clone();
+					else if (rawCell.IsLabel.Value)
+						cell = new GridViewHeader();
+					else
+						cell = new GridViewTextBox();
+
 					cell.Value = rawCell.Value;
 					if (rawCell.BackColor != null || rawCell.ForeColor != null) {
 						var style = cell.Style;
@@ -185,8 +195,10 @@ namespace dnExplorer.Controls {
 						cell.Style = style;
 					}
 				}
-				else
+				else {
+					cell = (DataGridViewCell)Columns[i].CellTemplate.Clone();
 					cell.Value = value;
+				}
 				dvRow.Cells.Add(cell);
 			}
 			Rows.Add(dvRow);
