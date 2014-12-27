@@ -10,7 +10,9 @@ namespace dnExplorer.Views {
 		public static ViewBase LocateView(IDataModel model) {
 			ViewBase view;
 			if (!views.TryGetValue(model.GetType(), out view)) {
-				if (model is PEImageModel)
+				if (model is ModuleModel)
+					view = new ModuleView();
+				else if (model is PEImageModel)
 					view = new PEImageView();
 				else if (model is PESectionsModel)
 					view = new PESectionsView();

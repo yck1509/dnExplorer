@@ -75,6 +75,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Trees\Utils.cs" />
+    <Compile Include="Views\ModuleView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Views\PE\PECLIView.cs">
       <SubType>Component</SubType>
     </Compile>
