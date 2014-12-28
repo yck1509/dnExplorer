@@ -73,6 +73,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\Resources.cs" />
     <Compile Include="Trees\BatchObservableCollection.cs" />
+    <Compile Include="Trees\ErrorModel.cs" />
     <Compile Include="Trees\DataModel.cs" />
     <Compile Include="Trees\DataTreeNodeX.cs" />
     <Compile Include="Trees\IDataModel.cs" />

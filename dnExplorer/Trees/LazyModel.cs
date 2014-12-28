@@ -42,7 +42,9 @@ namespace dnExplorer.Trees {
 				if (loadState == STATE_LOADING)
 					return;
 
-				if (IsVolatile && Children.Count > 0 && Children[0] != NullModel.Instance) {
+				if (Children.Count > 0 && (
+					(IsVolatile && Children[0] != NullModel.Instance) ||
+					Children[0] is ErrorModel)) {
 					Children.Clear();
 					Children.Add(NullModel.Instance);
 				}
@@ -70,7 +72,18 @@ namespace dnExplorer.Trees {
 		}
 
 		void PopulateChildrenInternal() {
-			var children = new List<IDataModel>(PopulateChildren());
+			ICollection<IDataModel> children;
+			try {
+				children = new List<IDataModel>(PopulateChildren());
+			}
+			catch (Exception ex) {
+				children = new IDataModel[] {
+					new ErrorModel(
+						string.Format("Error while loading ModuleDef:{0}{1}{0}{0}",
+							Environment.NewLine, ex))
+				};
+			}
+
 			waitHnd.Set();
 			lock (loadLock) {
 				if (loadState == STATE_CANCEL)
