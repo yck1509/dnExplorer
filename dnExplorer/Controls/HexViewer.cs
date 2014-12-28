@@ -63,15 +63,17 @@ namespace dnExplorer.Controls {
 			scrollBar.Value = scrollLine;
 		}
 
-		public void Select(long offset) {
+		public void Select(long offset, bool ensureVisible = true) {
 			SelectionStart = SelectionEnd = offset;
-			EnsureVisible(offset);
+			if (ensureVisible)
+				EnsureVisible(offset);
 		}
 
-		public void Select(long begin, long end) {
+		public void Select(long begin, long end, bool ensureVisible = true) {
 			SelectionStart = begin;
 			SelectionEnd = end;
-			EnsureVisible(begin);
+			if (ensureVisible)
+				EnsureVisible(begin);
 		}
 
 		public IImageStream Stream {
@@ -157,9 +159,9 @@ namespace dnExplorer.Controls {
 		public HitTestResult HitTest(Point pt) {
 			EnsureFontInfo();
 
-			var visibleLines = (ClientSize.Height - PAD_Y * 2 - 2) / charSize.Height;
+			var visibleLines = (ClientSize.Height - PAD_Y * 2 - 4) / charSize.Height;
 			var currentLine = (pt.Y - PAD_Y - 1) / charSize.Height - 1;
-			if (currentLine < 0 || currentLine >= visibleLines - 1)
+			if (currentLine < 0 || currentLine >= visibleLines - 2)
 				return new HitTestResult(HitType.None, 0);
 
 			var currentIndexBase = (scrollBar.Value + currentLine) * 0x10L;
@@ -283,13 +285,13 @@ namespace dnExplorer.Controls {
 				var currentX = PAD_X + padding;
 				var currentY = PAD_Y;
 
-				int visibleLines = (ClientSize.Height - PAD_Y * 2 - 2) / charSize.Height;
+				int visibleLines = (ClientSize.Height - PAD_Y * 2 - 4) / charSize.Height;
 
 				const string Header = " Offset    0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F    Ascii";
 				TextRenderer.DrawText(e.Graphics, Header, Font, new Point(currentX, currentY), HeaderColor,
 					TextFormatFlags.NoPadding);
 				currentY += charSize.Height + 2;
-				visibleLines--;
+				visibleLines -= 2;
 
 				var len = (int)Math.Min(visibleLines * 0x10, stream.Length - currentIndexBase);
 				byte[] data = new byte[len];
@@ -300,19 +302,26 @@ namespace dnExplorer.Controls {
 				for (int i = 0; i < visibleLines; i++) {
 					currentX = PAD_X + padding;
 
-					if (offset >= data.Length)
-						continue;
+					if (offset < data.Length) {
+						TextRenderer.DrawText(e.Graphics, currentIndexBase.ToString("X8"), Font, new Point(currentX, currentY),
+							HeaderColor,
+							TextFormatFlags.NoPadding);
+						currentX += charSize.Width * 10;
 
-					TextRenderer.DrawText(e.Graphics, currentIndexBase.ToString("X8"), Font, new Point(currentX, currentY), HeaderColor,
-						TextFormatFlags.NoPadding);
-					currentX += charSize.Width * 10;
-
-					PaintLine(e.Graphics, data, currentIndexBase, offset, currentX, currentY, padding);
+						PaintLine(e.Graphics, data, currentIndexBase, offset, currentX, currentY, padding);
+					}
 
 					currentY += charSize.Height;
 					currentIndexBase += 0x10;
 					offset += 0x10;
 				}
+
+				currentX = PAD_X + padding;
+				currentY += 4;
+
+				TextRenderer.DrawText(e.Graphics, GetStatusText(), Font, new Point(currentX, currentY), ForeColor,
+					TextFormatFlags.NoPadding);
+
 
 				var borderBounds = new Rectangle(PAD_X / 2, PAD_Y / 2, (15 + 16 * 3 + 16) * charSize.Width + PAD_X,
 					(visibleLines + 1) * charSize.Height + PAD_Y + 2);
@@ -507,6 +516,15 @@ namespace dnExplorer.Controls {
 					g.FillRectangle(brush, ascStartX, currentY, ascEndX - ascStartX, charSize.Height);
 				}
 			}
+		}
+
+		string GetStatusText() {
+			if (!HasSelection)
+				return string.Format("Length: {0:X8}", Stream.Length);
+			if (SelectionStart == SelectionEnd)
+				return string.Format("Position: {0:X8}", SelectionStart);
+			return string.Format("Begin: {0:X8}  End: {1:X8}  Size: {2:X8}",
+				SelectionStart, SelectionEnd, SelectionEnd - SelectionStart + 1);
 		}
 	}
 }

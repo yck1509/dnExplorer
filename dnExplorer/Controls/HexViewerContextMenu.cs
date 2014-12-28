@@ -15,6 +15,8 @@ namespace dnExplorer.Controls {
 		ToolStripMenuItem copyValue;
 		ToolStripMenuItem copyHex;
 		ToolStripMenuItem selAll;
+		ToolStripMenuItem selMarkBegin;
+		ToolStripMenuItem selMarkEnd;
 		ToolStripMenuItem gotoOffset;
 
 		public HexViewerContextMenu(HexViewer hexView) {
@@ -54,6 +56,14 @@ namespace dnExplorer.Controls {
 			selAll.Click += DoSelectAll;
 			Items.Add(selAll);
 
+			selMarkBegin = new ToolStripMenuItem("Mark Selection Begin");
+			selMarkBegin.Click += DoMarkSelectBegin;
+			Items.Add(selMarkBegin);
+
+			selMarkEnd = new ToolStripMenuItem("Mark Selection End");
+			selMarkEnd.Click += DoMarkSelectEnd;
+			Items.Add(selMarkEnd);
+
 			Items.Add(new ToolStripSeparator());
 
 			gotoOffset = new ToolStripMenuItem("Go To Offset...");
@@ -63,6 +73,8 @@ namespace dnExplorer.Controls {
 
 		void UpdateItems() {
 			copy.Enabled = hexView.HasSelection;
+			selMarkBegin.Enabled = hexView.HasSelection;
+			selMarkEnd.Enabled = hexView.HasSelection;
 		}
 
 		protected override void OnOpening(CancelEventArgs e) {
@@ -105,7 +117,7 @@ namespace dnExplorer.Controls {
 		}
 
 		void DoCopySize(object sender, EventArgs e) {
-			var size = ((uint)(hexView.SelectionEnd - hexView.SelectionStart)).ToString("X8");
+			var size = ((uint)(hexView.SelectionEnd - hexView.SelectionStart) + 1).ToString("X8");
 			Clipboard.SetText(size);
 		}
 
@@ -126,6 +138,25 @@ namespace dnExplorer.Controls {
 					sb.AppendFormat("{0:X2}", buff[i]);
 			}
 			Clipboard.SetText(sb.ToString());
+		}
+
+		long? selBegin;
+		long? selEnd;
+
+		void DoMarkSelectBegin(object sender, EventArgs e) {
+			selBegin = hexView.SelectionStart;
+			if (selBegin != null && selEnd != null) {
+				hexView.Select(selBegin.Value, selEnd.Value, false);
+				selBegin = selEnd = null;
+			}
+		}
+
+		void DoMarkSelectEnd(object sender, EventArgs e) {
+			selEnd = hexView.SelectionEnd;
+			if (selBegin != null && selEnd != null) {
+				hexView.Select(selBegin.Value, selEnd.Value, false);
+				selBegin = selEnd = null;
+			}
 		}
 	}
 }
