@@ -26,6 +26,54 @@ namespace dnExplorer.Controls {
 		public Color SelectedForeColor { get; set; }
 		public Color SelectedBackColor { get; set; }
 
+		public bool HasSelection {
+			get { return selStart != null && selEnd != null; }
+		}
+
+		public long SelectionStart {
+			get { return selStart ?? -1; }
+			set {
+				selStart = value;
+				Invalidate();
+			}
+		}
+
+		public long SelectionEnd {
+			get { return selEnd ?? -1; }
+			set {
+				selEnd = value;
+				Invalidate();
+			}
+		}
+
+		public byte[] GetSelection() {
+			var size = (int)(SelectionEnd - SelectionStart) + 1;
+			var buff = new byte[size];
+			Stream.Position = SelectionStart;
+			Stream.Read(buff, 0, buff.Length);
+			return buff;
+		}
+
+		public void EnsureVisible(long offset) {
+			int scrollLine = (int)(offset / 0x10 - 8);
+			if (scrollLine < scrollBar.Minimum)
+				scrollLine = scrollBar.Minimum;
+			if (scrollLine > scrollBar.Maximum)
+				scrollLine = scrollBar.Maximum;
+			scrollBar.Value = scrollLine;
+		}
+
+		public void Select(long offset) {
+			SelectionStart = SelectionEnd = offset;
+			EnsureVisible(offset);
+		}
+
+		public void Select(long begin, long end) {
+			SelectionStart = begin;
+			SelectionEnd = end;
+			EnsureVisible(begin);
+		}
+
 		public IImageStream Stream {
 			get { return stream; }
 			set {
@@ -63,6 +111,7 @@ namespace dnExplorer.Controls {
 
 			Font = new Font("Consolas", 10);
 			Dock = DockStyle.Fill;
+			ContextMenuStrip = new HexViewerContextMenu(this);
 		}
 
 		void OnScroll(object sender, ScrollEventArgs e) {
@@ -187,7 +236,7 @@ namespace dnExplorer.Controls {
 				else if (selStart == null || ht.Index < selStart.Value || ht.Index > selEnd.Value)
 					selStart = selEnd = ht.Index;
 			}
-			else
+			else if (ht.Type == HitType.None)
 				selStart = selEnd = null;
 			Invalidate();
 		}

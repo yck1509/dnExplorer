@@ -51,8 +51,12 @@
     <Compile Include="Controls\HexViewer.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\HexViewerContextMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="dnlibUtils.cs" />
     <Compile Include="dnModule.cs" />
+    <Compile Include="InputBox.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
     </Compile>

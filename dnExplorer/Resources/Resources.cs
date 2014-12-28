@@ -11,7 +11,7 @@ namespace dnExplorer {
 			if (cache.ContainsKey(name)) {
 				return (cache[name] as T);
 			}
-			var res = typeof(Resources).Assembly.GetManifestResourceStream("dnExplorer.Resources." + name);
+			var res = typeof(Resources).Assembly.GetManifestResourceStream(Main.AppName + ".Resources." + name);
 			if (typeof(T) == typeof(Stream)) {
 				return res as T;
 			}

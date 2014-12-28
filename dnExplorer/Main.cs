@@ -7,6 +7,8 @@ using dnExplorer.Views;
 
 namespace dnExplorer {
 	public class Main : Form {
+		public static readonly string AppName = typeof(InputBox).Assembly.GetName().Name;
+
 		TreeViewX treeView;
 		Panel content;
 

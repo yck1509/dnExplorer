@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Text;
 using dnExplorer.Controls;
 
@@ -38,7 +39,6 @@ namespace dnExplorer {
 			}
 			return bits;
 		}
-
 
 		public static string EscapeString(string s, bool addQuotes) {
 			var sb = new StringBuilder();
@@ -90,6 +90,26 @@ namespace dnExplorer {
 			if (addQuotes)
 				sb.Append('\'');
 			return sb.ToString();
+		}
+
+		public static uint? ParseInputNum(string input) {
+			uint num;
+			if (input.StartsWith("0x")) {
+				if (!uint.TryParse(input.Substring(2), NumberStyles.HexNumber, null, out num))
+					return null;
+			}
+			else if (input.EndsWith("h")) {
+				if (!uint.TryParse(input.Substring(0, input.Length - 1), NumberStyles.HexNumber, null, out num))
+					return null;
+			}
+			else if (input.EndsWith("d")) {
+				if (!uint.TryParse(input.Substring(0, input.Length - 1), out num))
+					return null;
+			}
+			else if (!uint.TryParse(input, NumberStyles.HexNumber, null, out num))
+				return null;
+
+			return num;
 		}
 	}
 }
