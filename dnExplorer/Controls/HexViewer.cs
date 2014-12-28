@@ -323,12 +323,17 @@ namespace dnExplorer.Controls {
 			}
 
 			lineTxt.Length--;
-			if (selected)
+			if (selected) {
+				using (var brush = new SolidBrush(SelectedBackColor))
+					g.FillRectangle(brush, currentX, currentY, charSize.Width * lineTxt.Length, charSize.Height);
+
 				TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), SelectedForeColor,
-					SelectedBackColor, TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
-			else
+					TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
+			}
+			else {
 				TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), ForeColor,
 					TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
+			}
 
 			currentX += (16 * 3 + 2) * charSize.Width;
 
@@ -345,9 +350,13 @@ namespace dnExplorer.Controls {
 					lineTxt.Append(" ");
 			}
 
-			if (selected)
+			if (selected) {
+				using (var brush = new SolidBrush(SelectedBackColor))
+					g.FillRectangle(brush, currentX, currentY, charSize.Width * lineTxt.Length, charSize.Height);
+
 				TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), SelectedForeColor,
-					SelectedBackColor, TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
+					TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
+			}
 			else
 				TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), ForeColor,
 					TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
@@ -362,9 +371,13 @@ namespace dnExplorer.Controls {
 				currentSel = Contains(selStart.Value, selEnd.Value, index + i);
 				if (currentSel != prevSel || i == 0x10) {
 					lineTxt.Length--;
-					if (prevSel)
+					if (prevSel) {
+						using (var brush = new SolidBrush(SelectedBackColor))
+							g.FillRectangle(brush, currentX, currentY, charSize.Width * lineTxt.Length, charSize.Height);
+
 						TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), SelectedForeColor,
-							SelectedBackColor, TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
+							TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
+					}
 					else
 						TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), ForeColor,
 							TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
@@ -389,9 +402,13 @@ namespace dnExplorer.Controls {
 			for (int i = 0; i < 0x11; i++) {
 				currentSel = Contains(selStart.Value, selEnd.Value, index + i);
 				if (currentSel != prevSel || i == 0x10) {
-					if (prevSel)
+					if (prevSel) {
+						using (var brush = new SolidBrush(SelectedBackColor))
+							g.FillRectangle(brush, currentX, currentY, charSize.Width * lineTxt.Length, charSize.Height);
+
 						TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), SelectedForeColor,
-							SelectedBackColor, TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
+							TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
+					}
 					else
 						TextRenderer.DrawText(g, lineTxt.ToString(), Font, new Point(currentX, currentY), ForeColor,
 							TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
