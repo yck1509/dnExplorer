@@ -5,13 +5,19 @@ using System.Windows.Forms;
 
 namespace dnExplorer.Trees {
 	public class TreeViewX : TreeView {
+		Control scratch;
+
 		public TreeViewX() {
 			HotTracking = true;
 			HideSelection = false;
 			ShowLines = false;
+			BorderStyle = BorderStyle.FixedSingle;
 			DrawMode = TreeViewDrawMode.OwnerDrawAll;
 			ImageList = new ImageList();
 			ImageList.Images.Add(new Bitmap(16, 16));
+
+			scratch = new Control();
+			scratch.CreateControl();
 
 			Font = new Font("Segoe UI", 9);
 			SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
@@ -160,6 +166,8 @@ namespace dnExplorer.Trees {
 			}
 		}
 
+		internal bool updating = false;
+
 		protected override void WndProc(ref Message m) {
 			const int WM_NOTIFY = 0x4e;
 			const int TTN_GETDISPINFOA = -520;
@@ -172,10 +180,18 @@ namespace dnExplorer.Trees {
 				if (code == TTN_GETDISPINFOA || code == TTN_GETDISPINFOW)
 					return;
 			}
+			else if (m.Msg == 0x204e) {
+				int code = Marshal.ReadInt32(m.LParam + IntPtr.Size * 2);
+				if (code == -12) {
+					//var nodeHnd = Marshal.ReadIntPtr(m.LParam + IntPtr.Size * 3 + 24);
+					//var state = Marshal.ReadInt32(m.LParam + IntPtr.Size * 4 + 24);
+					if (updating)
+						return;
+				}
+			}
 
 			if (m.Msg == 20)
 				return;
-
 
 			base.WndProc(ref m);
 		}

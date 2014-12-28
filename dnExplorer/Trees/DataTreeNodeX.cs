@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace dnExplorer.Trees {
 	public class DataTreeNodeX : TreeNodeX {
@@ -104,24 +105,17 @@ namespace dnExplorer.Trees {
 		}
 
 		void OnChildrenUpdated(object sender, NotifyCollectionChangedEventArgs e) {
+			if (e.Action == NotifyCollectionChangedAction.Reset) {
+				DoReset();
+				return;
+			}
+
 			if (TreeView != null && TreeView.InvokeRequired) {
 				TreeView.Invoke(new NotifyCollectionChangedEventHandler(OnChildrenUpdated), sender, e);
 				return;
 			}
 
 			switch (e.Action) {
-				case NotifyCollectionChangedAction.Reset: {
-					try {
-						Nodes.Clear();
-						foreach (var child in model.Children) {
-							Nodes.Add(child.ToNode());
-						}
-					}
-					finally {
-					}
-					break;
-				}
-
 				case NotifyCollectionChangedAction.Add: {
 					Nodes.Insert(e.NewStartingIndex, model.Children[e.NewStartingIndex].ToNode());
 					break;
@@ -143,6 +137,29 @@ namespace dnExplorer.Trees {
 					((DataTreeNodeX)Nodes[e.NewStartingIndex]).Model = model.Children[e.NewStartingIndex];
 					break;
 				}
+			}
+		}
+
+		void DoReset() {
+			var newNodes = new TreeNode[model.Children.Count];
+			for (int i = 0; i < newNodes.Length; i++)
+				newNodes[i] = model.Children[i].ToNode();
+
+			if (TreeView != null && TreeView.InvokeRequired) {
+				TreeView.Invoke(new Action<TreeNode[]>(DoReset), new object[] { newNodes });
+			}
+			else
+				DoReset(newNodes);
+		}
+
+		void DoReset(TreeNode[] nodes) {
+			Nodes.Clear();
+			((TreeViewX)TreeView).updating = true;
+			try {
+				Nodes.AddRange(nodes);
+			}
+			finally {
+				((TreeViewX)TreeView).updating = false;
 			}
 		}
 	}
