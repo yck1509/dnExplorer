@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 using dnExplorer.Controls;
 using dnExplorer.Nodes;
@@ -10,6 +12,7 @@ namespace dnExplorer.Views {
 		TreeViewX treeView;
 		GridView gridView;
 		HexViewer hexView;
+		Dictionary<Table, HexViewer.HighLight[]> hls;
 
 		public MDTableHeapView() {
 			var split1 = new SplitContainer {
@@ -21,6 +24,7 @@ namespace dnExplorer.Views {
 			treeView = new TreeViewX {
 				Dock = DockStyle.Fill
 			};
+			treeView.AfterSelect += OnNodeSelected;
 			split1.Panel1.Controls.Add(treeView);
 
 			var split2 = new SplitContainer {
@@ -30,12 +34,19 @@ namespace dnExplorer.Views {
 			split1.Panel2.Controls.Add(split2);
 
 			gridView = new GridView();
+			gridView.AddColumn(new GridView.Column("Field", true, 110));
+			gridView.AddColumn(new GridView.Column("Type", true));
+			gridView.AddColumn(new GridView.Column("Offset", true));
+			gridView.AddColumn(new GridView.Column("Value", false));
+			gridView.AddColumn(new GridView.Column("Description", false, 250));
 			split2.Panel1.Controls.Add(gridView);
 
 			hexView = new HexViewer();
 			split2.Panel2.Controls.Add(hexView);
 
 			PerformLayout();
+
+			hls = new Dictionary<Table, HexViewer.HighLight[]>();
 		}
 
 		void UpdateTreeView(IMetaData metadata, TablesStream stream) {
@@ -49,11 +60,79 @@ namespace dnExplorer.Views {
 			}
 		}
 
+		uint CalculateTableRowsOffset(Table table) {
+			var tbls = ((MDTableHeapModel)Model).Stream;
+			uint offset = 24;
+
+			var valid = tbls.ValidMask;
+			for (int i = 0; i < 0x40; i++) {
+				if ((Table)i == table)
+					break;
+
+				if ((valid & 1) == 1)
+					offset += 4;
+				valid = valid >> 1;
+			}
+			return offset;
+		}
+
+		HexViewer.HighLight[] GetHighLights(Table table) {
+			HexViewer.HighLight[] ret;
+			if (hls.TryGetValue(table, out ret))
+				return ret;
+
+			var tbls = ((MDTableHeapModel)Model).Stream;
+			var mdTable = tbls.Get(table);
+			ret = new HexViewer.HighLight[mdTable.Rows + 1];
+
+			var rowCountOffset = CalculateTableRowsOffset(table);
+			var rowOffset = (uint)mdTable.StartOffset - (uint)tbls.StartOffset;
+
+			using (var colorSeq = Utils.GetAlternateColorSequence(Color.Red, Color.Blue).GetEnumerator()) {
+				ret[0] = new HexViewer.HighLight(Color.Magenta, rowCountOffset, rowCountOffset + 4);
+				for (int i = 1; i < ret.Length && colorSeq.MoveNext(); i++) {
+					ret[i] = new HexViewer.HighLight(colorSeq.Current, rowOffset, rowOffset + mdTable.RowSize);
+					rowOffset += mdTable.RowSize;
+				}
+			}
+			hls[table] = ret;
+			return ret;
+		}
+
+		void OnNodeSelected(object sender, TreeViewEventArgs e) {
+			gridView.Clear();
+
+			var node = (DataTreeNodeX)treeView.SelectedNode;
+			if (node.Model is MDTableModel) {
+				var mdTable = ((MDTableModel)node.Model).Table;
+				hexView.SetHighLights(GetHighLights(mdTable.Table));
+			}
+			else if (node.Model is MDRowModel) {
+				var rowModel = (MDRowModel)node.Model;
+				var mdTable = rowModel.MDTable;
+				var rid = rowModel.Rid;
+
+				var rowHL = GetHighLights(mdTable.Table);
+				rowHL = (HexViewer.HighLight[])rowHL.Clone();
+
+				var row = rowHL[rid];
+				row = new HexViewer.HighLight(Color.Lime, row.Start, row.End);
+				rowHL[rid] = row;
+
+				hexView.SetHighLights(rowHL);
+				RowInfoPopulator.PopulateGridView(gridView, rowModel);
+			}
+			else {
+				hexView.ClearHighLight();
+			}
+		}
+
 		protected override void OnModelUpdated() {
 			var model = (MDTableHeapModel)Model;
 
 			treeView.BeginUpdate();
 			treeView.Nodes.Clear();
+			hls.Clear();
 
 			gridView.Clear();
 			if (model != null) {

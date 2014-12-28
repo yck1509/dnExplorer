@@ -162,6 +162,12 @@ namespace dnExplorer.Controls {
 			Invalidate();
 		}
 
+		public void SetHighLights(HighLight[] hl) {
+			highLights.Clear();
+			highLights.AddRange(hl);
+			Invalidate();
+		}
+
 		public void ClearHighLight() {
 			highLights.Clear();
 			Invalidate();
@@ -430,7 +436,7 @@ namespace dnExplorer.Controls {
 				var ascStartX = currentX + (16 * 3 + 2 + startOffset) * charSize.Width;
 				var ascEndX = currentX + (16 * 3 + 2 + endOffset) * charSize.Width;
 
-				using (var brush = new SolidBrush(Color.FromArgb(0x28, hl.Color))) {
+				using (var brush = new SolidBrush(Color.FromArgb(0x30, hl.Color))) {
 					g.FillRectangle(brush, hexStartX, currentY, hexEndX - hexStartX, charSize.Height);
 					g.FillRectangle(brush, ascStartX, currentY, ascEndX - ascStartX, charSize.Height);
 				}

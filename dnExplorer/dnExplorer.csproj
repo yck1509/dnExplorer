@@ -94,6 +94,7 @@
     <Compile Include="Views\MetaData\MDStreamView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Views\MetaData\RowInfoPopulator.cs" />
     <Compile Include="Views\ModuleView.cs">
       <SubType>Component</SubType>
     </Compile>

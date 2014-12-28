@@ -49,18 +49,16 @@ namespace dnExplorer.Nodes {
 
 		string ReadString(uint offset) {
 			var value = MetaData.StringsStream.Read(offset);
-			if (value.Length == 0)
-				return "<<EMPTY>>";
 			if (value == (UTF8String)null)
 				return "<<INVALID>>";
-			return value;
+			return Utils.EscapeString(value, true);
 		}
 
 		string ToTokenString(Table table, uint rid) {
 			if (!Tables.HasTable(table) || Tables.Get(table).IsInvalidRID(rid))
 				return "<<INVALID>>";
 
-			return string.Format("[{0} 0x{1:x}]", table, rid);
+			return new MDToken(table, rid).ToDescription();
 		}
 
 		string DecodeToken(CodedToken desc, uint codedToken) {
@@ -71,7 +69,7 @@ namespace dnExplorer.Nodes {
 			if (!Tables.HasTable(token.Table) || Tables.Get(token.Table).IsInvalidRID(token.Rid))
 				return "<<INVALID>>";
 
-			return string.Format("[{0} 0x{1:x}]", token.Table, token.Rid);
+			return token.ToDescription();
 		}
 
 		string GetDisplayText() {
@@ -81,13 +79,13 @@ namespace dnExplorer.Nodes {
 
 				case Table.TypeRef:
 					var typeRef = Tables.ReadTypeRefRow(Rid);
-					return string.Format("{0}, {1}",
+					return string.Format("({0}, {1})",
 						ReadString(typeRef.Namespace),
 						ReadString(typeRef.Name));
 
 				case Table.TypeDef:
 					var typeDef = Tables.ReadTypeDefRow(Rid);
-					return string.Format("{0}, {1}",
+					return string.Format("({0}, {1})",
 						ReadString(typeDef.Namespace),
 						ReadString(typeDef.Name));
 
@@ -111,7 +109,7 @@ namespace dnExplorer.Nodes {
 
 				case Table.InterfaceImpl:
 					var ifaceImpl = Tables.ReadInterfaceImplRow(Rid);
-					return string.Format("{0} : {1}",
+					return string.Format("({0} : {1})",
 						ToTokenString(Table.TypeDef, ifaceImpl.Class),
 						DecodeToken(CodedToken.TypeDefOrRef, ifaceImpl.Interface));
 
@@ -141,7 +139,7 @@ namespace dnExplorer.Nodes {
 
 				case Table.EventMap:
 					var eventMap = Tables.ReadEventMapRow(Rid);
-					return string.Format("{0} : {1}",
+					return string.Format("({0} : {1})",
 						ToTokenString(Table.TypeDef, eventMap.Parent),
 						ToTokenString(Table.Event, eventMap.EventList));
 
@@ -153,7 +151,7 @@ namespace dnExplorer.Nodes {
 
 				case Table.PropertyMap:
 					var propertyMap = Tables.ReadPropertyMapRow(Rid);
-					return string.Format("{0} : {1}",
+					return string.Format("({0} : {1})",
 						ToTokenString(Table.TypeDef, propertyMap.Parent),
 						ToTokenString(Table.Property, propertyMap.PropertyList));
 
@@ -165,13 +163,13 @@ namespace dnExplorer.Nodes {
 
 				case Table.MethodSemantics:
 					var methodSemantics = Tables.ReadMethodSemanticsRow(Rid);
-					return string.Format("{0} : {1}",
+					return string.Format("({0} : {1})",
 						DecodeToken(CodedToken.HasSemantic, methodSemantics.Association),
 						ToTokenString(Table.Method, methodSemantics.Method));
 
 				case Table.MethodImpl:
 					var methodImpl = Tables.ReadMethodImplRow(Rid);
-					return string.Format("{0} : {1}",
+					return string.Format("({0} : {1})",
 						DecodeToken(CodedToken.MethodDefOrRef, methodImpl.MethodBody),
 						DecodeToken(CodedToken.MethodDefOrRef, methodImpl.MethodDeclaration));
 
@@ -189,7 +187,7 @@ namespace dnExplorer.Nodes {
 
 				case Table.ENCLog:
 					var encLog = Tables.ReadENCLogRow(Rid);
-					return string.Format("0x{0:x8}, 0x{1:x8}", encLog.Token, encLog.FuncCode);
+					return string.Format("(0x{0:x8}, 0x{1:x8})", encLog.Token, encLog.FuncCode);
 
 				case Table.ENCMap:
 					var encMap = Tables.ReadENCMapRow(Rid);
@@ -214,7 +212,7 @@ namespace dnExplorer.Nodes {
 
 				case Table.ExportedType:
 					var exportedType = Tables.ReadExportedTypeRow(Rid);
-					return string.Format("{0}, {1}",
+					return string.Format("({0}, {1})",
 						ReadString(exportedType.TypeNamespace),
 						ReadString(exportedType.TypeName));
 
@@ -223,7 +221,7 @@ namespace dnExplorer.Nodes {
 
 				case Table.NestedClass:
 					var nestedClass = Tables.ReadNestedClassRow(Rid);
-					return string.Format("{0} : {1}",
+					return string.Format("({0} : {1})",
 						ToTokenString(Table.TypeDef, nestedClass.EnclosingClass),
 						ToTokenString(Table.TypeDef, nestedClass.NestedClass));
 

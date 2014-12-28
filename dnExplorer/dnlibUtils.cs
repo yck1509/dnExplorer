@@ -1,4 +1,5 @@
 ﻿using System;
+using dnlib.DotNet;
 using dnlib.IO;
 using dnlib.PE;
 
@@ -15,6 +16,10 @@ namespace dnExplorer {
 
 		public static IImageStream CreateStream(this IPEImage image, FileSection section) {
 			return image.CreateStream(section.StartOffset, section.EndOffset - section.StartOffset);
+		}
+
+		public static string ToDescription(this MDToken token) {
+			return string.Format("[{0} 0x{1:x}]", token.Table, token.Rid);
 		}
 	}
 }
