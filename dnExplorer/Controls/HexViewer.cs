@@ -184,7 +184,7 @@ namespace dnExplorer.Controls {
 					selBegin = selStart = selEnd = ht.Index;
 					Capture = true;
 				}
-				else if (selStart == null)
+				else if (selStart == null || ht.Index < selStart.Value || ht.Index > selEnd.Value)
 					selStart = selEnd = ht.Index;
 			}
 			else
