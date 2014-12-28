@@ -26,7 +26,7 @@ namespace dnExplorer.Nodes {
 			yield return new RawDataModel(Module.RawData);
 
 			if (Module.Image != null)
-				yield return new PEImageModel(Module.MetaData.PEImage, cor20);
+				yield return new PEImageModel(Module.Image, cor20);
 
 			if (Module.MetaData != null)
 				yield return new MetaDataModel(Module.MetaData);

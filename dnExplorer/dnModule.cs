@@ -42,7 +42,7 @@ namespace dnExplorer {
 		}
 
 		static SR.MethodInfo loadInternal = typeof(ModuleDefMD)
-			.GetMethod("Load", SR.BindingFlags.NonPublic | SR.BindingFlags.Instance);
+			.GetMethod("Load", SR.BindingFlags.NonPublic | SR.BindingFlags.Static);
 
 		public dnModule(string fileName)
 			: this(File.ReadAllBytes(fileName), fileName) {

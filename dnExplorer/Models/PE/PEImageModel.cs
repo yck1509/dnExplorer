@@ -14,10 +14,7 @@ namespace dnExplorer.Nodes {
 		public PEImageModel(IPEImage peImage, ImageCor20Header cliHeader) {
 			Image = peImage;
 			CLIHeader = cliHeader;
-			if (CLIHeader != null)
-				Text = "PE Image";
-			else
-				Text = Path.GetFileName(peImage.FileName);
+			Text = "PE Image";
 		}
 
 		protected override bool HasChildren {
