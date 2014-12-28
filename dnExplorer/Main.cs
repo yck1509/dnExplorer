@@ -4,7 +4,6 @@ using System.Windows.Forms;
 using dnExplorer.Nodes;
 using dnExplorer.Trees;
 using dnExplorer.Views;
-using dnlib.DotNet;
 
 namespace dnExplorer {
 	public class Main : Form {
@@ -58,7 +57,7 @@ namespace dnExplorer {
 
 		void LoadModules(string[] files) {
 			foreach (var module in files) {
-				treeView.Nodes.Add(new ModuleModel(ModuleDefMD.Load(module)).ToNode());
+				treeView.Nodes.Add(new ModuleModel(new dnModule(module)).ToNode());
 			}
 		}
 

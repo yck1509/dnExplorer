@@ -52,9 +52,11 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="dnlibUtils.cs" />
+    <Compile Include="dnModule.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Models\RawDataModel.cs" />
     <Compile Include="Models\MetaData\MDStreamModel.cs" />
     <Compile Include="Models\MetaData\MetaDataModel.cs" />
     <Compile Include="Models\MetaData\Streams\MDTableHeapModel.cs" />
@@ -96,6 +98,9 @@
     </Compile>
     <Compile Include="Views\MetaData\RowInfoPopulator.cs" />
     <Compile Include="Views\ModuleView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Views\RawDataView.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Views\PE\PECLIView.cs">

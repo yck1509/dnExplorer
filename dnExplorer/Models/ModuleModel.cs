@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 using dnExplorer.Trees;
-using dnlib.DotNet;
-using dnlib.DotNet.MD;
 
 namespace dnExplorer.Nodes {
 	public class ModuleModel : LazyModel {
-		public IMetaData MetaData { get; set; }
-		public ModuleDefMD Module { get; set; }
+		public dnModule Module { get; set; }
 
-		public ModuleModel(ModuleDefMD module) {
+		public ModuleModel(dnModule module) {
 			Module = module;
-			MetaData = module.MetaData;
 			Text = module.Name;
 		}
 
@@ -25,9 +21,15 @@ namespace dnExplorer.Nodes {
 		}
 
 		protected override IEnumerable<IDataModel> PopulateChildren() {
-			yield return new PEImageModel(MetaData.PEImage, MetaData.ImageCor20Header);
-			if (MetaData != null)
-				yield return new MetaDataModel(MetaData);
+			var cor20 = Module.MetaData == null ? null : Module.MetaData.ImageCor20Header;
+
+			yield return new RawDataModel(Module.RawData);
+
+			if (Module.Image != null)
+				yield return new PEImageModel(Module.MetaData.PEImage, cor20);
+
+			if (Module.MetaData != null)
+				yield return new MetaDataModel(Module.MetaData);
 		}
 
 		public override bool HasIcon {

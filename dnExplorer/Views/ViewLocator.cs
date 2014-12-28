@@ -13,6 +13,9 @@ namespace dnExplorer.Views {
 				if (model is ModuleModel)
 					view = new ModuleView();
 
+				else if (model is RawDataModel)
+					view = new RawDataView();
+
 				else if (model is PEImageModel)
 					view = new PEImageView();
 				else if (model is PESectionsModel)
