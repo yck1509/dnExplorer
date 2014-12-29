@@ -43,6 +43,11 @@ namespace dnExplorer.Views {
 			PerformLayout();
 
 			split2.SplitterDistance = split2.Width / 2;
+
+			hexView.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+			var nav = new ToolStripMenuItem("Show in Raw Data");
+			nav.Click += OnShowData;
+			hexView.ContextMenuStrip.Items.Add(nav);
 		}
 
 		void OnStreamSelectionChanged(object sender, EventArgs e) {
@@ -134,6 +139,19 @@ namespace dnExplorer.Views {
 			}
 			else
 				hexView.Stream = null;
+		}
+
+		void OnShowData(object sender, EventArgs e) {
+			var model = (MetaDataModel)Model;
+			var mdHeader = model.MetaData.MetaDataHeader;
+
+			long begin = (long)mdHeader.StartOffset;
+			long end = (long)mdHeader.EndOffset;
+			if (hexView.HasSelection) {
+				end = begin + hexView.SelectionEnd;
+				begin += hexView.SelectionStart;
+			}
+			ViewUtils.ShowRawData(Model, model.MetaData.PEImage, begin, end);
 		}
 	}
 }

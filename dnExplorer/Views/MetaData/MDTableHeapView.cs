@@ -48,6 +48,11 @@ namespace dnExplorer.Views {
 			PerformLayout();
 
 			hls = new Dictionary<Table, HexViewer.HighLight[]>();
+
+			hexView.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+			var nav = new ToolStripMenuItem("Show in Raw Data");
+			nav.Click += OnShowData;
+			hexView.ContextMenuStrip.Items.Add(nav);
 		}
 
 		public void SelectItem(MDToken token) {
@@ -160,6 +165,18 @@ namespace dnExplorer.Views {
 				hexView.Stream = null;
 
 			treeView.EndUpdate();
+		}
+
+		void OnShowData(object sender, EventArgs e) {
+			var model = (MDTableHeapModel)Model;
+
+			long begin = (long)model.Stream.StartOffset;
+			long end = (long)model.Stream.EndOffset;
+			if (hexView.HasSelection) {
+				end = begin + hexView.SelectionEnd;
+				begin += hexView.SelectionStart;
+			}
+			ViewUtils.ShowRawData(Model, model.MetaData.PEImage, begin, end);
 		}
 	}
 }

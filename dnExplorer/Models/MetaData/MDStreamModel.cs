@@ -6,9 +6,11 @@ using dnlib.DotNet.MD;
 
 namespace dnExplorer.Nodes {
 	public class MDStreamModel : LazyModel {
+		public IMetaData MetaData { get; set; }
 		public DotNetStream Stream { get; set; }
 
-		public MDStreamModel(DotNetStream stream) {
+		public MDStreamModel(IMetaData metadata, DotNetStream stream) {
+			MetaData = metadata;
 			Stream = stream;
 			Text = stream.Name;
 		}

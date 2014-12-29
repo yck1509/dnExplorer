@@ -14,6 +14,7 @@ namespace dnExplorer.Controls {
 		ToolStripMenuItem copySize;
 		ToolStripMenuItem copyValue;
 		ToolStripMenuItem copyHex;
+		ToolStripMenuItem copyFile;
 		ToolStripMenuItem selAll;
 		ToolStripMenuItem selMarkBegin;
 		ToolStripMenuItem selMarkEnd;
@@ -49,6 +50,10 @@ namespace dnExplorer.Controls {
 			copyHex = new ToolStripMenuItem("Hex");
 			copyHex.Click += DoCopyHex;
 			copy.DropDownItems.Add(copyHex);
+
+			copyFile = new ToolStripMenuItem("Into new file");
+			copyFile.Click += DoCopyFile;
+			copy.DropDownItems.Add(copyFile);
 
 			Items.Add(new ToolStripSeparator());
 
@@ -123,8 +128,12 @@ namespace dnExplorer.Controls {
 
 		void DoCopyValue(object sender, EventArgs e) {
 			var data = hexView.GetSelection();
+
 			var dataObj = new DataObject();
-			dataObj.SetData(Main.AppName + " Binary", true, new MemoryStream(hexView.GetSelection()));
+			dataObj.SetData(Main.AppName + " Binary", true, new MemoryStream(data));
+
+			dataObj.SetText(Encoding.ASCII.GetString(data));
+
 			Clipboard.SetDataObject(dataObj, true);
 		}
 
@@ -138,6 +147,14 @@ namespace dnExplorer.Controls {
 					sb.AppendFormat("{0:X2}", buff[i]);
 			}
 			Clipboard.SetText(sb.ToString());
+		}
+
+		void DoCopyFile(object sender, EventArgs e) {
+			var buff = hexView.GetSelection();
+			using (var dialog = new SaveFileDialog()) {
+				if (dialog.ShowDialog() == DialogResult.OK)
+					File.WriteAllBytes(dialog.FileName, buff);
+			}
 		}
 
 		long? selBegin;

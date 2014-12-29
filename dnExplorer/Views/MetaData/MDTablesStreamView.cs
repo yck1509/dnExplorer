@@ -27,6 +27,11 @@ namespace dnExplorer.Views {
 			split.Panel2.Controls.Add(hexView);
 
 			PerformLayout();
+
+			hexView.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+			var nav = new ToolStripMenuItem("Show in Raw Data");
+			nav.Click += OnShowData;
+			hexView.ContextMenuStrip.Items.Add(nav);
 		}
 
 		protected override void OnModelUpdated() {
@@ -77,6 +82,18 @@ namespace dnExplorer.Views {
 			}
 			else
 				hexView.Stream = null;
+		}
+
+		void OnShowData(object sender, EventArgs e) {
+			var model = (MDTablesStreamModel)Model;
+
+			long begin = (long)model.Stream.StartOffset;
+			long end = (long)model.Stream.EndOffset;
+			if (hexView.HasSelection) {
+				end = begin + hexView.SelectionEnd;
+				begin += hexView.SelectionStart;
+			}
+			ViewUtils.ShowRawData(Model, model.MetaData.PEImage, begin, end);
 		}
 	}
 }

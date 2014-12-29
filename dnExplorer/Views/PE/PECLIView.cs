@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using dnExplorer.Controls;
 using dnExplorer.Nodes;
-using dnExplorer.Trees;
 using dnlib.DotNet;
 using dnlib.DotNet.MD;
 using dnlib.PE;
@@ -89,14 +88,7 @@ namespace dnExplorer.Views {
 			}
 
 			var offset = (long)model.Image.ToFileOffset(rva);
-			TreeNavigator.Create()
-				.Path<ModuleModel>(m => m.Module.Image == model.Image ? NavigationState.In : NavigationState.Next)
-				.Path<RawDataModel>(m => NavigationState.Done)
-				.Handler(node => {
-					var targetView = (RawDataView)ViewLocator.LocateView(node.Model);
-					targetView.Select(offset, offset + size - 1);
-				})
-				.Navigate(Model);
+			ViewUtils.ShowRawData(Model, model.Image, offset, offset + size - 1);
 		}
 
 		void showEntryMenu_Opening(object sender, CancelEventArgs e) {
@@ -108,16 +100,7 @@ namespace dnExplorer.Views {
 			var cell = view.SelectedCells[0];
 			var token = new MDToken((uint)cell.Value);
 
-			TreeNavigator.Create()
-				.Path<ModuleModel>(m => m.Module.Image == model.Image ? NavigationState.In : NavigationState.Next)
-				.Path<MetaDataModel>(m => NavigationState.In)
-				.Path<MDTablesStreamModel>(m => NavigationState.In)
-				.Path<MDTableHeapModel>(m => NavigationState.Done)
-				.Handler(node => {
-					var targetView = (MDTableHeapView)ViewLocator.LocateView(node.Model);
-					targetView.SelectItem(token);
-				})
-				.Navigate(Model);
+			ViewUtils.ShowToken(Model, model.Image, token);
 		}
 	}
 }

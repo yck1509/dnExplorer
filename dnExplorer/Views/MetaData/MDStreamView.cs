@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 using dnExplorer.Controls;
 using dnExplorer.Nodes;
 
@@ -9,6 +10,11 @@ namespace dnExplorer.Views {
 		public MDStreamView() {
 			viewer = new HexViewer();
 			Controls.Add(viewer);
+
+			viewer.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+			var nav = new ToolStripMenuItem("Show in Raw Data");
+			nav.Click += OnShowData;
+			viewer.ContextMenuStrip.Items.Add(nav);
 		}
 
 		protected override void OnModelUpdated() {
@@ -19,6 +25,18 @@ namespace dnExplorer.Views {
 			else {
 				viewer.Stream = model.Stream.GetClonedImageStream();
 			}
+		}
+
+		void OnShowData(object sender, EventArgs e) {
+			var model = (MDStreamModel)Model;
+
+			long begin = (long)model.Stream.StartOffset;
+			long end = (long)model.Stream.EndOffset;
+			if (viewer.HasSelection) {
+				end = begin + viewer.SelectionEnd;
+				begin += viewer.SelectionStart;
+			}
+			ViewUtils.ShowRawData(Model, model.MetaData.PEImage, begin, end);
 		}
 	}
 }

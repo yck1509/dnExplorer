@@ -50,6 +50,14 @@ namespace dnExplorer.Controls {
 			}
 		}
 
+		public long SelectionSize {
+			get {
+				if (!HasSelection)
+					return 0;
+				return SelectionEnd - SelectionStart + 1;
+			}
+		}
+
 		public byte[] GetSelection() {
 			var size = (int)(SelectionEnd - SelectionStart) + 1;
 			var buff = new byte[size];

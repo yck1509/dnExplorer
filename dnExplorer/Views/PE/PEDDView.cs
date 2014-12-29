@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using dnExplorer.Controls;
 using dnExplorer.Nodes;
-using dnExplorer.Trees;
 
 namespace dnExplorer.Views {
 	public class PEDDView : ViewBase {
@@ -20,7 +19,7 @@ namespace dnExplorer.Views {
 
 			ctxMenu = new ContextMenuStrip();
 			var nav = new ToolStripMenuItem("Show in Raw Data");
-			nav.Click += OnNavigate;
+			nav.Click += OnShowData;
 			ctxMenu.Items.Add(nav);
 		}
 
@@ -64,7 +63,7 @@ namespace dnExplorer.Views {
 			}
 		}
 
-		void OnNavigate(object sender, EventArgs e) {
+		void OnShowData(object sender, EventArgs e) {
 			var row = view.SelectedCells[0].RowIndex;
 			var model = (PEDDModel)Model;
 			var dd = model.Image.ImageNTHeaders.OptionalHeader.DataDirectories[row - 1];
@@ -76,14 +75,7 @@ namespace dnExplorer.Views {
 			}
 
 			var offset = (long)model.Image.ToFileOffset(dd.VirtualAddress);
-			TreeNavigator.Create()
-				.Path<ModuleModel>(m => m.Module.Image == model.Image ? NavigationState.In : NavigationState.Next)
-				.Path<RawDataModel>(m => NavigationState.Done)
-				.Handler(node => {
-					var targetView = (RawDataView)ViewLocator.LocateView(node.Model);
-					targetView.Select(offset, offset + dd.Size - 1);
-				})
-				.Navigate(Model);
+			ViewUtils.ShowRawData(Model, model.Image, offset, offset + dd.Size - 1);
 		}
 	}
 }

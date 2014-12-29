@@ -26,7 +26,7 @@ namespace dnExplorer.Nodes {
 				if (stream is TablesStream)
 					yield return new MDTablesStreamModel(MetaData, (TablesStream)stream);
 				else
-					yield return new MDStreamModel(stream);
+					yield return new MDStreamModel(MetaData, stream);
 			}
 		}
 
