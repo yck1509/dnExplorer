@@ -15,6 +15,7 @@ namespace dnExplorer.Trees {
 		}
 
 		public override void DrawIcon(Graphics g, Rectangle bounds) {
+			g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.error.png"), bounds);
 		}
 
 		public override void Refresh(bool refreshChildren) {

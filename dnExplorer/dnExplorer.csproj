@@ -156,6 +156,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\Icons\loading.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Icons\back.png" />
+    <EmbeddedResource Include="Resources\Icons\delete.png" />
+    <EmbeddedResource Include="Resources\Icons\error.png" />
+    <EmbeddedResource Include="Resources\Icons\forward.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

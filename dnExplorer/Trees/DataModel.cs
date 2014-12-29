@@ -59,16 +59,6 @@ namespace dnExplorer.Trees {
 			}
 		}
 
-		public ContextMenuStrip ContextMenu {
-			get { return ctxMenu; }
-			set {
-				if (ctxMenu != value) {
-					ctxMenu = value;
-					OnPropertyChanged("ContextMenu");
-				}
-			}
-		}
-
 		public Color ForeColor {
 			get { return color; }
 			set {

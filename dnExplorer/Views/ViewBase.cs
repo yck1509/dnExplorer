@@ -21,5 +21,9 @@ namespace dnExplorer.Views {
 		}
 
 		protected abstract void OnModelUpdated();
+
+		protected internal virtual ContextMenuStrip GetContextMenu() {
+			return null;
+		}
 	}
 }

@@ -24,10 +24,6 @@ namespace dnExplorer.Trees {
 
 		public DataTreeNodeX Node { get; set; }
 
-		public ContextMenuStrip ContextMenu {
-			get { return null; }
-		}
-
 		public Color ForeColor {
 			get { return Color.Black; }
 		}

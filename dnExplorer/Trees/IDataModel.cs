@@ -11,7 +11,6 @@ namespace dnExplorer.Trees {
 		BatchObservableCollection<IDataModel> Children { get; }
 
 		DataTreeNodeX Node { get; set; }
-		ContextMenuStrip ContextMenu { get; }
 
 		Color ForeColor { get; }
 		string Text { get; }

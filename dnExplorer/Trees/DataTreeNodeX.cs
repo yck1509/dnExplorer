@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using dnExplorer.Views;
 
 namespace dnExplorer.Trees {
 	public class DataTreeNodeX : TreeNodeX {
@@ -15,6 +16,23 @@ namespace dnExplorer.Trees {
 		public IDataModel Model {
 			get { return model; }
 			set { SetModel(value); }
+		}
+
+		public override ContextMenuStrip ContextMenuStrip {
+			get {
+				if (TreeView == null)
+					return null;
+
+				var view = ViewLocator.LocateView(Model);
+				if (view == null)
+					return null;
+
+				var ctxMenu = view.GetContextMenu();
+				if (ctxMenu != null)
+					ctxMenu.Tag = this;
+				return ctxMenu;
+			}
+			set { throw new NotSupportedException(); }
 		}
 
 		void CollapseRequested(object sender, EventArgs e) {
@@ -79,7 +97,6 @@ namespace dnExplorer.Trees {
 
 			Text = model.Text;
 			ForeColor = model.ForeColor;
-			ContextMenuStrip = model.ContextMenu;
 			foreach (var child in model.Children) {
 				var childNode = new DataTreeNodeX(child);
 				Nodes.Add(childNode);
@@ -98,9 +115,6 @@ namespace dnExplorer.Trees {
 			}
 			else if (e.PropertyName == "ForeColor") {
 				ForeColor = model.ForeColor;
-			}
-			else if (e.PropertyName == "ContextMenu") {
-				ContextMenuStrip = model.ContextMenu;
 			}
 		}
 
