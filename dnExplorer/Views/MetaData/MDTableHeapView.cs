@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using dnExplorer.Controls;
 using dnExplorer.Nodes;
 using dnExplorer.Trees;
+using dnlib.DotNet;
 using dnlib.DotNet.MD;
 
 namespace dnExplorer.Views {
@@ -47,6 +48,20 @@ namespace dnExplorer.Views {
 			PerformLayout();
 
 			hls = new Dictionary<Table, HexViewer.HighLight[]>();
+		}
+
+		public void SelectItem(MDToken token) {
+			var table = ((MDTableHeapModel)Model).Stream.Get(token.Table);
+			var rid = token.Rid;
+			if (table == null || !table.IsValidRID(rid)) {
+				MessageBox.Show("Invalid token.", Main.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			TreeNavigator.Create()
+				.Path<MDTableModel>(m => m.Table == table ? NavigationState.In : NavigationState.Next)
+				.Path<MDRowModel>(m => m.Rid == rid ? NavigationState.Done : NavigationState.Next)
+				.Navigate(treeView);
 		}
 
 		void UpdateTreeView(IMetaData metadata, TablesStream stream) {

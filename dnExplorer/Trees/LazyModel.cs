@@ -53,41 +53,71 @@ namespace dnExplorer.Trees {
 		}
 
 		public override void OnExpand() {
+			if (loadState == STATE_LOADING)
+				return;
+
 			lock (loadLock) {
 				if (loadState == STATE_LOADING)
 					return;
+				if (!HasChildren || Children[0] != NullModel.Instance)
+					return;
+				loadState = STATE_LOADING;
+			}
 
-				if (HasChildren && Children[0] == NullModel.Instance) {
-					loadState = STATE_LOADING;
-					waitHnd.Reset();
+			waitHnd.Reset();
 
-					loadChildren = Task.Factory.StartNew(PopulateChildrenInternal);
-					if (!waitHnd.WaitOne(LOADING_THRESHOLD)) {
-						using (Children.BeginUpdate()) {
-							Children.Clear();
-							Children.Add(new Loading());
-						}
+			loadChildren = Task.Factory.StartNew(PopulateChildrenInternal);
+			if (!waitHnd.WaitOne(LOADING_THRESHOLD)) {
+				lock (loadLock) {
+					using (Children.BeginUpdate()) {
+						Children.Clear();
+						Children.Add(new Loading());
 					}
 				}
 			}
 		}
 
 		public void LoadImmediate() {
-			if (HasChildren && Children[0] == NullModel.Instance) {
-				loadState = STATE_LOADING;
-				waitHnd.Reset();
+			// This method should runs on UI thread.
+			if (Node != null && Node.TreeView != null && Node.TreeView.InvokeRequired)
+				throw new InvalidOperationException();
 
-				loadChildren = Task.Factory.StartNew(PopulateChildrenInternal);
-				if (!waitHnd.WaitOne(LOADING_THRESHOLD)) {
+			// I seldom uses DoEvents, but since DataTreeNodeX.OnChildrenUpdated
+			// calls BeginInvoke, I need to use it to ensure all TreeNodes 
+			// are created before returning.
+			// (Invoke cannot be used, as it will deadlock. Well, not with 
+			// DoEvents, but then I'd better use BeginInvoke)
+			if (loadState == STATE_LOADING) {
+				while (!waitHnd.WaitOne(LOADING_THRESHOLD))
+					Application.DoEvents();
+				while (loadState != STATE_COMPLETE)
+					Application.DoEvents();
+				return;
+			}
+
+			lock (loadLock) {
+				if (loadState == STATE_LOADING)
+					return;
+				if (!HasChildren || Children[0] != NullModel.Instance)
+					return;
+				loadState = STATE_LOADING;
+			}
+
+			waitHnd.Reset();
+
+			loadChildren = Task.Factory.StartNew(PopulateChildrenInternal);
+			if (!waitHnd.WaitOne(LOADING_THRESHOLD)) {
+				lock (loadLock) {
 					using (Children.BeginUpdate()) {
 						Children.Clear();
 						Children.Add(new Loading());
 					}
-					Application.DoEvents();
-					while (!waitHnd.WaitOne(LOADING_THRESHOLD))
-						Application.DoEvents();
 				}
+				while (!waitHnd.WaitOne(LOADING_THRESHOLD))
+					Application.DoEvents();
 			}
+			while (loadState != STATE_COMPLETE)
+				Application.DoEvents();
 		}
 
 		void PopulateChildrenInternal() {

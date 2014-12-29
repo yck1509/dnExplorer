@@ -63,7 +63,8 @@ namespace dnExplorer.Trees {
 					break;
 				case NavigationState.Done:
 					node.TreeView.SelectedNode = node;
-					onNavigated(node);
+					if (onNavigated != null)
+						onNavigated(node);
 					return;
 			}
 

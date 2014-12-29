@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using dnExplorer.Trees;
 using dnlib.DotNet.MD;
 using dnlib.PE;
@@ -18,7 +17,7 @@ namespace dnExplorer.Nodes {
 		}
 
 		protected override bool HasChildren {
-			get { return Image.ImageSectionHeaders.Count > 0; }
+			get { return true; }
 		}
 
 		protected override bool IsVolatile {
@@ -29,7 +28,7 @@ namespace dnExplorer.Nodes {
 			yield return new PESectionsModel(Image);
 			yield return new PEDDModel(Image);
 			if (CLIHeader != null)
-				yield return new PECLIModel(CLIHeader);
+				yield return new PECLIModel(Image, CLIHeader);
 		}
 
 		public override bool HasIcon {
