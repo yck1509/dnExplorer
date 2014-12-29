@@ -33,6 +33,8 @@ namespace dnExplorer.Controls {
 		public long SelectionStart {
 			get { return selStart ?? -1; }
 			set {
+				if (value < 0)
+					value = 0;
 				selStart = value;
 				Invalidate();
 			}
@@ -41,6 +43,8 @@ namespace dnExplorer.Controls {
 		public long SelectionEnd {
 			get { return selEnd ?? -1; }
 			set {
+				if (value >= stream.Length)
+					value = stream.Length - 1;
 				selEnd = value;
 				Invalidate();
 			}

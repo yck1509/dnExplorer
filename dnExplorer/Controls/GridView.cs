@@ -172,8 +172,15 @@ namespace dnExplorer.Controls {
 				AddHeaderRow();
 
 			var dvRow = new DataGridViewRow { Height = RowHeight };
+			ContextMenuStrip ctxMenu = null;
+			foreach (var value in row) {
+				if (value is ContextMenuStrip)
+					ctxMenu = (ContextMenuStrip)value;
+			}
+
 			for (int i = 0; i < cols.Count; i++) {
 				var value = row[i];
+
 				DataGridViewCell cell;
 				if (value is Cell) {
 					var rawCell = (Cell)value;
@@ -199,6 +206,9 @@ namespace dnExplorer.Controls {
 					cell = (DataGridViewCell)Columns[i].CellTemplate.Clone();
 					cell.Value = value;
 				}
+
+				if (ctxMenu != null && cell is GridViewTextBox)
+					cell.ContextMenuStrip = ctxMenu;
 				dvRow.Cells.Add(cell);
 			}
 			Rows.Add(dvRow);
@@ -224,6 +234,7 @@ namespace dnExplorer.Controls {
 				Capture = true;
 			}
 			inMouseDown = true;
+			this[e.ColumnIndex, e.RowIndex].Selected = true;
 			base.OnCellMouseDown(e);
 			inMouseDown = false;
 		}

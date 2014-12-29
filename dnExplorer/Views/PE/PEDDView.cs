@@ -3,10 +3,12 @@ using System.Drawing;
 using System.Windows.Forms;
 using dnExplorer.Controls;
 using dnExplorer.Nodes;
+using dnExplorer.Trees;
 
 namespace dnExplorer.Views {
 	public class PEDDView : ViewBase {
 		GridView view;
+		ContextMenuStrip ctxMenu;
 
 		public PEDDView() {
 			view = new GridView();
@@ -15,6 +17,11 @@ namespace dnExplorer.Views {
 			view.AddColumn(new GridView.Column("Size", false));
 			view.AddColumn(new GridView.Column("Section", false));
 			Controls.Add(view);
+
+			ctxMenu = new ContextMenuStrip();
+			var nav = new ToolStripMenuItem("Show in Raw Data");
+			nav.Click += OnNavigate;
+			ctxMenu.Items.Add(nav);
 		}
 
 		static readonly string[] DirectoryNames = {
@@ -52,9 +59,31 @@ namespace dnExplorer.Views {
 					else
 						sectionCell = new GridView.Cell("", back: SystemColors.ControlLight);
 
-					view.AddRow(DirectoryNames[i], dir.VirtualAddress, dir.Size, sectionCell);
+					view.AddRow(DirectoryNames[i], dir.VirtualAddress, dir.Size, sectionCell, ctxMenu);
 				}
 			}
+		}
+
+		void OnNavigate(object sender, EventArgs e) {
+			var row = view.SelectedCells[0].RowIndex;
+			var model = (PEDDModel)Model;
+			var dd = model.Image.ImageNTHeaders.OptionalHeader.DataDirectories[row - 1];
+
+			var section = model.Image.ToImageSectionHeader(dd.VirtualAddress);
+			if (section == null) {
+				MessageBox.Show("Invalid address.", Main.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			var offset = (long)model.Image.ToFileOffset(dd.VirtualAddress);
+			TreeNavigator.Create()
+				.Path<ModuleModel>(m => m.Module.Image == model.Image ? NavigationState.In : NavigationState.Next)
+				.Path<RawDataModel>(m => NavigationState.Done)
+				.Handler(node => {
+					var targetView = (RawDataView)ViewLocator.LocateView(node.Model);
+					targetView.Select(offset, offset + dd.Size - 1);
+				})
+				.Navigate(Model);
 		}
 	}
 }

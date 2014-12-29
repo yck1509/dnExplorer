@@ -83,6 +83,7 @@
     <Compile Include="Trees\IDataModel.cs" />
     <Compile Include="Trees\LazyModel.cs" />
     <Compile Include="Trees\NullModel.cs" />
+    <Compile Include="Trees\TreeNavigator.cs" />
     <Compile Include="Trees\TreeNodeX.cs" />
     <Compile Include="Trees\TreeViewX.cs">
       <SubType>Component</SubType>

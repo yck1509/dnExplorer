@@ -12,6 +12,10 @@ namespace dnExplorer.Views {
 			Controls.Add(viewer);
 		}
 
+		public void Select(long begin, long end) {
+			viewer.Select(begin, end);
+		}
+
 		protected override void OnModelUpdated() {
 			var model = (RawDataModel)Model;
 			if (model == null) {

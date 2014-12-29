@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace dnExplorer.Trees {
 	public abstract class LazyModel : DataModel {
@@ -67,6 +68,24 @@ namespace dnExplorer.Trees {
 							Children.Add(new Loading());
 						}
 					}
+				}
+			}
+		}
+
+		public void LoadImmediate() {
+			if (HasChildren && Children[0] == NullModel.Instance) {
+				loadState = STATE_LOADING;
+				waitHnd.Reset();
+
+				loadChildren = Task.Factory.StartNew(PopulateChildrenInternal);
+				if (!waitHnd.WaitOne(LOADING_THRESHOLD)) {
+					using (Children.BeginUpdate()) {
+						Children.Clear();
+						Children.Add(new Loading());
+					}
+					Application.DoEvents();
+					while (!waitHnd.WaitOne(LOADING_THRESHOLD))
+						Application.DoEvents();
 				}
 			}
 		}
