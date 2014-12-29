@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace dnExplorer.Trees {
 	public class TreeNavigator {
@@ -68,8 +69,20 @@ namespace dnExplorer.Trees {
 					return;
 			}
 
-			if (node.Model is LazyModel)
-				((LazyModel)node.Model).LoadImmediate();
+			if (node.Model is LazyModel) {
+				var task = ((LazyModel)node.Model).LoadImmediate();
+				if (task == null)
+					SearchNodeChildren(node);
+				else
+					task.ContinueWith(t => SearchNodeChildren(node),
+						TaskScheduler.FromCurrentSynchronizationContext());
+			}
+			else {
+				SearchNodeChildren(node);
+			}
+		}
+
+		void SearchNodeChildren(DataTreeNodeX node) {
 			node.Expand();
 
 			foreach (var child in node.Nodes)

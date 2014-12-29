@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace dnExplorer.Trees {
 	public abstract class LazyModel : DataModel {
@@ -77,29 +76,15 @@ namespace dnExplorer.Trees {
 			}
 		}
 
-		public void LoadImmediate() {
-			// This method should runs on UI thread.
-			if (Node != null && Node.TreeView != null && Node.TreeView.InvokeRequired)
-				throw new InvalidOperationException();
-
-			// I seldom uses DoEvents, but since DataTreeNodeX.OnChildrenUpdated
-			// calls BeginInvoke, I need to use it to ensure all TreeNodes 
-			// are created before returning.
-			// (Invoke cannot be used, as it will deadlock. Well, not with 
-			// DoEvents, but then I'd better use BeginInvoke)
-			if (loadState == STATE_LOADING) {
-				while (!waitHnd.WaitOne(LOADING_THRESHOLD))
-					Application.DoEvents();
-				while (loadState != STATE_COMPLETE)
-					Application.DoEvents();
-				return;
-			}
+		public Task LoadImmediate() {
+			if (loadState == STATE_LOADING)
+				return null;
 
 			lock (loadLock) {
 				if (loadState == STATE_LOADING)
-					return;
+					return null;
 				if (!HasChildren || Children[0] != NullModel.Instance)
-					return;
+					return null;
 				loadState = STATE_LOADING;
 			}
 
@@ -113,11 +98,8 @@ namespace dnExplorer.Trees {
 						Children.Add(new Loading());
 					}
 				}
-				while (!waitHnd.WaitOne(LOADING_THRESHOLD))
-					Application.DoEvents();
 			}
-			while (loadState != STATE_COMPLETE)
-				Application.DoEvents();
+			return loadChildren;
 		}
 
 		void PopulateChildrenInternal() {
@@ -150,6 +132,7 @@ namespace dnExplorer.Trees {
 				}
 				loadState = STATE_COMPLETE;
 			}
+			loadChildren = null;
 		}
 
 		protected abstract IEnumerable<IDataModel> PopulateChildren();

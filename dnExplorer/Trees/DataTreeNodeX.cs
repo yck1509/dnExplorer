@@ -111,7 +111,7 @@ namespace dnExplorer.Trees {
 			}
 
 			if (TreeView != null && TreeView.InvokeRequired) {
-				TreeView.BeginInvoke(new NotifyCollectionChangedEventHandler(OnChildrenUpdated), sender, e);
+				TreeView.Invoke(new NotifyCollectionChangedEventHandler(OnChildrenUpdated), sender, e);
 				return;
 			}
 
