@@ -67,7 +67,7 @@ namespace dnExplorer.Views {
 				hexView.AddHighLight(new HexViewer.HighLight(Color.Green, rowSizeBegin, rowSizeEnd));
 
 				if (tbls.HasExtraData) {
-					gridView.AddRow("ExtraData (!)", ranges.IncrementOffset(relBase, ref offset, 4),
+					gridView.AddRow("ExtraData (!)", ranges.IncrementOffset(relBase, ref rowSizeEnd, 4),
 						tbls.ExtraData);
 				}
 

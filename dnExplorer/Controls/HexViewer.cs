@@ -71,6 +71,7 @@ namespace dnExplorer.Controls {
 			SelectionStart = SelectionEnd = offset;
 			if (ensureVisible)
 				EnsureVisible(offset);
+			Focus();
 		}
 
 		public void Select(long begin, long end, bool ensureVisible = true) {
@@ -78,6 +79,7 @@ namespace dnExplorer.Controls {
 			SelectionEnd = end;
 			if (ensureVisible)
 				EnsureVisible(begin);
+			Focus();
 		}
 
 		public IImageStream Stream {
@@ -515,7 +517,7 @@ namespace dnExplorer.Controls {
 				var ascStartX = currentX + (16 * 3 + 2 + startOffset) * charSize.Width;
 				var ascEndX = currentX + (16 * 3 + 2 + endOffset) * charSize.Width;
 
-				using (var brush = new SolidBrush(Color.FromArgb(0x30, hl.Color))) {
+				using (var brush = new SolidBrush(Color.FromArgb(0x40, hl.Color))) {
 					g.FillRectangle(brush, hexStartX, currentY, hexEndX - hexStartX, charSize.Height);
 					g.FillRectangle(brush, ascStartX, currentY, ascEndX - ascStartX, charSize.Height);
 				}

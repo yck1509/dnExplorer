@@ -103,8 +103,8 @@ namespace dnExplorer.Views {
 			var rowCountOffset = CalculateTableRowsOffset(table);
 			var rowOffset = (uint)mdTable.StartOffset - (uint)tbls.StartOffset;
 
-			using (var colorSeq = Utils.GetAlternateColorSequence(Color.Red, Color.Blue).GetEnumerator()) {
-				ret[0] = new HexViewer.HighLight(Color.Magenta, rowCountOffset, rowCountOffset + 4);
+			using (var colorSeq = Utils.GetAlternateColorSequence(Color.Green, Color.Orange).GetEnumerator()) {
+				ret[0] = new HexViewer.HighLight(Color.Brown, rowCountOffset, rowCountOffset + 4);
 				for (int i = 1; i < ret.Length && colorSeq.MoveNext(); i++) {
 					ret[i] = new HexViewer.HighLight(colorSeq.Current, rowOffset, rowOffset + mdTable.RowSize);
 					rowOffset += mdTable.RowSize;
@@ -131,7 +131,7 @@ namespace dnExplorer.Views {
 				rowHL = (HexViewer.HighLight[])rowHL.Clone();
 
 				var row = rowHL[rid];
-				row = new HexViewer.HighLight(Color.Lime, row.Start, row.End);
+				row = new HexViewer.HighLight(Color.Blue, row.Start, row.End);
 				rowHL[rid] = row;
 
 				hexView.SetHighLights(rowHL);

@@ -51,7 +51,7 @@ namespace dnExplorer {
 				sb.Append('\'');
 
 			foreach (var c in s) {
-				if (c < 0x20) {
+				if (c < 0x20 || c >= 0x7f) {
 					switch (c) {
 						case '\a':
 							sb.Append(@"\a");
