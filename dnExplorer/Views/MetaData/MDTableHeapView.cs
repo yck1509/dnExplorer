@@ -37,11 +37,11 @@ namespace dnExplorer.Views {
 			split1.Panel2.Controls.Add(split2);
 
 			gridView = new GridView();
-			gridView.AddColumn(new GridView.Column("Field", true, 110));
-			gridView.AddColumn(new GridView.Column("Type", true));
+			gridView.AddColumn(new GridView.Column("Field", true, 120));
+			gridView.AddColumn(new GridView.Column("Type", true, 130));
 			gridView.AddColumn(new GridView.Column("Offset", true));
 			gridView.AddColumn(new GridView.Column("Value", false));
-			gridView.AddColumn(new GridView.Column("Description", false, 250));
+			gridView.AddColumn(new GridView.Column("Description", false, 200));
 			split2.Panel1.Controls.Add(gridView);
 
 			hexView = new HexViewer();
