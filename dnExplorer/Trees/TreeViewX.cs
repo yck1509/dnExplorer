@@ -27,7 +27,7 @@ namespace dnExplorer.Trees {
 		static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
 		protected override void CreateHandle() {
-			CreateHandle();
+			base.CreateHandle();
 			PostMessage(Handle, 0x1100 + 44, (IntPtr)4, (IntPtr)4);
 		}
 
@@ -36,7 +36,7 @@ namespace dnExplorer.Trees {
 			if (node != null) {
 				node.OnCollapse();
 			}
-			OnAfterCollapse(e);
+			base.OnAfterCollapse(e);
 		}
 
 		protected override void OnBeforeExpand(TreeViewCancelEventArgs e) {
@@ -44,7 +44,7 @@ namespace dnExplorer.Trees {
 			if (node != null) {
 				node.OnExpand();
 			}
-			OnBeforeExpand(e);
+			base.OnBeforeExpand(e);
 		}
 
 		protected override void OnNodeMouseClick(TreeNodeMouseClickEventArgs e) {
@@ -52,7 +52,7 @@ namespace dnExplorer.Trees {
 			if (node != null) {
 				node.OnMouseClick(e);
 			}
-			OnNodeMouseClick(e);
+			base.OnNodeMouseClick(e);
 		}
 
 		protected override void OnNodeMouseDoubleClick(TreeNodeMouseClickEventArgs e) {
@@ -60,7 +60,7 @@ namespace dnExplorer.Trees {
 			if (node != null) {
 				node.OnMouseDoubleClick(e);
 			}
-			OnNodeMouseDoubleClick(e);
+			base.OnNodeMouseDoubleClick(e);
 		}
 
 		protected override void OnNodeMouseHover(TreeNodeMouseHoverEventArgs e) {
@@ -68,11 +68,11 @@ namespace dnExplorer.Trees {
 			if (node != null) {
 				node.OnMouseHover(e);
 			}
-			OnNodeMouseHover(e);
+			base.OnNodeMouseHover(e);
 		}
 
 		protected override void OnMouseDown(MouseEventArgs e) {
-			OnMouseDown(e);
+			base.OnMouseDown(e);
 			switch (e.Button) {
 				case MouseButtons.Left:
 				case MouseButtons.Right:
@@ -168,8 +168,8 @@ namespace dnExplorer.Trees {
 			}
 		}
 
-		int updating = 0;
-		bool updateRedraw = false;
+		int updating;
+		bool updateRedraw;
 
 		internal void EnterUpdate() {
 			updating++;
@@ -211,7 +211,7 @@ namespace dnExplorer.Trees {
 			if (m.Msg == 20)
 				return;
 
-			WndProc(ref m);
+			base.WndProc(ref m);
 			if (m.Msg == 15 && updateRedraw)
 				updateRedraw = false;
 		}
