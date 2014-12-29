@@ -10,6 +10,8 @@ using SR = System.Reflection;
 
 namespace dnExplorer.Views {
 	internal class RowInfoPopulator {
+		static readonly object InvalidValue = "<<INVALID>>\0";
+
 		static readonly Func<TablesStream, MDTable, uint, IBinaryReader> getReader;
 
 		static RowInfoPopulator() {
@@ -20,7 +22,7 @@ namespace dnExplorer.Views {
 					Delegate.CreateDelegate(typeof(Func<TablesStream, MDTable, uint, IBinaryReader>), getReaderInfo);
 		}
 
-		public static void PopulateGridView(GridView gridView, MDRowModel row) {
+		public static void PopulateGridView(MDTableHeapView view, GridView gridView, MDRowModel row) {
 			var reader = getReader(row.Parent.Tables, row.Parent.MDTable, row.Rid);
 
 			var beginPos = reader.Position;
@@ -52,15 +54,19 @@ namespace dnExplorer.Views {
 				}
 
 				var desc = GetDescription(row.Parent.MetaData, row.Parent.MDTable, column, rawValue);
+				var ctxMenu = GetContextMenu(view, row, row.Parent.MetaData, column.ColumnSize);
 				var cell = new GridView.Cell(desc,
-					back: desc == "<<INVALID>>" ? ControlPaint.Light(Color.Red) : SystemColors.ControlLight);
-				gridView.AddRow(column.Name, column.ColumnSize.ToString(), offset, value, cell);
+					back: desc == InvalidValue ? ControlPaint.Light(Color.Red) : SystemColors.ControlLight);
+				gridView.AddRow(column.Name, column.ColumnSize.ToString(), offset, value, cell, ctxMenu);
 			}
 		}
 
-		static string GetDescription(IMetaData metadata, MDTable table, ColumnInfo column, uint rowValue) {
+		static object GetDescription(IMetaData metadata, MDTable table, ColumnInfo column, uint rowValue) {
 			if (ColumnSize.Module <= column.ColumnSize && column.ColumnSize <= ColumnSize.GenericParamConstraint) {
 				Table targetTable = (Table)(column.ColumnSize - ColumnSize.Module);
+
+				if (rowValue == 0)
+					return "";
 				return new MDToken(targetTable, rowValue).ToDescription();
 			}
 			if (ColumnSize.TypeDefOrRef <= column.ColumnSize && column.ColumnSize <= ColumnSize.TypeOrMethodDef) {
@@ -111,7 +117,10 @@ namespace dnExplorer.Views {
 
 				MDToken decodedToken;
 				if (!info.Decode(rowValue, out decodedToken))
-					return "<<INVALID>>";
+					return InvalidValue;
+
+				if (decodedToken.Rid == 0)
+					return "";
 				return decodedToken.ToDescription();
 			}
 			if (column.ColumnSize == ColumnSize.Strings) {
@@ -120,19 +129,19 @@ namespace dnExplorer.Views {
 
 				var value = metadata.StringsStream.Read(rowValue);
 				if (value == (UTF8String)null)
-					return "<<INVALID>>";
-				return Utils.EscapeString(value, false);
+					return InvalidValue;
+				return value;
 			}
 			if (column.ColumnSize == ColumnSize.Blob) {
 				if (rowValue == 0)
 					return "";
 
 				if (!metadata.BlobStream.IsValidOffset(rowValue))
-					return "<<INVALID>>";
+					return InvalidValue;
 
 				var reader = metadata.BlobStream.GetClonedImageStream();
 				reader.Position = rowValue;
-				return reader.ReadCompressedUInt32().ToString("X8");
+				return reader.ReadCompressedUInt32();
 			}
 			if (column.ColumnSize == ColumnSize.GUID) {
 				if (rowValue == 0)
@@ -140,7 +149,7 @@ namespace dnExplorer.Views {
 
 				var value = metadata.GuidStream.Read(rowValue);
 				if (value == null)
-					return "<<INVALID>>";
+					return InvalidValue;
 				return value.Value.ToString("D");
 			}
 			return GetLiteralDescription(table.Table, column, rowValue);
@@ -238,6 +247,151 @@ namespace dnExplorer.Views {
 			if (enumValue == null)
 				return "";
 			return enumValue.ToString();
+		}
+
+		static ContextMenuStrip GetContextMenu(MDTableHeapView view, MDRowModel row, IMetaData metadata, ColumnSize size) {
+			ContextMenuStrip ctxMenu;
+
+			if (ColumnSize.Module <= size && size <= ColumnSize.GenericParamConstraint) {
+				Table targetTable = (Table)(size - ColumnSize.Module);
+				ctxMenu = CreateMDTokenContextMenu(view, targetTable);
+			}
+			else if (ColumnSize.TypeDefOrRef <= size && size <= ColumnSize.TypeOrMethodDef) {
+				CodedToken info;
+				switch (size) {
+					case ColumnSize.TypeDefOrRef:
+						info = CodedToken.TypeDefOrRef;
+						break;
+					case ColumnSize.HasConstant:
+						info = CodedToken.HasConstant;
+						break;
+					case ColumnSize.HasCustomAttribute:
+						info = CodedToken.HasCustomAttribute;
+						break;
+					case ColumnSize.HasFieldMarshal:
+						info = CodedToken.HasFieldMarshal;
+						break;
+					case ColumnSize.HasDeclSecurity:
+						info = CodedToken.HasDeclSecurity;
+						break;
+					case ColumnSize.MemberRefParent:
+						info = CodedToken.MemberRefParent;
+						break;
+					case ColumnSize.HasSemantic:
+						info = CodedToken.HasSemantic;
+						break;
+					case ColumnSize.MethodDefOrRef:
+						info = CodedToken.MethodDefOrRef;
+						break;
+					case ColumnSize.MemberForwarded:
+						info = CodedToken.MemberForwarded;
+						break;
+					case ColumnSize.Implementation:
+						info = CodedToken.Implementation;
+						break;
+					case ColumnSize.CustomAttributeType:
+						info = CodedToken.CustomAttributeType;
+						break;
+					case ColumnSize.ResolutionScope:
+						info = CodedToken.ResolutionScope;
+						break;
+					case ColumnSize.TypeOrMethodDef:
+						info = CodedToken.TypeOrMethodDef;
+						break;
+					default:
+						throw new InvalidOperationException(string.Format("Invalid ColumnSize: {0}", size));
+				}
+
+				ctxMenu = CreateCodedTokenContextMenu(view, info);
+			}
+			else if (size == ColumnSize.Strings) {
+				ctxMenu = CreateStreamContextMenu(view, metadata, metadata.StringsStream);
+			}
+			else if (size == ColumnSize.Blob) {
+				ctxMenu = CreateStreamContextMenu(view, metadata, metadata.BlobStream);
+			}
+			else if (size == ColumnSize.GUID) {
+				ctxMenu = CreateStreamContextMenu(view, metadata, metadata.GuidStream);
+			}
+			else
+				ctxMenu = null;
+
+			return ctxMenu;
+		}
+
+		static ContextMenuStrip CreateMDTokenContextMenu(MDTableHeapView view, Table table) {
+			var menu = new ContextMenuStrip();
+
+			var go = new ToolStripMenuItem("Go To Row");
+			go.Click += (sender, e) => {
+				var gridView = (GridView)menu.SourceControl;
+				var rowIndex = gridView.SelectedCells[0].RowIndex;
+				var rid = Convert.ToUInt32(gridView[3, rowIndex].Value);
+				view.SelectItem(new MDToken(table, rid));
+			};
+			menu.Items.Add(go);
+
+			return menu;
+		}
+
+		static ContextMenuStrip CreateCodedTokenContextMenu(MDTableHeapView view, CodedToken code) {
+			var menu = new ContextMenuStrip();
+
+			var go = new ToolStripMenuItem("Go To Row");
+			go.Click += (sender, e) => {
+				var gridView = (GridView)menu.SourceControl;
+				var rowIndex = gridView.SelectedCells[0].RowIndex;
+
+				if (gridView[4, rowIndex].Value == InvalidValue) {
+					MessageBox.Show("Invalid token.", Main.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
+
+				var token = code.Decode(Convert.ToUInt32(gridView[3, rowIndex].Value));
+				view.SelectItem(new MDToken(token));
+			};
+			menu.Items.Add(go);
+
+			return menu;
+		}
+
+		static ContextMenuStrip CreateStreamContextMenu(MDTableHeapView view, IMetaData metadata, DotNetStream stream) {
+			var menu = new ContextMenuStrip();
+
+			var show = new ToolStripMenuItem("Show in " + stream.Name + " Stream");
+			show.Click += (sender, e) => {
+				var gridView = (GridView)menu.SourceControl;
+				var rowIndex = gridView.SelectedCells[0].RowIndex;
+
+				if (gridView[4, rowIndex].Value == InvalidValue) {
+					MessageBox.Show("Invalid offset.", Main.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
+
+				var offset = Convert.ToUInt32(gridView[3, rowIndex].Value);
+				if (offset == 0)
+					return;
+
+				var desc = gridView[4, rowIndex].Value;
+				uint size = 1;
+				if (stream is StringsStream) {
+					size = (uint)((UTF8String)desc).DataLength + 1;
+				}
+				else if (stream is BlobStream) {
+					size = (uint)gridView[4, rowIndex].Value;
+					size += (uint)Utils.GetCompressedUInt32Length(size);
+				}
+				else if (stream is GuidStream) {
+					offset = (offset - 1) * 0x10;
+					size = 0x10;
+				}
+
+
+				ViewUtils.ShowStream(view.Model, metadata.PEImage, stream, offset, size);
+			};
+			menu.Items.Add(show);
+
+			return menu;
 		}
 	}
 }

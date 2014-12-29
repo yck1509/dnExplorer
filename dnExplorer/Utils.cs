@@ -111,5 +111,18 @@ namespace dnExplorer {
 
 			return num;
 		}
+
+		public static int GetCompressedUInt32Length(uint value) {
+			if (value <= 0x7f) {
+				return 1;
+			}
+			if (value <= 0x3fff) {
+				return 2;
+			}
+			if (value > 0x1fffffff) {
+				throw new ArgumentOutOfRangeException("UInt32 value can't be compressed");
+			}
+			return 4;
+		}
 	}
 }

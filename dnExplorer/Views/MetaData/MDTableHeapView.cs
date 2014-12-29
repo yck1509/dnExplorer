@@ -156,7 +156,7 @@ namespace dnExplorer.Views {
 				rowHL[rid] = row;
 
 				hexView.SetHighLights(rowHL);
-				RowInfoPopulator.PopulateGridView(gridView, rowModel);
+				RowInfoPopulator.PopulateGridView(this, gridView, rowModel);
 
 				if (followInHex) {
 					hexView.Select(row.Start, row.End);

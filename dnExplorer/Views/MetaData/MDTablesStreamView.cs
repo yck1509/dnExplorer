@@ -95,5 +95,9 @@ namespace dnExplorer.Views {
 			}
 			ViewUtils.ShowRawData(Model, model.MetaData.PEImage, begin, end);
 		}
+
+		public void SelectHexRange(uint begin, uint end) {
+			hexView.Select(begin, end);
+		}
 	}
 }

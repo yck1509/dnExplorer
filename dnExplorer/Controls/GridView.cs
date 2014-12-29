@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using dnlib.DotNet;
 using dnlib.IO;
 using dnlib.PE;
 
@@ -139,6 +140,14 @@ namespace dnExplorer.Controls {
 				return ((ushort)value).ToString("X4");
 			if (value is byte)
 				return ((byte)value).ToString("X2");
+			if (value is UTF8String) {
+				var str = (UTF8String)value;
+				if (str.String == null)
+					return "<<INVALID>>";
+				return Utils.EscapeString(str.String, false);
+			}
+			if (value is string)
+				return Utils.EscapeString((string)value, false);
 			return value.ToString();
 		}
 

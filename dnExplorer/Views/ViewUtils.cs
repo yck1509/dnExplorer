@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using dnExplorer.Nodes;
 using dnExplorer.Trees;
 using dnlib.DotNet;
+using dnlib.DotNet.MD;
 using dnlib.PE;
 
 namespace dnExplorer.Views {
@@ -27,6 +28,25 @@ namespace dnExplorer.Views {
 				.Handler(node => {
 					var targetView = (MDTableHeapView)ViewLocator.LocateView(node.Model);
 					targetView.SelectItem(token);
+				})
+				.Navigate(model);
+		}
+
+		public static void ShowStream(IDataModel model, IPEImage image, DotNetStream stream, uint begin, uint size) {
+			TreeNavigator.Create()
+				.Path<ModuleModel>(m => m.Module.Image == image ? NavigationState.In : NavigationState.Next)
+				.Path<MetaDataModel>(m => NavigationState.In)
+				.Path<MDStreamModel>(m => m.Stream == stream ? NavigationState.Done : NavigationState.Next)
+				.Path<MDTablesStreamModel>(m => m.Stream == stream ? NavigationState.Done : NavigationState.Next)
+				.Handler(node => {
+					if (node.Model is MDStreamModel) {
+						var targetView = (MDStreamView)ViewLocator.LocateView(node.Model);
+						targetView.SelectHexRange(begin, begin + size - 1);
+					}
+					else if (node.Model is MDTablesStreamModel) {
+						var targetView = (MDTablesStreamView)ViewLocator.LocateView(node.Model);
+						targetView.SelectHexRange(begin, begin + size - 1);
+					}
 				})
 				.Navigate(model);
 		}

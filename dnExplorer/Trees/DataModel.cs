@@ -6,7 +6,6 @@ using System.Windows.Forms;
 namespace dnExplorer.Trees {
 	public abstract class DataModel : IDataModel {
 		DataTreeNodeX node;
-		ContextMenuStrip ctxMenu;
 		Color color;
 		string text;
 
