@@ -28,6 +28,18 @@ namespace dnExplorer.Views {
 			copyTokenRaw.Click += CopyTokenRaw;
 			ctxMenu.Items.Add(copyTokenRaw);
 
+			ctxMenu.Items.Add(new ToolStripSeparator());
+			ctxMenu.Opening += (sender, e) => {
+				var model = sender.GetContextMenuModel<MDRowModel>();
+				var view = (MDTableHeapView)ViewLocator.LocateView(model.Parent.Parent);
+				ToolStripManager.Merge(view.GetContextMenu(), (ContextMenuStrip)sender);
+			};
+			ctxMenu.Closed += (sender, e) => {
+				var model = sender.GetContextMenuModel<MDRowModel>();
+				var view = (MDTableHeapView)ViewLocator.LocateView(model.Parent.Parent);
+				ToolStripManager.RevertMerge((ContextMenuStrip)sender, view.GetContextMenu());
+			};
+
 			return ctxMenu;
 		}
 

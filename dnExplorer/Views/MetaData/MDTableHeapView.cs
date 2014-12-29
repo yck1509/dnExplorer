@@ -220,9 +220,26 @@ namespace dnExplorer.Views {
 			return ctxMenu;
 		}
 
+		static void GetThisModelView(object sender, out MDTableHeapView view, out MDTableHeapModel model) {
+			model = sender.GetContextMenuModel<MDTableHeapModel>();
+			if (model == null) {
+				var m1 = sender.GetContextMenuModel<MDTableModel>();
+				if (m1 != null)
+					model = m1.Parent;
+				else {
+					var m2 = sender.GetContextMenuModel<MDRowModel>();
+					if (m2 != null)
+						model = m2.Parent.Parent;
+				}
+			}
+
+			view = (MDTableHeapView)ViewLocator.LocateView(model);
+		}
+
 		static void GotoToken(object sender, EventArgs e) {
-			var model = sender.GetContextMenuModel<MDTableHeapModel>();
-			var view = (MDTableHeapView)ViewLocator.LocateView(model);
+			MDTableHeapView view;
+			MDTableHeapModel model;
+			GetThisModelView(sender, out view, out model);
 
 			var result = InputBox.Show("Go To Token", "Target MD Token:");
 			if (result == null)

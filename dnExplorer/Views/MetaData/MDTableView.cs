@@ -19,6 +19,18 @@ namespace dnExplorer.Views {
 			showHex.Click += ShowHex;
 			ctxMenu.Items.Add(showHex);
 
+			ctxMenu.Items.Add(new ToolStripSeparator());
+			ctxMenu.Opening += (sender, e) => {
+				var model = sender.GetContextMenuModel<MDTableModel>();
+				var view = (MDTableHeapView)ViewLocator.LocateView(model.Parent);
+				ToolStripManager.Merge(view.GetContextMenu(), (ContextMenuStrip)sender);
+			};
+			ctxMenu.Closed += (sender, e) => {
+				var model = sender.GetContextMenuModel<MDTableModel>();
+				var view = (MDTableHeapView)ViewLocator.LocateView(model.Parent);
+				ToolStripManager.RevertMerge((ContextMenuStrip)sender, view.GetContextMenu());
+			};
+
 			return ctxMenu;
 		}
 
