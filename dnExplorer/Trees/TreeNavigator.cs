@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 
 namespace dnExplorer.Trees {
 	public class TreeNavigator {
-		Func<object, NavigationState> rootPredicate;
 		Action<DataTreeNodeX> onNavigated;
 		Dictionary<Type, Func<object, NavigationState>> navPath;
 
@@ -50,10 +49,10 @@ namespace dnExplorer.Trees {
 		}
 
 		void NavigateChild(DataTreeNodeX node) {
-			if (node == null)
+			if (node == null || node.TreeView == null)
 				return;
 
-			Func<object, NavigationState> predicate = rootPredicate;
+			Func<object, NavigationState> predicate;
 			if (!navPath.TryGetValue(node.Model.GetType(), out predicate))
 				return;
 

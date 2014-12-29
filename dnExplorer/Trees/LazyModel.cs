@@ -27,7 +27,7 @@ namespace dnExplorer.Trees {
 		const int STATE_LOADING = 1;
 		const int STATE_CANCEL = 2;
 		const int STATE_COMPLETE = 3;
-		const int LOADING_THRESHOLD = 200;
+		const int LOADING_THRESHOLD = 100;
 
 		object loadLock = new object();
 		Task loadChildren;
@@ -52,28 +52,7 @@ namespace dnExplorer.Trees {
 		}
 
 		public override void OnExpand() {
-			if (loadState == STATE_LOADING)
-				return;
-
-			lock (loadLock) {
-				if (loadState == STATE_LOADING)
-					return;
-				if (!HasChildren || Children[0] != NullModel.Instance)
-					return;
-				loadState = STATE_LOADING;
-			}
-
-			waitHnd.Reset();
-
-			loadChildren = Task.Factory.StartNew(PopulateChildrenInternal);
-			if (!waitHnd.WaitOne(LOADING_THRESHOLD)) {
-				lock (loadLock) {
-					using (Children.BeginUpdate()) {
-						Children.Clear();
-						Children.Add(new Loading());
-					}
-				}
-			}
+			LoadImmediate();
 		}
 
 		public Task LoadImmediate() {

@@ -27,7 +27,7 @@ namespace dnExplorer.Trees {
 		static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
 		protected override void CreateHandle() {
-			base.CreateHandle();
+			CreateHandle();
 			PostMessage(Handle, 0x1100 + 44, (IntPtr)4, (IntPtr)4);
 		}
 
@@ -36,7 +36,7 @@ namespace dnExplorer.Trees {
 			if (node != null) {
 				node.OnCollapse();
 			}
-			base.OnAfterCollapse(e);
+			OnAfterCollapse(e);
 		}
 
 		protected override void OnBeforeExpand(TreeViewCancelEventArgs e) {
@@ -44,7 +44,7 @@ namespace dnExplorer.Trees {
 			if (node != null) {
 				node.OnExpand();
 			}
-			base.OnBeforeExpand(e);
+			OnBeforeExpand(e);
 		}
 
 		protected override void OnNodeMouseClick(TreeNodeMouseClickEventArgs e) {
@@ -52,7 +52,7 @@ namespace dnExplorer.Trees {
 			if (node != null) {
 				node.OnMouseClick(e);
 			}
-			base.OnNodeMouseClick(e);
+			OnNodeMouseClick(e);
 		}
 
 		protected override void OnNodeMouseDoubleClick(TreeNodeMouseClickEventArgs e) {
@@ -60,7 +60,7 @@ namespace dnExplorer.Trees {
 			if (node != null) {
 				node.OnMouseDoubleClick(e);
 			}
-			base.OnNodeMouseDoubleClick(e);
+			OnNodeMouseDoubleClick(e);
 		}
 
 		protected override void OnNodeMouseHover(TreeNodeMouseHoverEventArgs e) {
@@ -68,11 +68,11 @@ namespace dnExplorer.Trees {
 			if (node != null) {
 				node.OnMouseHover(e);
 			}
-			base.OnNodeMouseHover(e);
+			OnNodeMouseHover(e);
 		}
 
 		protected override void OnMouseDown(MouseEventArgs e) {
-			base.OnMouseDown(e);
+			OnMouseDown(e);
 			switch (e.Button) {
 				case MouseButtons.Left:
 				case MouseButtons.Right:
@@ -91,6 +91,8 @@ namespace dnExplorer.Trees {
 		}
 
 		void CustomDrawNode(DrawTreeNodeEventArgs e) {
+			using (var brush = new SolidBrush(BackColor))
+				e.Graphics.FillRectangle(brush, e.Bounds);
 			DrawToggle(e);
 			DrawText(e);
 		}
@@ -140,7 +142,7 @@ namespace dnExplorer.Trees {
 				backColor = SystemBrushes.Highlight;
 			}
 			else {
-				backColor = SystemBrushes.Window;
+				backColor = new SolidBrush(e.Node.BackColor);
 			}
 
 			if (hot)
@@ -166,7 +168,20 @@ namespace dnExplorer.Trees {
 			}
 		}
 
-		internal bool updating = false;
+		int updating = 0;
+		bool updateRedraw = false;
+
+		internal void EnterUpdate() {
+			updating++;
+			updateRedraw = true;
+			Invalidate();
+		}
+
+		internal void LeaveUpdate() {
+			updating--;
+			updateRedraw = true;
+			Invalidate();
+		}
 
 		protected override void WndProc(ref Message m) {
 			const int WM_NOTIFY = 0x4e;
@@ -183,9 +198,12 @@ namespace dnExplorer.Trees {
 			else if (m.Msg == 0x204e) {
 				int code = Marshal.ReadInt32(m.LParam + IntPtr.Size * 2);
 				if (code == -12) {
-					//var nodeHnd = Marshal.ReadIntPtr(m.LParam + IntPtr.Size * 3 + 24);
-					//var state = Marshal.ReadInt32(m.LParam + IntPtr.Size * 4 + 24);
-					if (updating)
+					if (updating > 0 && !updateRedraw)
+						return;
+
+					var nodeHnd = Marshal.ReadIntPtr(m.LParam + IntPtr.Size * 5 + 16);
+					var node = TreeNode.FromHandle(this, nodeHnd);
+					if (node != null && !node.IsVisible)
 						return;
 				}
 			}
@@ -193,7 +211,9 @@ namespace dnExplorer.Trees {
 			if (m.Msg == 20)
 				return;
 
-			base.WndProc(ref m);
+			WndProc(ref m);
+			if (m.Msg == 15 && updateRedraw)
+				updateRedraw = false;
 		}
 	}
 }

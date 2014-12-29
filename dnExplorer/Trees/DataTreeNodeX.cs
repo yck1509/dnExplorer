@@ -154,12 +154,12 @@ namespace dnExplorer.Trees {
 
 		void DoReset(TreeNode[] nodes) {
 			Nodes.Clear();
-			((TreeViewX)TreeView).updating = true;
+			((TreeViewX)TreeView).EnterUpdate();
 			try {
 				Nodes.AddRange(nodes);
 			}
 			finally {
-				((TreeViewX)TreeView).updating = false;
+				((TreeViewX)TreeView).LeaveUpdate();
 			}
 		}
 	}
