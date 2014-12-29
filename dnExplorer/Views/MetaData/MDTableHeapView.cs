@@ -14,6 +14,7 @@ namespace dnExplorer.Views {
 		GridView gridView;
 		HexViewer hexView;
 		Dictionary<Table, HexViewer.HighLight[]> hls;
+		bool followInHex;
 
 		public MDTableHeapView() {
 			var split1 = new SplitContainer {
@@ -26,6 +27,7 @@ namespace dnExplorer.Views {
 				Dock = DockStyle.Fill
 			};
 			treeView.AfterSelect += OnNodeSelected;
+			treeView.ContextMenuStrip = GetContextMenu();
 			split1.Panel1.Controls.Add(treeView);
 
 			var split2 = new SplitContainer {
@@ -53,6 +55,8 @@ namespace dnExplorer.Views {
 			var nav = new ToolStripMenuItem("Show in Raw Data");
 			nav.Click += OnShowData;
 			hexView.ContextMenuStrip.Items.Add(nav);
+
+			followInHex = false;
 		}
 
 		public void SelectItem(MDToken token) {
@@ -64,18 +68,23 @@ namespace dnExplorer.Views {
 			}
 
 			TreeNavigator.Create()
-				.Path<MDTableModel>(m => m.Table == table ? NavigationState.In : NavigationState.Next)
+				.Path<MDTableModel>(m => m.MDTable == table ? NavigationState.In : NavigationState.Next)
 				.Path<MDRowModel>(m => m.Rid == rid ? NavigationState.Done : NavigationState.Next)
 				.Navigate(treeView);
 		}
 
+		public void SelectHexRange(uint begin, uint end) {
+			hexView.Select(begin, end);
+		}
+
 		void UpdateTreeView(IMetaData metadata, TablesStream stream) {
+			var model = (MDTableHeapModel)Model;
 			for (int i = 0; i < 0x40; i++) {
 				var table = (Table)i;
 				if (stream.HasTable(table)) {
 					var mdTable = stream.Get(table);
 					if (mdTable.Rows > 0)
-						treeView.Nodes.Add(new MDTableModel(metadata, stream, mdTable).ToNode());
+						treeView.Nodes.Add(new MDTableModel(model, metadata, stream, mdTable).ToNode());
 				}
 			}
 		}
@@ -124,12 +133,19 @@ namespace dnExplorer.Views {
 
 			var node = (DataTreeNodeX)treeView.SelectedNode;
 			if (node.Model is MDTableModel) {
-				var mdTable = ((MDTableModel)node.Model).Table;
+				var mdTable = ((MDTableModel)node.Model).MDTable;
 				hexView.SetHighLights(GetHighLights(mdTable.Table));
+
+				if (followInHex) {
+					var tbls = ((MDTableHeapModel)Model).Stream;
+					var begin = mdTable.StartOffset - tbls.StartOffset;
+					var end = mdTable.EndOffset - tbls.StartOffset;
+					hexView.Select(begin, end);
+				}
 			}
 			else if (node.Model is MDRowModel) {
 				var rowModel = (MDRowModel)node.Model;
-				var mdTable = rowModel.MDTable;
+				var mdTable = rowModel.Parent.MDTable;
 				var rid = rowModel.Rid;
 
 				var rowHL = GetHighLights(mdTable.Table);
@@ -141,6 +157,10 @@ namespace dnExplorer.Views {
 
 				hexView.SetHighLights(rowHL);
 				RowInfoPopulator.PopulateGridView(gridView, rowModel);
+
+				if (followInHex) {
+					hexView.Select(row.Start, row.End);
+				}
 			}
 			else {
 				hexView.ClearHighLight();
@@ -157,6 +177,7 @@ namespace dnExplorer.Views {
 			gridView.Clear();
 			if (model != null) {
 				UpdateTreeView(model.MetaData, model.Stream);
+				treeView.ContextMenuStrip.Tag = Model;
 
 				hexView.ClearHighLight();
 				hexView.Stream = model.Stream.GetClonedImageStream();
@@ -177,6 +198,43 @@ namespace dnExplorer.Views {
 				begin += hexView.SelectionStart;
 			}
 			ViewUtils.ShowRawData(Model, model.MetaData.PEImage, begin, end);
+		}
+
+		static ContextMenuStrip ctxMenu;
+
+		protected internal override ContextMenuStrip GetContextMenu() {
+			if (ctxMenu != null)
+				return ctxMenu;
+
+			ctxMenu = new ContextMenuStrip();
+
+			var gotoToken = new ToolStripMenuItem("Go To Token");
+			gotoToken.Click += GotoToken;
+			ctxMenu.Items.Add(gotoToken);
+
+			var follow = new ToolStripMenuItem("Follow Selection in Hex View");
+			follow.CheckOnClick = true;
+			follow.CheckedChanged += (sender, e) => followInHex = follow.Checked;
+			ctxMenu.Items.Add(follow);
+
+			return ctxMenu;
+		}
+
+		static void GotoToken(object sender, EventArgs e) {
+			var model = sender.GetContextMenuModel<MDTableHeapModel>();
+			var view = (MDTableHeapView)ViewLocator.LocateView(model);
+
+			var result = InputBox.Show("Go To Token", "Target MD Token:");
+			if (result == null)
+				return;
+
+			var token = Utils.ParseInputNum(result);
+			if (token == null) {
+				MessageBox.Show("Invalid token.", "Go To Offset", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			view.SelectItem(new MDToken(token.Value));
 		}
 	}
 }

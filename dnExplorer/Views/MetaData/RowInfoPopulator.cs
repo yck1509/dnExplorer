@@ -21,13 +21,13 @@ namespace dnExplorer.Views {
 		}
 
 		public static void PopulateGridView(GridView gridView, MDRowModel row) {
-			var reader = getReader(row.Tables, row.MDTable, row.Rid);
+			var reader = getReader(row.Parent.Tables, row.Parent.MDTable, row.Rid);
 
 			var beginPos = reader.Position;
 			gridView.Clear();
-			foreach (var column in row.MDTable.Columns) {
+			foreach (var column in row.Parent.MDTable.Columns) {
 				reader.Position = beginPos + column.Offset;
-				var offset = (uint)row.MDTable.StartOffset + (uint)reader.Position;
+				var offset = (uint)row.Parent.MDTable.StartOffset + (uint)reader.Position;
 
 				object value = null;
 				uint rawValue = 0;
@@ -51,7 +51,7 @@ namespace dnExplorer.Views {
 						throw new Exception("Unexpected column size.");
 				}
 
-				var desc = GetDescription(row.MetaData, row.MDTable, column, rawValue);
+				var desc = GetDescription(row.Parent.MetaData, row.Parent.MDTable, column, rawValue);
 				var cell = new GridView.Cell(desc,
 					back: desc == "<<INVALID>>" ? ControlPaint.Light(Color.Red) : SystemColors.ControlLight);
 				gridView.AddRow(column.Name, column.ColumnSize.ToString(), offset, value, cell);

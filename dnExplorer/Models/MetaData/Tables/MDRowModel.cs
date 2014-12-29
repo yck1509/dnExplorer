@@ -8,15 +8,11 @@ using dnlib.DotNet.MD;
 
 namespace dnExplorer.Nodes {
 	public class MDRowModel : LazyModel {
-		public IMetaData MetaData { get; set; }
-		public TablesStream Tables { get; set; }
-		public MDTable MDTable { get; set; }
+		public MDTableModel Parent { get; set; }
 		public uint Rid { get; set; }
 
-		public MDRowModel(IMetaData metadata, TablesStream stream, MDTable table, uint rid) {
-			MetaData = metadata;
-			Tables = stream;
-			MDTable = table;
+		public MDRowModel(MDTableModel parent, uint rid) {
+			Parent = parent;
 			Rid = rid;
 
 			var text = new StringBuilder();
@@ -48,14 +44,14 @@ namespace dnExplorer.Nodes {
 		}
 
 		string ReadString(uint offset) {
-			var value = MetaData.StringsStream.Read(offset);
+			var value = Parent.MetaData.StringsStream.Read(offset);
 			if (value == (UTF8String)null)
 				return "<<INVALID>>";
 			return Utils.EscapeString(value, true);
 		}
 
 		string ToTokenString(Table table, uint rid) {
-			if (!Tables.HasTable(table) || Tables.Get(table).IsInvalidRID(rid))
+			if (!Parent.Tables.HasTable(table) || Parent.Tables.Get(table).IsInvalidRID(rid))
 				return "<<INVALID>>";
 
 			return new MDToken(table, rid).ToDescription();
@@ -66,173 +62,174 @@ namespace dnExplorer.Nodes {
 			if (!desc.Decode(codedToken, out token))
 				return "<<INVALID>>";
 
-			if (!Tables.HasTable(token.Table) || Tables.Get(token.Table).IsInvalidRID(token.Rid))
+			if (!Parent.Tables.HasTable(token.Table) ||
+			    Parent.Tables.Get(token.Table).IsInvalidRID(token.Rid))
 				return "<<INVALID>>";
 
 			return token.ToDescription();
 		}
 
 		string GetDisplayText() {
-			switch (MDTable.Table) {
+			switch (Parent.MDTable.Table) {
 				case Table.Module:
-					return ReadString(Tables.ReadModuleRow(Rid).Name);
+					return ReadString(Parent.Tables.ReadModuleRow(Rid).Name);
 
 				case Table.TypeRef:
-					var typeRef = Tables.ReadTypeRefRow(Rid);
+					var typeRef = Parent.Tables.ReadTypeRefRow(Rid);
 					return string.Format("({0}, {1})",
 						ReadString(typeRef.Namespace),
 						ReadString(typeRef.Name));
 
 				case Table.TypeDef:
-					var typeDef = Tables.ReadTypeDefRow(Rid);
+					var typeDef = Parent.Tables.ReadTypeDefRow(Rid);
 					return string.Format("({0}, {1})",
 						ReadString(typeDef.Namespace),
 						ReadString(typeDef.Name));
 
 				case Table.FieldPtr:
-					return ToTokenString(Table.Field, Tables.ReadFieldPtrRow(Rid).Field);
+					return ToTokenString(Table.Field, Parent.Tables.ReadFieldPtrRow(Rid).Field);
 
 				case Table.Field:
-					return ReadString(Tables.ReadFieldRow(Rid).Name);
+					return ReadString(Parent.Tables.ReadFieldRow(Rid).Name);
 
 				case Table.MethodPtr:
-					return ToTokenString(Table.Method, Tables.ReadMethodPtrRow(Rid).Method);
+					return ToTokenString(Table.Method, Parent.Tables.ReadMethodPtrRow(Rid).Method);
 
 				case Table.Method:
-					return ReadString(Tables.ReadMethodRow(Rid).Name);
+					return ReadString(Parent.Tables.ReadMethodRow(Rid).Name);
 
 				case Table.ParamPtr:
-					return ToTokenString(Table.Param, Tables.ReadParamPtrRow(Rid).Param);
+					return ToTokenString(Table.Param, Parent.Tables.ReadParamPtrRow(Rid).Param);
 
 				case Table.Param:
-					return ReadString(Tables.ReadParamRow(Rid).Name);
+					return ReadString(Parent.Tables.ReadParamRow(Rid).Name);
 
 				case Table.InterfaceImpl:
-					var ifaceImpl = Tables.ReadInterfaceImplRow(Rid);
+					var ifaceImpl = Parent.Tables.ReadInterfaceImplRow(Rid);
 					return string.Format("({0} : {1})",
 						ToTokenString(Table.TypeDef, ifaceImpl.Class),
 						DecodeToken(CodedToken.TypeDefOrRef, ifaceImpl.Interface));
 
 				case Table.MemberRef:
-					return ReadString(Tables.ReadMemberRefRow(Rid).Name);
+					return ReadString(Parent.Tables.ReadMemberRefRow(Rid).Name);
 
 				case Table.Constant:
-					return DecodeToken(CodedToken.HasConstant, Tables.ReadConstantRow(Rid).Parent);
+					return DecodeToken(CodedToken.HasConstant, Parent.Tables.ReadConstantRow(Rid).Parent);
 
 				case Table.CustomAttribute:
-					return DecodeToken(CodedToken.HasCustomAttribute, Tables.ReadCustomAttributeRow(Rid).Parent);
+					return DecodeToken(CodedToken.HasCustomAttribute, Parent.Tables.ReadCustomAttributeRow(Rid).Parent);
 
 				case Table.FieldMarshal:
-					return DecodeToken(CodedToken.HasFieldMarshal, Tables.ReadFieldMarshalRow(Rid).Parent);
+					return DecodeToken(CodedToken.HasFieldMarshal, Parent.Tables.ReadFieldMarshalRow(Rid).Parent);
 
 				case Table.DeclSecurity:
-					return DecodeToken(CodedToken.HasDeclSecurity, Tables.ReadDeclSecurityRow(Rid).Parent);
+					return DecodeToken(CodedToken.HasDeclSecurity, Parent.Tables.ReadDeclSecurityRow(Rid).Parent);
 
 				case Table.ClassLayout:
-					return ToTokenString(Table.TypeDef, Tables.ReadClassLayoutRow(Rid).Parent);
+					return ToTokenString(Table.TypeDef, Parent.Tables.ReadClassLayoutRow(Rid).Parent);
 
 				case Table.FieldLayout:
-					return ToTokenString(Table.Field, Tables.ReadFieldLayoutRow(Rid).Field);
+					return ToTokenString(Table.Field, Parent.Tables.ReadFieldLayoutRow(Rid).Field);
 
 				case Table.StandAloneSig:
-					return string.Format("0x{0:x}", Tables.ReadStandAloneSigRow(Rid).Signature);
+					return string.Format("0x{0:x}", Parent.Tables.ReadStandAloneSigRow(Rid).Signature);
 
 				case Table.EventMap:
-					var eventMap = Tables.ReadEventMapRow(Rid);
+					var eventMap = Parent.Tables.ReadEventMapRow(Rid);
 					return string.Format("({0} : {1})",
 						ToTokenString(Table.TypeDef, eventMap.Parent),
 						ToTokenString(Table.Event, eventMap.EventList));
 
 				case Table.EventPtr:
-					return ToTokenString(Table.Event, Tables.ReadEventPtrRow(Rid).Event);
+					return ToTokenString(Table.Event, Parent.Tables.ReadEventPtrRow(Rid).Event);
 
 				case Table.Event:
-					return ReadString(Tables.ReadEventRow(Rid).Name);
+					return ReadString(Parent.Tables.ReadEventRow(Rid).Name);
 
 				case Table.PropertyMap:
-					var propertyMap = Tables.ReadPropertyMapRow(Rid);
+					var propertyMap = Parent.Tables.ReadPropertyMapRow(Rid);
 					return string.Format("({0} : {1})",
 						ToTokenString(Table.TypeDef, propertyMap.Parent),
 						ToTokenString(Table.Property, propertyMap.PropertyList));
 
 				case Table.PropertyPtr:
-					return ToTokenString(Table.Property, Tables.ReadPropertyPtrRow(Rid).Property);
+					return ToTokenString(Table.Property, Parent.Tables.ReadPropertyPtrRow(Rid).Property);
 
 				case Table.Property:
-					return ReadString(Tables.ReadPropertyRow(Rid).Name);
+					return ReadString(Parent.Tables.ReadPropertyRow(Rid).Name);
 
 				case Table.MethodSemantics:
-					var methodSemantics = Tables.ReadMethodSemanticsRow(Rid);
+					var methodSemantics = Parent.Tables.ReadMethodSemanticsRow(Rid);
 					return string.Format("({0} : {1})",
 						DecodeToken(CodedToken.HasSemantic, methodSemantics.Association),
 						ToTokenString(Table.Method, methodSemantics.Method));
 
 				case Table.MethodImpl:
-					var methodImpl = Tables.ReadMethodImplRow(Rid);
+					var methodImpl = Parent.Tables.ReadMethodImplRow(Rid);
 					return string.Format("({0} : {1})",
 						DecodeToken(CodedToken.MethodDefOrRef, methodImpl.MethodBody),
 						DecodeToken(CodedToken.MethodDefOrRef, methodImpl.MethodDeclaration));
 
 				case Table.ModuleRef:
-					return ReadString(Tables.ReadModuleRefRow(Rid).Name);
+					return ReadString(Parent.Tables.ReadModuleRefRow(Rid).Name);
 
 				case Table.TypeSpec:
-					return string.Format("0x{0:x}", Tables.ReadTypeSpecRow(Rid).Signature);
+					return string.Format("0x{0:x}", Parent.Tables.ReadTypeSpecRow(Rid).Signature);
 
 				case Table.ImplMap:
-					return ReadString(Tables.ReadImplMapRow(Rid).ImportName);
+					return ReadString(Parent.Tables.ReadImplMapRow(Rid).ImportName);
 
 				case Table.FieldRVA:
-					return ToTokenString(Table.Field, Tables.ReadFieldRVARow(Rid).Field);
+					return ToTokenString(Table.Field, Parent.Tables.ReadFieldRVARow(Rid).Field);
 
 				case Table.ENCLog:
-					var encLog = Tables.ReadENCLogRow(Rid);
+					var encLog = Parent.Tables.ReadENCLogRow(Rid);
 					return string.Format("(0x{0:x8}, 0x{1:x8})", encLog.Token, encLog.FuncCode);
 
 				case Table.ENCMap:
-					var encMap = Tables.ReadENCMapRow(Rid);
+					var encMap = Parent.Tables.ReadENCMapRow(Rid);
 					return string.Format("0x{0:x8}", encMap.Token);
 
 				case Table.Assembly:
-					return ReadString(Tables.ReadAssemblyRow(Rid).Name);
+					return ReadString(Parent.Tables.ReadAssemblyRow(Rid).Name);
 
 				case Table.AssemblyProcessor:
 				case Table.AssemblyOS:
 					break;
 
 				case Table.AssemblyRef:
-					return ReadString(Tables.ReadAssemblyRefRow(Rid).Name);
+					return ReadString(Parent.Tables.ReadAssemblyRefRow(Rid).Name);
 
 				case Table.AssemblyRefProcessor:
 				case Table.AssemblyRefOS:
 					break;
 
 				case Table.File:
-					return ReadString(Tables.ReadFileRow(Rid).Name);
+					return ReadString(Parent.Tables.ReadFileRow(Rid).Name);
 
 				case Table.ExportedType:
-					var exportedType = Tables.ReadExportedTypeRow(Rid);
+					var exportedType = Parent.Tables.ReadExportedTypeRow(Rid);
 					return string.Format("({0}, {1})",
 						ReadString(exportedType.TypeNamespace),
 						ReadString(exportedType.TypeName));
 
 				case Table.ManifestResource:
-					return ReadString(Tables.ReadManifestResourceRow(Rid).Name);
+					return ReadString(Parent.Tables.ReadManifestResourceRow(Rid).Name);
 
 				case Table.NestedClass:
-					var nestedClass = Tables.ReadNestedClassRow(Rid);
+					var nestedClass = Parent.Tables.ReadNestedClassRow(Rid);
 					return string.Format("({0} : {1})",
 						ToTokenString(Table.TypeDef, nestedClass.EnclosingClass),
 						ToTokenString(Table.TypeDef, nestedClass.NestedClass));
 
 				case Table.GenericParam:
-					return ReadString(Tables.ReadGenericParamRow(Rid).Name);
+					return ReadString(Parent.Tables.ReadGenericParamRow(Rid).Name);
 
 				case Table.MethodSpec:
-					return DecodeToken(CodedToken.MethodDefOrRef, Tables.ReadMethodSpecRow(Rid).Method);
+					return DecodeToken(CodedToken.MethodDefOrRef, Parent.Tables.ReadMethodSpecRow(Rid).Method);
 
 				case Table.GenericParamConstraint:
-					return ToTokenString(Table.GenericParam, Tables.ReadGenericParamConstraintRow(Rid).Owner);
+					return ToTokenString(Table.GenericParam, Parent.Tables.ReadGenericParamConstraintRow(Rid).Owner);
 			}
 			return null;
 		}

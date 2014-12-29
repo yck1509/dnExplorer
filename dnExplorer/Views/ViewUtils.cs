@@ -53,10 +53,9 @@ namespace dnExplorer.Views {
 				return null;
 
 			var node = menu.Tag as DataTreeNodeX;
-			if (node == null)
-				return null;
-
-			return (TModel)node.Model;
+			if (node != null)
+				return (TModel)node.Model;
+			return (TModel)menu.Tag;
 		}
 	}
 }

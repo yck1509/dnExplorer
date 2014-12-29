@@ -35,6 +35,10 @@ namespace dnExplorer.Views {
 					view = new MDTablesStreamView();
 				else if (model is MDTableHeapModel)
 					view = new MDTableHeapView();
+				else if (model is MDTableModel)
+					view = new MDTableView();
+				else if (model is MDRowModel)
+					view = new MDRowView();
 
 				else
 					view = null;

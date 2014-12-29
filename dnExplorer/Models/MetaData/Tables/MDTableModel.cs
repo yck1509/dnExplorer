@@ -6,19 +6,21 @@ using dnlib.DotNet.MD;
 
 namespace dnExplorer.Nodes {
 	public class MDTableModel : LazyModel {
+		public MDTableHeapModel Parent { get; set; }
 		public IMetaData MetaData { get; set; }
-		public MDTable Table { get; set; }
-		public TablesStream Stream { get; set; }
+		public MDTable MDTable { get; set; }
+		public TablesStream Tables { get; set; }
 
-		public MDTableModel(IMetaData metadata, TablesStream stream, MDTable table) {
+		public MDTableModel(MDTableHeapModel parent, IMetaData metadata, TablesStream stream, MDTable table) {
+			Parent = parent;
 			MetaData = metadata;
-			Stream = stream;
-			Table = table;
-			Text = string.Format("{0} (0x{1:x})", table.Name, table.Rows);
+			Tables = stream;
+			MDTable = table;
+			Text = string.Format("{0:x2}: {1} (0x{2:x})", (byte)table.Table, table.Name, table.Rows);
 		}
 
 		protected override bool HasChildren {
-			get { return Table.Rows > 0; }
+			get { return MDTable.Rows > 0; }
 		}
 
 		protected override bool IsVolatile {
@@ -26,8 +28,8 @@ namespace dnExplorer.Nodes {
 		}
 
 		protected override IEnumerable<IDataModel> PopulateChildren() {
-			for (uint i = 1; i <= Table.Rows; i++)
-				yield return new MDRowModel(MetaData, Stream, Table, i);
+			for (uint i = 1; i <= MDTable.Rows; i++)
+				yield return new MDRowModel(this, i);
 		}
 
 		public override bool HasIcon {

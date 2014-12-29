@@ -90,10 +90,16 @@
     </Compile>
     <Compile Include="Trees\Utils.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="Views\MetaData\MDRowView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Views\MetaData\MDTableHeapView.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Views\MetaData\MDTablesStreamView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Views\MetaData\MDTableView.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Views\MetaData\MetaDataView.cs">
