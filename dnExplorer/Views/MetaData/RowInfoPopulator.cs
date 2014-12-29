@@ -9,7 +9,7 @@ using dnlib.IO;
 using SR = System.Reflection;
 
 namespace dnExplorer.Views {
-	public class RowInfoPopulator {
+	internal class RowInfoPopulator {
 		static readonly Func<TablesStream, MDTable, uint, IBinaryReader> getReader;
 
 		static RowInfoPopulator() {
@@ -127,9 +127,12 @@ namespace dnExplorer.Views {
 				if (rowValue == 0)
 					return "";
 
-				if (!metadata.BlobStream.IsValidIndex(rowValue))
+				if (!metadata.BlobStream.IsValidOffset(rowValue))
 					return "<<INVALID>>";
-				return "";
+
+				var reader = metadata.BlobStream.GetClonedImageStream();
+				reader.Position = rowValue;
+				return reader.ReadCompressedUInt32().ToString("X8");
 			}
 			if (column.ColumnSize == ColumnSize.GUID) {
 				if (rowValue == 0)
