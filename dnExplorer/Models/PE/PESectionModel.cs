@@ -3,7 +3,7 @@ using System.Drawing;
 using dnExplorer.Trees;
 using dnlib.PE;
 
-namespace dnExplorer.Nodes {
+namespace dnExplorer.Models {
 	public class PESectionModel : DataModel {
 		public IPEImage Image { get; set; }
 		public ImageSectionHeader Section { get; set; }

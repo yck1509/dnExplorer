@@ -1,6 +1,6 @@
 ﻿using System;
 using dnExplorer.Controls;
-using dnExplorer.Nodes;
+using dnExplorer.Models;
 
 namespace dnExplorer.Views {
 	public class PEImageView : ViewBase {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using dnExplorer.Trees;
 
-namespace dnExplorer.Nodes {
+namespace dnExplorer.Models {
 	public class RawDataModel : LazyModel {
 		public byte[] Data { get; set; }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using dnExplorer.Controls;
-using dnExplorer.Nodes;
+using dnExplorer.Models;
 using dnExplorer.Trees;
 using dnlib.DotNet;
 using dnlib.DotNet.MD;

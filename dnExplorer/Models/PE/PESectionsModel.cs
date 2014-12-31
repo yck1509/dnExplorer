@@ -4,7 +4,7 @@ using System.Drawing;
 using dnExplorer.Trees;
 using dnlib.PE;
 
-namespace dnExplorer.Nodes {
+namespace dnExplorer.Models {
 	public class PESectionsModel : LazyModel {
 		public IPEImage Image { get; set; }
 

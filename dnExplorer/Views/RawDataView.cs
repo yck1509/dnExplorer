@@ -1,6 +1,6 @@
 ﻿using System;
 using dnExplorer.Controls;
-using dnExplorer.Nodes;
+using dnExplorer.Models;
 using dnlib.IO;
 
 namespace dnExplorer.Views {

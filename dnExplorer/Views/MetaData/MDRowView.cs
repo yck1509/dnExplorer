@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using dnExplorer.Nodes;
+using dnExplorer.Models;
 using dnlib.DotNet;
 
 namespace dnExplorer.Views {

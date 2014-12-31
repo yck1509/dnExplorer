@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using dnExplorer.Nodes;
+using dnExplorer.Models;
 
 namespace dnExplorer.Views {
 	public class MDTableView : ViewBase {

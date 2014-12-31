@@ -4,7 +4,7 @@ using dnExplorer.Trees;
 using dnlib.DotNet.MD;
 using dnlib.PE;
 
-namespace dnExplorer.Nodes {
+namespace dnExplorer.Models {
 	public class PECLIModel : DataModel {
 		public IPEImage Image { get; set; }
 		public ImageCor20Header CLIHeader { get; set; }

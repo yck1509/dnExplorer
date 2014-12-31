@@ -6,7 +6,7 @@ using dnExplorer.Trees;
 using dnlib.DotNet;
 using dnlib.DotNet.MD;
 
-namespace dnExplorer.Nodes {
+namespace dnExplorer.Models {
 	public class MDRowModel : LazyModel {
 		public MDTableModel Parent { get; set; }
 		public uint Rid { get; set; }

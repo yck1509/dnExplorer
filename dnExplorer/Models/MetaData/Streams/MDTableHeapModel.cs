@@ -4,7 +4,7 @@ using System.Drawing;
 using dnExplorer.Trees;
 using dnlib.DotNet.MD;
 
-namespace dnExplorer.Nodes {
+namespace dnExplorer.Models {
 	public class MDTableHeapModel : LazyModel {
 		public IMetaData MetaData { get; set; }
 		public TablesStream Stream { get; set; }

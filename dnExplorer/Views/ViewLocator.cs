@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using dnExplorer.Nodes;
+using dnExplorer.Models;
 using dnExplorer.Trees;
 
 namespace dnExplorer.Views {

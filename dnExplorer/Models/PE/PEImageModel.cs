@@ -5,7 +5,7 @@ using dnExplorer.Trees;
 using dnlib.DotNet.MD;
 using dnlib.PE;
 
-namespace dnExplorer.Nodes {
+namespace dnExplorer.Models {
 	public class PEImageModel : LazyModel {
 		public IPEImage Image { get; set; }
 		public ImageCor20Header CLIHeader { get; set; }
