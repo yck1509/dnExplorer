@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using dnExplorer.Models;
+using dnExplorer.Theme;
 using dnExplorer.Trees;
 using dnExplorer.Views;
 
@@ -13,6 +14,8 @@ namespace dnExplorer {
 		Panel content;
 
 		public Main() {
+			ToolStripManager.Renderer = new VS2010Renderer();
+
 			Initialize();
 		}
 

@@ -85,6 +85,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RawString.cs" />
     <Compile Include="Resources\Resources.cs" />
+    <Compile Include="Theme\RoundedRectangle.cs" />
+    <Compile Include="Theme\VS2010Renderer.cs" />
     <Compile Include="Trees\BatchObservableCollection.cs" />
     <Compile Include="Trees\ErrorModel.cs" />
     <Compile Include="Trees\DataModel.cs" />
@@ -198,6 +200,9 @@
     <EmbeddedResource Include="Resources\Icons\ObjModel\type.png" />
     <EmbeddedResource Include="Resources\Icons\ObjModel\valuetype.png" />
     <EmbeddedResource Include="Resources\Icons\ObjModel\writeonly.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Icons\check.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
