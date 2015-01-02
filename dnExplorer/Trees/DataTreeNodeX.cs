@@ -168,12 +168,17 @@ namespace dnExplorer.Trees {
 
 		void DoReset(TreeNode[] nodes) {
 			Nodes.Clear();
-			((TreeViewX)TreeView).EnterUpdate();
+			var treeView = (TreeViewX)TreeView;
+
+			if (treeView != null)
+				treeView.EnterUpdate();
+
 			try {
 				Nodes.AddRange(nodes);
 			}
 			finally {
-				((TreeViewX)TreeView).LeaveUpdate();
+				if (treeView != null)
+					treeView.LeaveUpdate();
 			}
 		}
 	}

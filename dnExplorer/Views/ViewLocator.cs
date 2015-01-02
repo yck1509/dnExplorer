@@ -10,7 +10,7 @@ namespace dnExplorer.Views {
 		public static ViewBase LocateView(IDataModel model) {
 			ViewBase view;
 			if (!views.TryGetValue(model.GetType(), out view)) {
-				if (model is ModuleModel)
+				if (model is dnModuleModel)
 					view = new ModuleView();
 
 				else if (model is RawDataModel)

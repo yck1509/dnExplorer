@@ -39,7 +39,7 @@ namespace dnExplorer.Views {
 			ctxMenu.Items.Add(remove);
 
 			ctxMenu.Opening += (sender, e) => {
-				var model = sender.GetContextMenuModel<ModuleModel>();
+				var model = sender.GetContextMenuModel<dnModuleModel>();
 
 				bool canGoEntry = model.Module.MetaData != null;
 				if (canGoEntry) {
@@ -58,13 +58,13 @@ namespace dnExplorer.Views {
 		}
 
 		static void GotoEntryPoint(object sender, EventArgs e) {
-			var model = sender.GetContextMenuModel<ModuleModel>();
+			var model = sender.GetContextMenuModel<dnModuleModel>();
 			var token = new MDToken(model.Module.MetaData.ImageCor20Header.EntryPointToken_or_RVA);
 			ViewUtils.ShowToken(model, model.Module.Image, token);
 		}
 
 		static void Remove(object sender, EventArgs e) {
-			var node = sender.GetContextMenuModel<ModuleModel>().Node;
+			var node = sender.GetContextMenuModel<dnModuleModel>().Node;
 			node.TreeView.Nodes.Remove(node);
 		}
 	}

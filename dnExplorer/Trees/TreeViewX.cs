@@ -102,7 +102,7 @@ namespace dnExplorer.Trees {
 				return;
 
 			var bounds = e.Node.Bounds;
-			bounds.X = (e.Bounds.X + ((e.Node.Level + 1) * Indent)) - 15;
+			bounds.X = (e.Bounds.X + ((e.Node.Level + 1) * Indent)) - 12;
 			bounds.Y += (bounds.Height - 8) / 2;
 			bounds.Width = bounds.Height = 8;
 			if (e.Node.Nodes.Count != 0) {

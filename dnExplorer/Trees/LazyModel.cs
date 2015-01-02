@@ -25,12 +25,13 @@ namespace dnExplorer.Trees {
 
 		const int STATE_IDLE = 0;
 		const int STATE_LOADING = 1;
-		const int STATE_CANCEL = 2;
-		const int STATE_COMPLETE = 3;
-		const int LOADING_THRESHOLD = 100;
+		const int STATE_SETTING = 2;
+		const int STATE_CANCEL = 3;
+		const int STATE_COMPLETE = 4;
+		const int LOADING_THRESHOLD = 250;
 
 		object loadLock = new object();
-		Task loadChildren;
+		Task<ICollection<IDataModel>> loadChildren;
 		int loadState = STATE_IDLE;
 		ManualResetEvent waitHnd = new ManualResetEvent(false);
 
@@ -55,12 +56,12 @@ namespace dnExplorer.Trees {
 			LoadImmediate();
 		}
 
-		public Task LoadImmediate() {
-			if (loadState == STATE_LOADING)
+		public Task<ICollection<IDataModel>> LoadImmediate() {
+			if (loadState == STATE_LOADING || loadState == STATE_SETTING)
 				return null;
 
 			lock (loadLock) {
-				if (loadState == STATE_LOADING)
+				if (loadState == STATE_LOADING || loadState == STATE_SETTING)
 					return null;
 				if (!HasChildren || Children[0] != NullModel.Instance)
 					return null;
@@ -69,19 +70,28 @@ namespace dnExplorer.Trees {
 
 			waitHnd.Reset();
 
-			loadChildren = Task.Factory.StartNew(PopulateChildrenInternal);
+			loadChildren = Task.Factory.StartNew<ICollection<IDataModel>>(PopulateChildrenInternal);
+
 			if (!waitHnd.WaitOne(LOADING_THRESHOLD)) {
 				lock (loadLock) {
-					using (Children.BeginUpdate()) {
-						Children.Clear();
-						Children.Add(new Loading());
+					if (!waitHnd.WaitOne(0)) {
+						using (Children.BeginUpdate()) {
+							Children.Clear();
+							Children.Add(new Loading());
+						}
+						loadChildren.ContinueWith(SetChildren, TaskScheduler.FromCurrentSynchronizationContext());
+						return loadChildren;
 					}
 				}
+				SetChildren(loadChildren);
 			}
+			else
+				SetChildren(loadChildren);
+
 			return loadChildren;
 		}
 
-		void PopulateChildrenInternal() {
+		ICollection<IDataModel> PopulateChildrenInternal() {
 			ICollection<IDataModel> children;
 			try {
 				children = new List<IDataModel>(PopulateChildren());
@@ -94,11 +104,24 @@ namespace dnExplorer.Trees {
 				};
 			}
 
-			waitHnd.Set();
+			lock (loadLock) {
+				waitHnd.Set();
+			}
+			return children;
+		}
+
+		void SetChildren(Task<ICollection<IDataModel>> task) {
 			lock (loadLock) {
 				if (loadState == STATE_CANCEL)
 					return;
-				if (children.Count > 0x200) {
+
+				loadState = STATE_SETTING;
+				loadChildren = null;
+				while (!task.IsCompleted)
+					Thread.Sleep(10);
+				var models = task.Result;
+
+				if (models.Count > 0x200) {
 					using (Children.BeginUpdate()) {
 						Children.Clear();
 						Children.Add(new Loading());
@@ -106,12 +129,11 @@ namespace dnExplorer.Trees {
 				}
 				using (Children.BeginUpdate()) {
 					Children.Clear();
-					foreach (var child in children)
+					foreach (var child in models)
 						Children.Add(child);
 				}
 				loadState = STATE_COMPLETE;
 			}
-			loadChildren = null;
 		}
 
 		protected abstract IEnumerable<IDataModel> PopulateChildren();

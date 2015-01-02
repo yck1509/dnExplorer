@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using dnExplorer.Nodes;
+using dnExplorer.Models;
 using dnExplorer.Trees;
 using dnExplorer.Views;
 
@@ -40,8 +40,6 @@ namespace dnExplorer {
 
 			PerformLayout();
 			split.SplitterDistance = 200;
-			treeView.BeginUpdate();
-			treeView.EndUpdate();
 		}
 
 		protected override void OnDragOver(DragEventArgs drgevent) {
@@ -59,7 +57,7 @@ namespace dnExplorer {
 
 		void LoadModules(string[] files) {
 			foreach (var module in files) {
-				treeView.Nodes.Add(new ModuleModel(new dnModule(module)).ToNode());
+				treeView.Nodes.Add(new dnModuleModel(new dnModule(module)).ToNode());
 			}
 		}
 

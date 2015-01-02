@@ -10,7 +10,7 @@ namespace dnExplorer.Views {
 	public static class ViewUtils {
 		public static void ShowRawData(IDataModel model, IPEImage image, long begin, long end) {
 			TreeNavigator.Create()
-				.Path<ModuleModel>(m => m.Module.Image == image ? NavigationState.In : NavigationState.Next)
+				.Path<dnModuleModel>(m => m.Module.Image == image ? NavigationState.In : NavigationState.Next)
 				.Path<RawDataModel>(m => NavigationState.Done)
 				.Handler(node => {
 					var targetView = (RawDataView)ViewLocator.LocateView(node.Model);
@@ -21,7 +21,7 @@ namespace dnExplorer.Views {
 
 		public static void ShowToken(IDataModel model, IPEImage image, MDToken token) {
 			TreeNavigator.Create()
-				.Path<ModuleModel>(m => m.Module.Image == image ? NavigationState.In : NavigationState.Next)
+				.Path<dnModuleModel>(m => m.Module.Image == image ? NavigationState.In : NavigationState.Next)
 				.Path<MetaDataModel>(m => NavigationState.In)
 				.Path<MDTablesStreamModel>(m => NavigationState.In)
 				.Path<MDTableHeapModel>(m => NavigationState.Done)
@@ -34,7 +34,7 @@ namespace dnExplorer.Views {
 
 		public static void ShowStream(IDataModel model, IPEImage image, DotNetStream stream, uint begin, uint size) {
 			TreeNavigator.Create()
-				.Path<ModuleModel>(m => m.Module.Image == image ? NavigationState.In : NavigationState.Next)
+				.Path<dnModuleModel>(m => m.Module.Image == image ? NavigationState.In : NavigationState.Next)
 				.Path<MetaDataModel>(m => NavigationState.In)
 				.Path<MDStreamModel>(m => m.Stream == stream ? NavigationState.Done : NavigationState.Next)
 				.Path<MDTablesStreamModel>(m => m.Stream == stream ? NavigationState.Done : NavigationState.Next)

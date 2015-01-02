@@ -4,10 +4,10 @@ using System.Drawing;
 using dnExplorer.Trees;
 
 namespace dnExplorer.Models {
-	public class ModuleModel : LazyModel {
+	public class dnModuleModel : LazyModel {
 		public dnModule Module { get; set; }
 
-		public ModuleModel(dnModule module) {
+		public dnModuleModel(dnModule module) {
 			Module = module;
 			Text = module.Name;
 		}
@@ -30,6 +30,9 @@ namespace dnExplorer.Models {
 
 			if (Module.MetaData != null)
 				yield return new MetaDataModel(Module.MetaData);
+
+			if (Module.ModuleDef != null)
+				yield return new ModuleModel(Module.ModuleDef);
 		}
 
 		public override bool HasIcon {
@@ -37,7 +40,10 @@ namespace dnExplorer.Models {
 		}
 
 		public override void DrawIcon(Graphics g, Rectangle bounds) {
-			g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.module.png"), bounds);
+			if (Module.ModuleDef != null && Module.ModuleDef.Assembly != null)
+				g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.ObjModel.assembly.png"), bounds);
+			else
+				g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.ObjModel.module.png"), bounds);
 		}
 	}
 }

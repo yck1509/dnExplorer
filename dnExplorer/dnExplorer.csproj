@@ -54,12 +54,20 @@
     <Compile Include="Controls\HexViewerContextMenu.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="DisplayNameCreator.cs" />
     <Compile Include="dnlibUtils.cs" />
     <Compile Include="dnModule.cs" />
     <Compile Include="InputBox.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Models\ObjModels\FieldModel.cs" />
+    <Compile Include="Models\ObjModels\EventModel.cs" />
+    <Compile Include="Models\ObjModels\PropertyModel.cs" />
+    <Compile Include="Models\ObjModels\MethodModel.cs" />
+    <Compile Include="Models\ObjModels\TypeModel.cs" />
+    <Compile Include="Models\ObjModels\ModuleModel.cs" />
+    <Compile Include="Models\ObjModels\NamespaceModel.cs" />
     <Compile Include="Models\RawDataModel.cs" />
     <Compile Include="Models\MetaData\MDStreamModel.cs" />
     <Compile Include="Models\MetaData\MetaDataModel.cs" />
@@ -67,7 +75,7 @@
     <Compile Include="Models\MetaData\Streams\MDTablesStreamModel.cs" />
     <Compile Include="Models\MetaData\Tables\MDRowModel.cs" />
     <Compile Include="Models\MetaData\Tables\MDTableModel.cs" />
-    <Compile Include="Models\ModuleModel.cs" />
+    <Compile Include="Models\dnModuleModel.cs" />
     <Compile Include="Models\PE\PECLIModel.cs" />
     <Compile Include="Models\PE\PEDDModel.cs" />
     <Compile Include="Models\PE\PESectionsModel.cs" />
@@ -75,6 +83,7 @@
     <Compile Include="Models\PE\PESectionModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RawString.cs" />
     <Compile Include="Resources\Resources.cs" />
     <Compile Include="Trees\BatchObservableCollection.cs" />
     <Compile Include="Trees\ErrorModel.cs" />
@@ -137,11 +146,6 @@
     <Compile Include="Views\ViewUtils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Icons\module.png" />
-    <EmbeddedResource Include="Resources\Icons\namespace.png" />
-    <EmbeddedResource Include="Resources\Icons\type.png" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\dnlib\src\dnlib.csproj">
       <Project>{FDFC1237-143F-4919-8318-4926901F4639}</Project>
       <Name>dnlib</Name>
@@ -167,6 +171,33 @@
     <EmbeddedResource Include="Resources\Icons\delete.png" />
     <EmbeddedResource Include="Resources\Icons\error.png" />
     <EmbeddedResource Include="Resources\Icons\forward.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\ObjModels\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Icons\ObjModel\assembly.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\constant.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\constructor.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\delegate.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\enum.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\event.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\famasm.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\field.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\interface.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\internal.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\method.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\module.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\namespace.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\override.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\private.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\property.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\protected.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\readonly.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\static.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\type.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\valuetype.png" />
+    <EmbeddedResource Include="Resources\Icons\ObjModel\writeonly.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

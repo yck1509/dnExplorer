@@ -10,7 +10,7 @@ using SR = System.Reflection;
 
 namespace dnExplorer.Views {
 	internal class RowInfoPopulator {
-		static readonly object InvalidValue = "<<INVALID>>\0";
+		static readonly object InvalidValue = "<<<INVALID>>>\0";
 
 		static readonly Func<TablesStream, MDTable, uint, IBinaryReader> getReader;
 

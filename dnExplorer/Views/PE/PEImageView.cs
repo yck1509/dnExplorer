@@ -17,7 +17,7 @@ namespace dnExplorer.Views {
 			var model = (PEImageModel)Model;
 			view.Clear();
 			if (model != null) {
-				view.AddRow("Location", model.Image.FileName ?? "<Unknown>");
+				view.AddRow("Location", new RawString(model.Image.FileName ?? "<Unknown>"));
 				view.AddRow("Machine", model.Image.ImageNTHeaders.FileHeader.Machine);
 				view.AddRow("Characteristics", model.Image.ImageNTHeaders.FileHeader.Characteristics);
 				view.AddRow("AddressOfEntryPoint", model.Image.ImageNTHeaders.OptionalHeader.AddressOfEntryPoint);

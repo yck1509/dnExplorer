@@ -87,7 +87,12 @@ namespace dnExplorer {
 				return;
 			}
 
-			Name = ModuleDef.Name;
+			if (ModuleDef.Assembly != null)
+				Name = ModuleDef.Assembly.Name;
+			else
+				Name = ModuleDef.Name;
+			if (string.IsNullOrEmpty(Name))
+				Name = Path.GetFileName(fileName);
 		}
 
 		public byte[] RawData { get; private set; }

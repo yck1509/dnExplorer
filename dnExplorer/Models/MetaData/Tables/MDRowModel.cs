@@ -46,13 +46,13 @@ namespace dnExplorer.Models {
 		string ReadString(uint offset) {
 			var value = Parent.MetaData.StringsStream.Read(offset);
 			if (value == (UTF8String)null)
-				return "<<INVALID>>";
+				return "<<<INVALID>>>";
 			return Utils.EscapeString(value, true);
 		}
 
 		string ToTokenString(Table table, uint rid) {
 			if (!Parent.Tables.HasTable(table) || Parent.Tables.Get(table).IsInvalidRID(rid))
-				return "<<INVALID>>";
+				return "<<<INVALID>>>";
 
 			return new MDToken(table, rid).ToDescription();
 		}
@@ -60,11 +60,11 @@ namespace dnExplorer.Models {
 		string DecodeToken(CodedToken desc, uint codedToken) {
 			MDToken token;
 			if (!desc.Decode(codedToken, out token))
-				return "<<INVALID>>";
+				return "<<<INVALID>>>";
 
 			if (!Parent.Tables.HasTable(token.Table) ||
 			    Parent.Tables.Get(token.Table).IsInvalidRID(token.Rid))
-				return "<<INVALID>>";
+				return "<<<INVALID>>>";
 
 			return token.ToDescription();
 		}

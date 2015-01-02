@@ -127,7 +127,7 @@ namespace dnExplorer.Controls {
 
 		static string FormatValue(object value) {
 			if (value == null)
-				return "<NULL>";
+				return "<<<NULL>>>";
 			if (value is RVA || value is FileOffset)
 				return ((Enum)value).ToString("X");
 			if (value is Enum)
@@ -143,7 +143,7 @@ namespace dnExplorer.Controls {
 			if (value is UTF8String) {
 				var str = (UTF8String)value;
 				if (str.String == null)
-					return "<<INVALID>>";
+					return "<<<INVALID>>>";
 				return Utils.EscapeString(str.String, false);
 			}
 			if (value is string)

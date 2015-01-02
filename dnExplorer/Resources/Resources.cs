@@ -12,19 +12,24 @@ namespace dnExplorer {
 				return (cache[name] as T);
 			}
 			var res = typeof(Resources).Assembly.GetManifestResourceStream(Main.AppName + ".Resources." + name);
+			T ret;
 			if (typeof(T) == typeof(Stream)) {
-				return res as T;
+				ret = res as T;
 			}
-			if (typeof(T) == typeof(string)) {
-				return new StreamReader(res).ReadToEnd() as T;
+			else if (typeof(T) == typeof(string)) {
+				ret = new StreamReader(res).ReadToEnd() as T;
 			}
-			if (typeof(T) == typeof(Image)) {
-				return Image.FromStream(res) as T;
+			else if (typeof(T) == typeof(Image)) {
+				ret = Image.FromStream(res) as T;
 			}
-			if (typeof(T) == typeof(Icon)) {
-				return new Icon(res) as T;
+			else if (typeof(T) == typeof(Icon)) {
+				ret = new Icon(res) as T;
 			}
-			throw new NotSupportedException();
+			else
+				throw new NotSupportedException();
+
+			cache[name] = ret;
+			return ret;
 		}
 	}
 }
