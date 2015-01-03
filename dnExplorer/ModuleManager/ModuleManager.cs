@@ -2,13 +2,19 @@
 using System.Windows.Forms;
 using dnExplorer.Models;
 using dnExplorer.Trees;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace dnExplorer {
-	internal class ModuleManager : Control {
+	internal class ModuleManager : DockContent {
 		InfoPanel infos;
 		TreeViewX treeView;
 
 		public ModuleManager() {
+			Text = "Modules";
+			Height = 600;
+			CloseButtonVisible = false;
+			CloseButton = false;
+
 			var split = new SplitContainer {
 				Orientation = Orientation.Horizontal,
 				Dock = DockStyle.Fill
@@ -16,7 +22,8 @@ namespace dnExplorer {
 			Controls.Add(split);
 
 			treeView = new TreeViewX {
-				Dock = DockStyle.Fill
+				Dock = DockStyle.Fill,
+				BorderStyle = BorderStyle.None
 			};
 			treeView.AfterSelect += OnNodeSelected;
 			split.Panel1.Controls.Add(treeView);
@@ -26,16 +33,8 @@ namespace dnExplorer {
 			};
 			split.Panel2.Controls.Add(infos);
 
-			bool layouted = false;
-			split.Layout += (sender, e) => {
-				if (layouted)
-					return;
-				if (split.Height > 150)
-					split.SplitterDistance = split.Height - 150;
-				else
-					split.SplitterDistance = split.Height;
-				layouted = true;
-			};
+			split.SplitterDistance = 400;
+			Icon = null;
 		}
 
 		void OnNodeSelected(object sender, TreeViewEventArgs e) {

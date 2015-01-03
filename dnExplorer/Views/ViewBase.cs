@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using dnExplorer.Trees;
 
@@ -6,6 +7,8 @@ namespace dnExplorer.Views {
 	public interface IView {
 		Control ViewControl { get; }
 		object Model { get; set; }
+
+		Icon Icon { get; }
 
 		ContextMenuStrip GetContextMenu();
 	}
@@ -34,6 +37,10 @@ namespace dnExplorer.Views {
 
 		Control IView.ViewControl {
 			get { return this; }
+		}
+
+		public virtual Icon Icon {
+			get { return null; }
 		}
 
 		protected abstract void OnModelUpdated();

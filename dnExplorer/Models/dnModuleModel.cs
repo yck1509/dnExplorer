@@ -55,7 +55,8 @@ namespace dnExplorer.Models {
 		}
 
 		IEnumerable<KeyValuePair<string, string>> IHasInfo.GetInfos() {
-			yield return new KeyValuePair<string, string>("Location", Module.Image.FileName);
+			if (Module.Image != null)
+				yield return new KeyValuePair<string, string>("Location", Module.Image.FileName);
 			yield return new KeyValuePair<string, string>("Size", Module.RawData.Length + " Bytes");
 			if (Module.ModuleDef != null && Module.ModuleDef.Assembly != null) {
 				var asmDef = Module.ModuleDef.Assembly;

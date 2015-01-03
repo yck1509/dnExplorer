@@ -203,8 +203,8 @@ namespace dnExplorer.Trees {
 
 					var nodeHnd = Marshal.ReadIntPtr(m.LParam + IntPtr.Size * 5 + 16);
 					var node = TreeNode.FromHandle(this, nodeHnd);
-					if (node != null && !node.IsVisible)
-						return;
+					//if (node != null && !node.IsVisible)
+					//    return;
 				}
 			}
 

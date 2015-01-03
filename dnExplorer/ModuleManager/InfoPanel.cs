@@ -19,7 +19,7 @@ namespace dnExplorer {
 		public InfoPanel() {
 			content = new Scintilla();
 
-			content.BorderStyle = BorderStyle.None;
+			//content.BorderStyle = BorderStyle.None;
 			content.Folding.IsEnabled = false;
 			foreach (var i in content.Margins)
 				i.Width = 0;

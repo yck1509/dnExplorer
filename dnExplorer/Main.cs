@@ -1,17 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using dnExplorer.Theme;
 using dnExplorer.Views;
 using ScintillaNET;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace dnExplorer {
 	public class Main : Form {
 		public static readonly string AppName = typeof(InputBox).Assembly.GetName().Name;
 
 		ModuleManager modMgr;
-		Panel content;
+		DockPanel dockPanel;
 
 		public Main() {
 			ToolStripManager.Renderer = new VS2010Renderer();
@@ -21,29 +23,28 @@ namespace dnExplorer {
 		}
 
 		void Initialize() {
-			Size = new Size(800, 650);
+			ClientSize = new Size(800, 600);
 			Text = "dnExplorer";
 			AllowDrop = true;
+			IsMdiContainer = true;
 
-			var split = new SplitContainer {
-				Orientation = Orientation.Vertical,
-				Dock = DockStyle.Fill
-			};
-			Controls.Add(split);
-
-			modMgr = new ModuleManager {
-				Dock = DockStyle.Fill
-			};
+			modMgr = new ModuleManager();
 			modMgr.SelectionChanged += OnNodeSelected;
-			split.Panel1.Controls.Add(modMgr);
 
-			content = new Panel {
-				Dock = DockStyle.Fill
+			dockPanel = new DockPanel {
+				Dock = DockStyle.Fill,
+				Theme = new VS2010Theme(),
+				DockLeftPortion = 0.4,
+				DockBottomPortion = 0.4,
+				DocumentStyle = DocumentStyle.DockingMdi,
+				ShowDocumentIcon = true,
+				AllowEndUserDocking = false,
+				AllowEndUserNestedDocking = false
 			};
-			split.Panel2.Controls.Add(content);
+			Controls.Add(dockPanel);
+			modMgr.Show(dockPanel, DockState.DockLeft);
 
 			PerformLayout();
-			split.SplitterDistance = 250;
 		}
 
 		protected override void OnDragOver(DragEventArgs drgevent) {
@@ -65,27 +66,61 @@ namespace dnExplorer {
 			}
 		}
 
-		IView currentView;
+		Dictionary<IView, DockContent> currentViews = new Dictionary<IView, DockContent>();
 
 		void OnNodeSelected(object sender, SelectionChangedEventArgs e) {
-			IView newView;
+			IView[] newViews;
 			if (e.Selection == null)
-				newView = null;
+				newViews = new IView[0];
 			else
-				newView = ViewLocator.LocateViews(e.Selection).SingleOrDefault();
+				newViews = ViewLocator.LocateViews(e.Selection).ToArray();
 
-			if (newView != currentView) {
-				if (currentView != null) {
-					content.Controls.Remove(currentView.ViewControl);
+			var newActualViews = new Dictionary<IView, DockContent>();
+			foreach (var view in newViews) {
+				DockContent content;
+				if (!currentViews.TryGetValue(view, out content)) {
+					content = new DockContent {
+						HideOnClose = true,
+						CloseButtonVisible = false,
+						CloseButton = false
+					};
+					content.DockHandler.ActivateOnShow = false;
+					view.ViewControl.Dock = DockStyle.Fill;
+
+					if (string.IsNullOrEmpty(view.ViewControl.Text))
+						content.Text = e.Selection.Node.Text;
+					else
+						content.Text = view.ViewControl.Text;
+
+					if (view.Icon != null)
+						content.Icon = view.Icon;
+					else {
+						var bmp = new Bitmap(16, 16);
+						using (var g = Graphics.FromImage(bmp))
+							e.Selection.Node.DrawIcon(g, new Rectangle(0, 0, 16, 16));
+						content.Icon = IconCreator.CreateIcon(bmp, 16);
+					}
+
+					content.Controls.Add(view.ViewControl);
 				}
-				currentView = newView;
-				if (currentView != null) {
-					currentView.Model = e.Selection;
-					content.Controls.Add(currentView.ViewControl);
-				}
+				newActualViews.Add(view, content);
 			}
-			else if (currentView != null)
-				currentView.Model = e.Selection;
+
+			dockPanel.SuspendLayout(true);
+
+			foreach (var view in newActualViews) {
+				view.Key.Model = e.Selection;
+				view.Value.Show(dockPanel, DockState.Document);
+			}
+
+			foreach (var prevView in currentViews) {
+				if (!newActualViews.ContainsKey(prevView.Key))
+					prevView.Value.Hide();
+			}
+			currentViews = newActualViews;
+
+			modMgr.Activate();
+			dockPanel.ResumeLayout(true, true);
 		}
 	}
 }

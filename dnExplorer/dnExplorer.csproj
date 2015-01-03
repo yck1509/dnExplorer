@@ -48,8 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\IconCreator.cs" />
     <Compile Include="ModuleManager\ModuleManager.cs">
-      <SubType>Component</SubType>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Controls\GridView.cs">
       <SubType>Component</SubType>
@@ -94,8 +95,34 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\RawString.cs" />
     <Compile Include="Resources\Resources.cs" />
+    <Compile Include="Theme\Indicators.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Indicators.resx</DependentUpon>
+    </Compile>
     <Compile Include="Theme\RoundedRectangle.cs" />
+    <Compile Include="Theme\VS2010AutoHideStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Theme\VS2010AutoHideWindowControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Theme\VS2010DockPaneCaption.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Theme\VS2010DockPaneStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Theme\VS2010DockWindow.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Theme\VS2010Renderer.cs" />
+    <Compile Include="Theme\VS2010SplitterControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Theme\VS2010Theme.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Trees\BatchObservableCollection.cs" />
     <Compile Include="Trees\ErrorModel.cs" />
     <Compile Include="Trees\DataModel.cs" />
@@ -161,9 +188,17 @@
       <Project>{FDFC1237-143F-4919-8318-4926901F4639}</Project>
       <Name>dnlib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\dockpanelsuite\WinFormsUI\WinFormsUI.csproj">
+      <Project>{C75532C4-765B-418E-B09B-46D36B2ABDB1}</Project>
+      <Name>WinFormsUI</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Icons\folder.png" />
+    <EmbeddedResource Include="Theme\Indicators.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Indicators.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Icons\code.png" />
@@ -222,6 +257,14 @@
       <Link>SciLexer.x86.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Theme\Dockindicator_PaneDiamond.png" />
+    <Content Include="Theme\Dockindicator_PaneDiamond_Fill.png" />
+    <Content Include="Theme\Dockindicator_PaneDiamond_Hotspot.png" />
+    <Content Include="Theme\DockIndicator_PanelBottom.png" />
+    <Content Include="Theme\DockIndicator_PanelFill.png" />
+    <Content Include="Theme\DockIndicator_PanelLeft.png" />
+    <Content Include="Theme\DockIndicator_PanelRight.png" />
+    <Content Include="Theme\DockIndicator_PanelTop.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
