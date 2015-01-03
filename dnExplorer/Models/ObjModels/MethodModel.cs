@@ -5,7 +5,7 @@ using dnExplorer.Trees;
 using dnlib.DotNet;
 
 namespace dnExplorer.Models {
-	public class MethodModel : LazyModel {
+	public class MethodModel : LazyModel, IHasInfo {
 		public MethodDef Method { get; set; }
 
 		public MethodModel(MethodDef method) {
@@ -82,6 +82,31 @@ namespace dnExplorer.Models {
 					break;
 			}
 			Text = Utils.EscapeString(DisplayNameCreator.CreateDisplayName(Method), false);
+		}
+
+		string IHasInfo.Header {
+			get { return Utils.EscapeString(Method.FullName, false); }
+		}
+
+		IEnumerable<KeyValuePair<string, string>> IHasInfo.GetInfos() {
+			yield return
+				new KeyValuePair<string, string>("Declaring Type", Utils.EscapeString(Method.DeclaringType.FullName, false));
+			if (Method.DeclaringType.Scope != null)
+				yield return
+					new KeyValuePair<string, string>("Scope", Utils.EscapeString(Method.DeclaringType.Scope.ToString(), false));
+
+			yield return new KeyValuePair<string, string>("Token", Method.MDToken.ToStringRaw());
+			if (Method.RVA != 0) {
+				yield return new KeyValuePair<string, string>("RVA", ((uint)Method.RVA).ToHexString());
+				var fileOffset = ((ModuleDefMD)Method.Module).MetaData.PEImage.ToFileOffset(Method.RVA);
+				yield return new KeyValuePair<string, string>("File Offset", ((uint)fileOffset).ToHexString());
+
+				if (Method.HasBody) {
+					if (Method.Body.LocalVarSigTok != 0)
+						yield return
+							new KeyValuePair<string, string>("LocalVarSigTok", new MDToken(Method.Body.LocalVarSigTok).ToStringRaw());
+				}
+			}
 		}
 	}
 }

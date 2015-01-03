@@ -19,6 +19,10 @@ namespace dnExplorer {
 			return image.CreateStream(section.StartOffset, section.EndOffset - section.StartOffset);
 		}
 
+		public static string ToStringRaw(this MDToken token) {
+			return string.Format("0x{0:x8}", token.Raw);
+		}
+
 		public static string ToDescription(this MDToken token) {
 			return string.Format("[{0} 0x{1:x}]", token.Table, token.Rid);
 		}

@@ -5,7 +5,7 @@ using dnExplorer.Trees;
 using dnlib.DotNet;
 
 namespace dnExplorer.Models {
-	public class FieldModel : LazyModel {
+	public class FieldModel : LazyModel, IHasInfo {
 		public FieldDef Field { get; set; }
 
 		public FieldModel(FieldDef field) {
@@ -84,6 +84,25 @@ namespace dnExplorer.Models {
 					break;
 			}
 			Text = Utils.EscapeString(DisplayNameCreator.CreateDisplayName(Field), false);
+		}
+
+		string IHasInfo.Header {
+			get { return Utils.EscapeString(Field.FullName, false); }
+		}
+
+		IEnumerable<KeyValuePair<string, string>> IHasInfo.GetInfos() {
+			yield return
+				new KeyValuePair<string, string>("Declaring Type", Utils.EscapeString(Field.DeclaringType.FullName, false));
+			if (Field.DeclaringType.Scope != null)
+				yield return
+					new KeyValuePair<string, string>("Scope", Utils.EscapeString(Field.DeclaringType.Scope.ToString(), false));
+
+			yield return new KeyValuePair<string, string>("Token", Field.MDToken.ToStringRaw());
+			yield return new KeyValuePair<string, string>("Field Type", Utils.EscapeString(Field.FieldType.FullName, false));
+
+			if (Field.RVA != 0) {
+				yield return new KeyValuePair<string, string>("RVA", ((uint)Field.RVA).ToHexString());
+			}
 		}
 	}
 }

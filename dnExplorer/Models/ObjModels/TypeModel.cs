@@ -6,7 +6,7 @@ using dnExplorer.Trees;
 using dnlib.DotNet;
 
 namespace dnExplorer.Models {
-	public class TypeModel : LazyModel {
+	public class TypeModel : LazyModel, IHasInfo {
 		public TypeDef Type { get; set; }
 
 		public TypeModel(TypeDef type) {
@@ -109,6 +109,20 @@ namespace dnExplorer.Models {
 					break;
 			}
 			Text = Utils.EscapeString(DisplayNameCreator.CreateDisplayName(Type), false);
+		}
+
+		string IHasInfo.Header {
+			get { return Utils.EscapeString(Type.FullName, false); }
+		}
+
+		IEnumerable<KeyValuePair<string, string>> IHasInfo.GetInfos() {
+			if (Type.DeclaringType != null)
+				yield return
+					new KeyValuePair<string, string>("Declaring Type", Utils.EscapeString(Type.DeclaringType.FullName, false));
+			if (Type.Scope != null)
+				yield return new KeyValuePair<string, string>("Scope", Utils.EscapeString(Type.Scope.ToString(), false));
+
+			yield return new KeyValuePair<string, string>("Token", Type.MDToken.ToStringRaw());
 		}
 	}
 }

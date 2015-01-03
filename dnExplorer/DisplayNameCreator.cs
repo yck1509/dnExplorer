@@ -63,7 +63,7 @@ namespace dnExplorer {
 					else
 						for (int i = 0; i < (int)rank; i++) {
 							if (i != 0)
-								sb.Append(',');
+								sb.Append(", ");
 
 							const int NO_LOWER = int.MinValue;
 							const uint NO_SIZE = uint.MaxValue;
@@ -130,7 +130,7 @@ namespace dnExplorer {
 					foreach (var genArg in typeGenArgs.GetSafeEnumerable()) {
 						i++;
 						if (i != 0)
-							sb.Append(',');
+							sb.Append(", ");
 						CreateDisplayName(sb, recu, genArg);
 					}
 					sb.Append('>');

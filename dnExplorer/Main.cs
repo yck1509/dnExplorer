@@ -5,16 +5,19 @@ using dnExplorer.Models;
 using dnExplorer.Theme;
 using dnExplorer.Trees;
 using dnExplorer.Views;
+using ScintillaNET;
 
 namespace dnExplorer {
 	public class Main : Form {
 		public static readonly string AppName = typeof(InputBox).Assembly.GetName().Name;
 
+		InfoPanel infos;
 		TreeViewX treeView;
 		Panel content;
 
 		public Main() {
 			ToolStripManager.Renderer = new VS2010Renderer();
+			Scintilla.SetModulePath(IntPtr.Size == 4 ? @"SciLexer.x86.dll" : @"SciLexer.x64.dll");
 
 			Initialize();
 		}
@@ -30,11 +33,22 @@ namespace dnExplorer {
 			};
 			Controls.Add(split);
 
+			var split2 = new SplitContainer {
+				Orientation = Orientation.Horizontal,
+				Dock = DockStyle.Fill
+			};
+			split.Panel1.Controls.Add(split2);
+
 			treeView = new TreeViewX {
 				Dock = DockStyle.Fill
 			};
 			treeView.AfterSelect += OnNodeSelected;
-			split.Panel1.Controls.Add(treeView);
+			split2.Panel1.Controls.Add(treeView);
+
+			infos = new InfoPanel {
+				Dock = DockStyle.Fill
+			};
+			split2.Panel2.Controls.Add(infos);
 
 			content = new Panel {
 				Dock = DockStyle.Fill
@@ -42,7 +56,8 @@ namespace dnExplorer {
 			split.Panel2.Controls.Add(content);
 
 			PerformLayout();
-			split.SplitterDistance = 200;
+			split.SplitterDistance = 250;
+			split2.SplitterDistance = split2.Height - 150;
 		}
 
 		protected override void OnDragOver(DragEventArgs drgevent) {
@@ -87,6 +102,11 @@ namespace dnExplorer {
 			}
 			else if (currentView != null)
 				currentView.Model = newNode.Model;
+
+			if (newNode.Model is IHasInfo)
+				infos.SetInfo((IHasInfo)newNode.Model);
+			else
+				infos.Clear();
 		}
 	}
 }

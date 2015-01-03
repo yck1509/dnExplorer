@@ -6,7 +6,7 @@ using dnExplorer.Trees;
 using dnlib.DotNet;
 
 namespace dnExplorer.Models {
-	public class EventModel : LazyModel {
+	public class EventModel : LazyModel, IHasInfo {
 		public EventDef Event { get; set; }
 
 		public EventModel(EventDef evnt) {
@@ -79,6 +79,21 @@ namespace dnExplorer.Models {
 					break;
 			}
 			Text = Utils.EscapeString(DisplayNameCreator.CreateDisplayName(Event), false);
+		}
+
+		string IHasInfo.Header {
+			get { return Utils.EscapeString(Event.FullName, false); }
+		}
+
+		IEnumerable<KeyValuePair<string, string>> IHasInfo.GetInfos() {
+			yield return
+				new KeyValuePair<string, string>("Declaring Type", Utils.EscapeString(Event.DeclaringType.FullName, false));
+			if (Event.DeclaringType.Scope != null)
+				yield return
+					new KeyValuePair<string, string>("Scope", Utils.EscapeString(Event.DeclaringType.Scope.ToString(), false));
+
+			yield return new KeyValuePair<string, string>("Token", Event.MDToken.ToStringRaw());
+			yield return new KeyValuePair<string, string>("Event Type", Utils.EscapeString(Event.EventType.FullName, false));
 		}
 	}
 }

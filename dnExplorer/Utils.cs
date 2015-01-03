@@ -124,5 +124,13 @@ namespace dnExplorer {
 			}
 			return 4;
 		}
+
+		public static string ToHexString(this byte[] buffer) {
+			return BitConverter.ToString(buffer).Replace("-", "");
+		}
+
+		public static string ToHexString(this uint value) {
+			return string.Format("0x{0:x8}", value);
+		}
 	}
 }

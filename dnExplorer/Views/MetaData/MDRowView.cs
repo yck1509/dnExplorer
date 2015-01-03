@@ -62,7 +62,7 @@ namespace dnExplorer.Views {
 		static void CopyTokenRaw(object sender, EventArgs e) {
 			var model = sender.GetContextMenuModel<MDRowModel>();
 			var token = new MDToken(model.Parent.MDTable.Table, model.Rid);
-			Clipboard.SetText(token.Raw.ToString("X8"));
+			Clipboard.SetText(token.Raw.ToString("x8"));
 		}
 	}
 }

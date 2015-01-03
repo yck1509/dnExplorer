@@ -36,6 +36,9 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ScintillaNET">
+      <HintPath>..\libs\ScintillaNET.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -57,6 +60,9 @@
     <Compile Include="DisplayNameCreator.cs" />
     <Compile Include="dnlibUtils.cs" />
     <Compile Include="dnModule.cs" />
+    <Compile Include="InfoPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="InputBox.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
@@ -203,6 +209,14 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Icons\check.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SciLexer.x64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SciLexer.x86.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
