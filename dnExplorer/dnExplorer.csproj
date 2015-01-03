@@ -48,6 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ModuleManager\ModuleManager.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\GridView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -57,10 +60,10 @@
     <Compile Include="Controls\HexViewerContextMenu.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="DisplayNameCreator.cs" />
-    <Compile Include="dnlibUtils.cs" />
+    <Compile Include="Helpers\DisplayNameCreator.cs" />
+    <Compile Include="Helpers\dnlibUtils.cs" />
     <Compile Include="dnModule.cs" />
-    <Compile Include="InfoPanel.cs">
+    <Compile Include="ModuleManager\InfoPanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="InputBox.cs" />
@@ -89,7 +92,7 @@
     <Compile Include="Models\PE\PESectionModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RawString.cs" />
+    <Compile Include="Helpers\RawString.cs" />
     <Compile Include="Resources\Resources.cs" />
     <Compile Include="Theme\RoundedRectangle.cs" />
     <Compile Include="Theme\VS2010Renderer.cs" />
@@ -106,7 +109,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Trees\Utils.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="Helpers\Utils.cs" />
     <Compile Include="Views\MetaData\MDRowView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -211,10 +214,12 @@
     <EmbeddedResource Include="Resources\Icons\check.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SciLexer.x64.dll">
+    <Content Include="..\libs\SciLexer.x64.dll">
+      <Link>SciLexer.x64.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SciLexer.x86.dll">
+    <Content Include="..\libs\SciLexer.x86.dll">
+      <Link>SciLexer.x86.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
