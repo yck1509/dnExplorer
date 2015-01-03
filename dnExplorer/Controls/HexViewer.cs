@@ -171,6 +171,9 @@ namespace dnExplorer.Controls {
 		}
 
 		public HitTestResult HitTest(Point pt) {
+			if (stream == null)
+				return new HitTestResult(HitType.None, 0);
+
 			EnsureFontInfo();
 
 			var visibleLines = (ClientSize.Height - PAD_Y * 2 - 4) / charSize.Height;

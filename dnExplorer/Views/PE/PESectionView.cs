@@ -5,7 +5,7 @@ using dnExplorer.Models;
 using dnlib.IO;
 
 namespace dnExplorer.Views {
-	public class PESectionView : ViewBase {
+	public class PESectionView : ViewBase<PESectionModel> {
 		HexViewer viewer;
 
 		public PESectionView() {
@@ -19,27 +19,24 @@ namespace dnExplorer.Views {
 		}
 
 		protected override void OnModelUpdated() {
-			var model = (PESectionModel)Model;
-			if (model == null) {
+			if (Model == null) {
 				viewer.Stream = null;
 			}
 			else {
-				var offset = model.Section.PointerToRawData;
-				var size = model.Section.SizeOfRawData;
-				viewer.Stream = model.Image.CreateStream((FileOffset)offset, size);
+				var offset = Model.Section.PointerToRawData;
+				var size = Model.Section.SizeOfRawData;
+				viewer.Stream = Model.Image.CreateStream((FileOffset)offset, size);
 			}
 		}
 
 		void OnShowData(object sender, EventArgs e) {
-			var model = (PESectionModel)Model;
-
-			long offset = model.Section.PointerToRawData;
-			long size = model.Section.SizeOfRawData;
+			long offset = Model.Section.PointerToRawData;
+			long size = Model.Section.SizeOfRawData;
 			if (viewer.HasSelection) {
 				offset += viewer.SelectionStart;
 				size = viewer.SelectionSize;
 			}
-			ViewUtils.ShowRawData(Model, model.Image, offset, offset + size - 1);
+			ViewUtils.ShowRawData(Model, Model.Image, offset, offset + size - 1);
 		}
 	}
 }

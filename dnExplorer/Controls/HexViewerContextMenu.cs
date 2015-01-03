@@ -77,9 +77,11 @@ namespace dnExplorer.Controls {
 		}
 
 		void UpdateItems() {
-			copy.Enabled = hexView.HasSelection;
-			selMarkBegin.Enabled = hexView.HasSelection;
-			selMarkEnd.Enabled = hexView.HasSelection;
+			copy.Enabled = hexView.HasSelection && hexView.Stream != null;
+			selAll.Enabled = hexView.Stream != null;
+			selMarkBegin.Enabled = hexView.HasSelection && hexView.Stream != null;
+			selMarkEnd.Enabled = hexView.HasSelection && hexView.Stream != null;
+			gotoOffset.Enabled = hexView.Stream != null;
 		}
 
 		protected override void OnOpening(CancelEventArgs e) {

@@ -5,7 +5,7 @@ using dnExplorer.Controls;
 using dnExplorer.Models;
 
 namespace dnExplorer.Views {
-	public class PEDDView : ViewBase {
+	public class PEDDView : ViewBase<PEDDModel> {
 		GridView view;
 		ContextMenuStrip ctxMenu;
 
@@ -43,12 +43,11 @@ namespace dnExplorer.Views {
 		};
 
 		protected override void OnModelUpdated() {
-			var model = (PEDDModel)Model;
 			view.Clear();
-			if (model != null) {
+			if (Model != null) {
 				for (int i = 0; i < 0x10; i++) {
-					var dir = model.Image.ImageNTHeaders.OptionalHeader.DataDirectories[i];
-					var section = model.Image.ToImageSectionHeader(dir.VirtualAddress);
+					var dir = Model.Image.ImageNTHeaders.OptionalHeader.DataDirectories[i];
+					var section = Model.Image.ToImageSectionHeader(dir.VirtualAddress);
 
 					GridView.Cell sectionCell;
 					if (dir.VirtualAddress != 0 && section == null)
@@ -65,17 +64,16 @@ namespace dnExplorer.Views {
 
 		void OnShowData(object sender, EventArgs e) {
 			var row = view.SelectedCells[0].RowIndex;
-			var model = (PEDDModel)Model;
-			var dd = model.Image.ImageNTHeaders.OptionalHeader.DataDirectories[row - 1];
+			var dd = Model.Image.ImageNTHeaders.OptionalHeader.DataDirectories[row - 1];
 
-			var section = model.Image.ToImageSectionHeader(dd.VirtualAddress);
+			var section = Model.Image.ToImageSectionHeader(dd.VirtualAddress);
 			if (section == null) {
 				MessageBox.Show("Invalid address.", Main.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
-			var offset = (long)model.Image.ToFileOffset(dd.VirtualAddress);
-			ViewUtils.ShowRawData(Model, model.Image, offset, offset + dd.Size - 1);
+			var offset = (long)Model.Image.ToFileOffset(dd.VirtualAddress);
+			ViewUtils.ShowRawData(Model, Model.Image, offset, offset + dd.Size - 1);
 		}
 	}
 }

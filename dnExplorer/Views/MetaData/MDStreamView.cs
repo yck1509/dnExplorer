@@ -4,7 +4,7 @@ using dnExplorer.Controls;
 using dnExplorer.Models;
 
 namespace dnExplorer.Views {
-	public class MDStreamView : ViewBase {
+	public class MDStreamView : ViewBase<MDStreamModel> {
 		HexViewer viewer;
 
 		public MDStreamView() {
@@ -18,25 +18,22 @@ namespace dnExplorer.Views {
 		}
 
 		protected override void OnModelUpdated() {
-			var model = (MDStreamModel)Model;
-			if (model == null) {
+			if (Model == null) {
 				viewer.Stream = null;
 			}
 			else {
-				viewer.Stream = model.Stream.GetClonedImageStream();
+				viewer.Stream = Model.Stream.GetClonedImageStream();
 			}
 		}
 
 		void OnShowData(object sender, EventArgs e) {
-			var model = (MDStreamModel)Model;
-
-			long begin = (long)model.Stream.StartOffset;
-			long end = (long)model.Stream.EndOffset;
+			long begin = (long)Model.Stream.StartOffset;
+			long end = (long)Model.Stream.EndOffset;
 			if (viewer.HasSelection) {
 				end = begin + viewer.SelectionEnd;
 				begin += viewer.SelectionStart;
 			}
-			ViewUtils.ShowRawData(Model, model.MetaData.PEImage, begin, end);
+			ViewUtils.ShowRawData(Model, Model.MetaData.PEImage, begin, end);
 		}
 
 		public void SelectHexRange(uint begin, uint end) {

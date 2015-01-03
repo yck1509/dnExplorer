@@ -3,7 +3,7 @@ using dnExplorer.Controls;
 using dnExplorer.Models;
 
 namespace dnExplorer.Views {
-	public class PESectionsView : ViewBase {
+	public class PESectionsView : ViewBase<PESectionsModel> {
 		GridView view;
 
 		public PESectionsView() {
@@ -22,10 +22,9 @@ namespace dnExplorer.Views {
 		}
 
 		protected override void OnModelUpdated() {
-			var model = (PESectionsModel)Model;
 			view.Clear();
-			if (model != null) {
-				foreach (var section in model.Image.ImageSectionHeaders)
+			if (Model != null) {
+				foreach (var section in Model.Image.ImageSectionHeaders)
 					view.AddRow(
 						section.DisplayName,
 						section.VirtualSize,

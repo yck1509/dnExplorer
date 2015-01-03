@@ -129,7 +129,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Views\MetaData\RowInfoPopulator.cs" />
-    <Compile Include="Views\ModuleView.cs">
+    <Compile Include="Views\dnModuleView.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Views\RawDataView.cs">

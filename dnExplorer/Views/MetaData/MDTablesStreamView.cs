@@ -6,7 +6,7 @@ using dnExplorer.Controls;
 using dnExplorer.Models;
 
 namespace dnExplorer.Views {
-	public class MDTablesStreamView : ViewBase {
+	public class MDTablesStreamView : ViewBase<MDTablesStreamModel> {
 		GridView gridView;
 		HexViewer hexView;
 
@@ -35,12 +35,11 @@ namespace dnExplorer.Views {
 		}
 
 		protected override void OnModelUpdated() {
-			var model = (MDTablesStreamModel)Model;
 			gridView.Clear();
-			if (model != null) {
+			if (Model != null) {
 				hexView.ClearHighLight();
 
-				var tbls = model.Stream;
+				var tbls = Model.Stream;
 				var ranges = new List<Tuple<uint, uint>>();
 				uint relBase = (uint)tbls.StartOffset;
 				uint offset = 0;
@@ -85,15 +84,13 @@ namespace dnExplorer.Views {
 		}
 
 		void OnShowData(object sender, EventArgs e) {
-			var model = (MDTablesStreamModel)Model;
-
-			long begin = (long)model.Stream.StartOffset;
-			long end = (long)model.Stream.EndOffset;
+			long begin = (long)Model.Stream.StartOffset;
+			long end = (long)Model.Stream.EndOffset;
 			if (hexView.HasSelection) {
 				end = begin + hexView.SelectionEnd;
 				begin += hexView.SelectionStart;
 			}
-			ViewUtils.ShowRawData(Model, model.MetaData.PEImage, begin, end);
+			ViewUtils.ShowRawData(Model, Model.MetaData.PEImage, begin, end);
 		}
 
 		public void SelectHexRange(uint begin, uint end) {

@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Forms;
 using dnExplorer.Models;
 
 namespace dnExplorer.Views {
-	public class MDTableView : ViewBase {
+	public class MDTableView : ViewBase<MDTableModel> {
 		protected override void OnModelUpdated() {
 		}
 
@@ -22,12 +23,12 @@ namespace dnExplorer.Views {
 			ctxMenu.Items.Add(new ToolStripSeparator());
 			ctxMenu.Opening += (sender, e) => {
 				var model = sender.GetContextMenuModel<MDTableModel>();
-				var view = (MDTableHeapView)ViewLocator.LocateView(model.Parent);
+				var view = (MDTableHeapView)ViewLocator.LocateViews(model.Parent).Single();
 				ToolStripManager.Merge(view.GetContextMenu(), (ContextMenuStrip)sender);
 			};
 			ctxMenu.Closed += (sender, e) => {
 				var model = sender.GetContextMenuModel<MDTableModel>();
-				var view = (MDTableHeapView)ViewLocator.LocateView(model.Parent);
+				var view = (MDTableHeapView)ViewLocator.LocateViews(model.Parent).Single();
 				ToolStripManager.RevertMerge((ContextMenuStrip)sender, view.GetContextMenu());
 			};
 
@@ -36,7 +37,7 @@ namespace dnExplorer.Views {
 
 		static void ShowHex(object sender, EventArgs e) {
 			var model = sender.GetContextMenuModel<MDTableModel>();
-			var view = (MDTableHeapView)ViewLocator.LocateView(model.Parent);
+			var view = (MDTableHeapView)ViewLocator.LocateViews(model.Parent).Single();
 
 			var offset = model.MDTable.StartOffset - model.Tables.StartOffset;
 			var size = model.MDTable.Rows * model.MDTable.RowSize;

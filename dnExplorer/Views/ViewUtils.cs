@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Forms;
 using dnExplorer.Models;
 using dnExplorer.Trees;
@@ -13,7 +14,7 @@ namespace dnExplorer.Views {
 				.Path<dnModuleModel>(m => m.Module.Image == image ? NavigationState.In : NavigationState.Next)
 				.Path<RawDataModel>(m => NavigationState.Done)
 				.Handler(node => {
-					var targetView = (RawDataView)ViewLocator.LocateView(node.Model);
+					var targetView = (RawDataView)ViewLocator.LocateViews(node.Model).Single();
 					targetView.Select(begin, end);
 				})
 				.Navigate(model);
@@ -26,7 +27,7 @@ namespace dnExplorer.Views {
 				.Path<MDTablesStreamModel>(m => NavigationState.In)
 				.Path<MDTableHeapModel>(m => NavigationState.Done)
 				.Handler(node => {
-					var targetView = (MDTableHeapView)ViewLocator.LocateView(node.Model);
+					var targetView = (MDTableHeapView)ViewLocator.LocateViews(node.Model).Single();
 					targetView.SelectItem(token);
 				})
 				.Navigate(model);
@@ -40,11 +41,11 @@ namespace dnExplorer.Views {
 				.Path<MDTablesStreamModel>(m => m.Stream == stream ? NavigationState.Done : NavigationState.Next)
 				.Handler(node => {
 					if (node.Model is MDStreamModel) {
-						var targetView = (MDStreamView)ViewLocator.LocateView(node.Model);
+						var targetView = (MDStreamView)ViewLocator.LocateViews(node.Model).Single();
 						targetView.SelectHexRange(begin, begin + size - 1);
 					}
 					else if (node.Model is MDTablesStreamModel) {
-						var targetView = (MDTablesStreamView)ViewLocator.LocateView(node.Model);
+						var targetView = (MDTablesStreamView)ViewLocator.LocateViews(node.Model).Single();
 						targetView.SelectHexRange(begin, begin + size - 1);
 					}
 				})

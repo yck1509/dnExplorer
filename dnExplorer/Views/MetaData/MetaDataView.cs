@@ -6,7 +6,7 @@ using dnExplorer.Controls;
 using dnExplorer.Models;
 
 namespace dnExplorer.Views {
-	public class MetaDataView : ViewBase {
+	public class MetaDataView : ViewBase<MetaDataModel> {
 		GridView hdrGridView;
 		GridView strGridView;
 		HexViewer hexView;
@@ -58,12 +58,11 @@ namespace dnExplorer.Views {
 			if (strGridView.SelectedCells.Count == 0)
 				offset = size = name = "";
 			else {
-				var model = (MetaDataModel)Model;
 				var cell = strGridView.SelectedCells[0];
-				if (cell.RowIndex <= 1 || cell.RowIndex - 2 >= model.MetaData.MetaDataHeader.Streams)
+				if (cell.RowIndex <= 1 || cell.RowIndex - 2 >= Model.MetaData.MetaDataHeader.Streams)
 					offset = size = name = "";
 				else {
-					var hdr = model.MetaData.MetaDataHeader.StreamHeaders[cell.RowIndex - 2];
+					var hdr = Model.MetaData.MetaDataHeader.StreamHeaders[cell.RowIndex - 2];
 					uint hdrOffset = (uint)hdr.StartOffset;
 					offset = hdrOffset + 0;
 					size = hdrOffset + 4;
@@ -76,10 +75,10 @@ namespace dnExplorer.Views {
 			strGridView[2, 1].Value = name;
 		}
 
-		void PopulateMDHeader(MetaDataModel model) {
+		void PopulateMDHeader() {
 			hexView.ClearHighLight();
 
-			var header = model.MetaData.MetaDataHeader;
+			var header = Model.MetaData.MetaDataHeader;
 			var ranges = new List<Tuple<uint, uint>>();
 			uint relBase = (uint)header.StartOffset;
 			uint offset = 0;
@@ -103,23 +102,23 @@ namespace dnExplorer.Views {
 				header.VersionString);
 
 			hdrGridView.AddRow("Flags", ranges.IncrementOffset(relBase, ref offset, 1),
-				model.MetaData.MetaDataHeader.Flags);
+				header.Flags);
 
 			hdrGridView.AddRow("Reserved", ranges.IncrementOffset(relBase, ref offset, 1),
-				model.MetaData.MetaDataHeader.Reserved2);
+				header.Reserved2);
 
 			hdrGridView.AddRow("NumberOfStreams", ranges.IncrementOffset(relBase, ref offset, 2),
-				model.MetaData.MetaDataHeader.Streams);
+				header.Streams);
 
 			hexView.AddHighLights(ranges, Color.Red, Color.Blue);
 		}
 
-		void PopulateStreamHeader(MetaDataModel model) {
+		void PopulateStreamHeader() {
 			strGridView.AddRow(new GridView.Cell("", true), new GridView.Cell("", true), new GridView.Cell("", true));
 
 			var ranges = new List<Tuple<uint, uint>>();
-			var relBase = (uint)model.MetaData.MetaDataHeader.StartOffset;
-			foreach (var stream in model.MetaData.MetaDataHeader.StreamHeaders) {
+			var relBase = (uint)Model.MetaData.MetaDataHeader.StartOffset;
+			foreach (var stream in Model.MetaData.MetaDataHeader.StreamHeaders) {
 				strGridView.AddRow(stream.Offset, stream.StreamSize, stream.Name);
 				var offset = (uint)stream.StartOffset - relBase;
 				ranges.Add(Tuple.Create(offset, offset + 8));
@@ -129,21 +128,19 @@ namespace dnExplorer.Views {
 		}
 
 		protected override void OnModelUpdated() {
-			var model = (MetaDataModel)Model;
 			hdrGridView.Clear();
 			strGridView.Clear();
-			if (model != null) {
-				PopulateMDHeader(model);
-				PopulateStreamHeader(model);
-				hexView.Stream = model.MetaData.PEImage.CreateStream(model.MetaData.MetaDataHeader);
+			if (Model != null) {
+				PopulateMDHeader();
+				PopulateStreamHeader();
+				hexView.Stream = Model.MetaData.PEImage.CreateStream(Model.MetaData.MetaDataHeader);
 			}
 			else
 				hexView.Stream = null;
 		}
 
 		void OnShowData(object sender, EventArgs e) {
-			var model = (MetaDataModel)Model;
-			var mdHeader = model.MetaData.MetaDataHeader;
+			var mdHeader = Model.MetaData.MetaDataHeader;
 
 			long begin = (long)mdHeader.StartOffset;
 			long end = (long)mdHeader.EndOffset;
@@ -151,7 +148,7 @@ namespace dnExplorer.Views {
 				end = begin + hexView.SelectionEnd;
 				begin += hexView.SelectionStart;
 			}
-			ViewUtils.ShowRawData(Model, model.MetaData.PEImage, begin, end);
+			ViewUtils.ShowRawData(Model, Model.MetaData.PEImage, begin, end);
 		}
 	}
 }

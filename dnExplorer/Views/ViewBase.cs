@@ -3,14 +3,21 @@ using System.Windows.Forms;
 using dnExplorer.Trees;
 
 namespace dnExplorer.Views {
-	public abstract class ViewBase : Control {
-		IDataModel model;
+	public interface IView {
+		Control ViewControl { get; }
+		object Model { get; set; }
+
+		ContextMenuStrip GetContextMenu();
+	}
+
+	public abstract class ViewBase<TModel> : Control, IView where TModel : class, IDataModel {
+		TModel model;
 
 		public ViewBase() {
 			Dock = DockStyle.Fill;
 		}
 
-		public IDataModel Model {
+		public TModel Model {
 			get { return model; }
 			set {
 				if (model != value) {
@@ -20,10 +27,23 @@ namespace dnExplorer.Views {
 			}
 		}
 
+		object IView.Model {
+			get { return Model; }
+			set { Model = (TModel)value; }
+		}
+
+		Control IView.ViewControl {
+			get { return this; }
+		}
+
 		protected abstract void OnModelUpdated();
 
 		protected internal virtual ContextMenuStrip GetContextMenu() {
 			return null;
+		}
+
+		ContextMenuStrip IView.GetContextMenu() {
+			return GetContextMenu();
 		}
 	}
 }

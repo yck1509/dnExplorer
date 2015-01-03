@@ -1,50 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using dnExplorer.Models;
+using System.Linq;
 using dnExplorer.Trees;
 
 namespace dnExplorer.Views {
 	public class ViewLocator {
-		static readonly Dictionary<Type, ViewBase> views = new Dictionary<Type, ViewBase>();
+		static ViewLocator() {
+			viewMap = new Dictionary<Type, IList<IView>>();
+			foreach (var type in typeof(IView).Assembly.GetTypes()) {
+				if (!type.IsAbstract && typeof(IView).IsAssignableFrom(type)) {
+					var baseType = type.BaseType;
 
-		public static ViewBase LocateView(IDataModel model) {
-			ViewBase view;
-			if (!views.TryGetValue(model.GetType(), out view)) {
-				if (model is dnModuleModel)
-					view = new ModuleView();
+					if (baseType != null && baseType.IsGenericType &&
+					    baseType.GetGenericTypeDefinition() == typeof(ViewBase<>)) {
+						var modelType = baseType.GetGenericArguments()[0];
+						var view = (IView)Activator.CreateInstance(type);
 
-				else if (model is RawDataModel)
-					view = new RawDataView();
-
-				else if (model is PEImageModel)
-					view = new PEImageView();
-				else if (model is PESectionsModel)
-					view = new PESectionsView();
-				else if (model is PESectionModel)
-					view = new PESectionView();
-				else if (model is PEDDModel)
-					view = new PEDDView();
-				else if (model is PECLIModel)
-					view = new PECLIView();
-
-				else if (model is MetaDataModel)
-					view = new MetaDataView();
-				else if (model is MDStreamModel)
-					view = new MDStreamView();
-				else if (model is MDTablesStreamModel)
-					view = new MDTablesStreamView();
-				else if (model is MDTableHeapModel)
-					view = new MDTableHeapView();
-				else if (model is MDTableModel)
-					view = new MDTableView();
-				else if (model is MDRowModel)
-					view = new MDRowView();
-
-				else
-					view = null;
-				views[model.GetType()] = view;
+						viewMap.AddListEntry(modelType, view);
+					}
+				}
 			}
-			return view;
+		}
+
+		static readonly Dictionary<Type, IList<IView>> viewMap;
+
+		public static IEnumerable<IView> LocateViews(IDataModel model) {
+			IList<IView> views;
+			if (!viewMap.TryGetValue(model.GetType(), out views))
+				return Enumerable.Empty<IView>();
+			return views;
 		}
 	}
 }

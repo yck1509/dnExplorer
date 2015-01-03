@@ -23,13 +23,15 @@ namespace dnExplorer.Trees {
 				if (TreeView == null)
 					return null;
 
-				var view = ViewLocator.LocateView(Model);
-				if (view == null)
-					return null;
-
-				var ctxMenu = view.GetContextMenu();
-				if (ctxMenu != null)
-					ctxMenu.Tag = this;
+				var views = ViewLocator.LocateViews(Model);
+				ContextMenuStrip ctxMenu = null;
+				foreach (var view in views) {
+					ctxMenu = view.GetContextMenu();
+					if (ctxMenu != null) {
+						ctxMenu.Tag = this;
+						break;
+					}
+				}
 				return ctxMenu;
 			}
 			set { throw new NotSupportedException(); }

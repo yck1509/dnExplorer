@@ -132,5 +132,12 @@ namespace dnExplorer {
 		public static string ToHexString(this uint value) {
 			return string.Format("0x{0:x8}", value);
 		}
+
+		public static void AddListEntry<TKey, TValue>(this IDictionary<TKey, IList<TValue>> self, TKey key, TValue value) {
+			IList<TValue> list;
+			if (!self.TryGetValue(key, out list))
+				self.Add(key, list = new List<TValue>());
+			list.Add(value);
+		}
 	}
 }

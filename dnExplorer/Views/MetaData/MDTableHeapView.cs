@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using dnExplorer.Controls;
 using dnExplorer.Models;
@@ -9,7 +10,7 @@ using dnlib.DotNet;
 using dnlib.DotNet.MD;
 
 namespace dnExplorer.Views {
-	public class MDTableHeapView : ViewBase {
+	public class MDTableHeapView : ViewBase<MDTableHeapModel> {
 		TreeViewX treeView;
 		GridView gridView;
 		HexViewer hexView;
@@ -60,7 +61,7 @@ namespace dnExplorer.Views {
 		}
 
 		public void SelectItem(MDToken token) {
-			var table = ((MDTableHeapModel)Model).Stream.Get(token.Table);
+			var table = Model.Stream.Get(token.Table);
 			var rid = token.Rid;
 			if (table == null || !table.IsValidRID(rid)) {
 				MessageBox.Show("Invalid token.", Main.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -78,19 +79,18 @@ namespace dnExplorer.Views {
 		}
 
 		void UpdateTreeView(IMetaData metadata, TablesStream stream) {
-			var model = (MDTableHeapModel)Model;
 			for (int i = 0; i < 0x40; i++) {
 				var table = (Table)i;
 				if (stream.HasTable(table)) {
 					var mdTable = stream.Get(table);
 					if (mdTable.Rows > 0)
-						treeView.Nodes.Add(new MDTableModel(model, metadata, stream, mdTable).ToNode());
+						treeView.Nodes.Add(new MDTableModel(Model, metadata, stream, mdTable).ToNode());
 				}
 			}
 		}
 
 		uint CalculateTableRowsOffset(Table table) {
-			var tbls = ((MDTableHeapModel)Model).Stream;
+			var tbls = Model.Stream;
 			uint offset = 24;
 
 			var valid = tbls.ValidMask;
@@ -110,7 +110,7 @@ namespace dnExplorer.Views {
 			if (hls.TryGetValue(table, out ret))
 				return ret;
 
-			var tbls = ((MDTableHeapModel)Model).Stream;
+			var tbls = Model.Stream;
 			var mdTable = tbls.Get(table);
 			ret = new HexViewer.HighLight[mdTable.Rows + 1];
 
@@ -137,7 +137,7 @@ namespace dnExplorer.Views {
 				hexView.SetHighLights(GetHighLights(mdTable.Table));
 
 				if (followInHex) {
-					var tbls = ((MDTableHeapModel)Model).Stream;
+					var tbls = Model.Stream;
 					var begin = mdTable.StartOffset - tbls.StartOffset;
 					var end = mdTable.EndOffset - tbls.StartOffset;
 					hexView.Select(begin, end);
@@ -168,19 +168,17 @@ namespace dnExplorer.Views {
 		}
 
 		protected override void OnModelUpdated() {
-			var model = (MDTableHeapModel)Model;
-
 			treeView.BeginUpdate();
 			treeView.Nodes.Clear();
 			hls.Clear();
 
 			gridView.Clear();
-			if (model != null) {
-				UpdateTreeView(model.MetaData, model.Stream);
+			if (Model != null) {
+				UpdateTreeView(Model.MetaData, Model.Stream);
 				treeView.ContextMenuStrip.Tag = Model;
 
 				hexView.ClearHighLight();
-				hexView.Stream = model.Stream.GetClonedImageStream();
+				hexView.Stream = Model.Stream.GetClonedImageStream();
 			}
 			else
 				hexView.Stream = null;
@@ -189,15 +187,13 @@ namespace dnExplorer.Views {
 		}
 
 		void OnShowData(object sender, EventArgs e) {
-			var model = (MDTableHeapModel)Model;
-
-			long begin = (long)model.Stream.StartOffset;
-			long end = (long)model.Stream.EndOffset;
+			long begin = (long)Model.Stream.StartOffset;
+			long end = (long)Model.Stream.EndOffset;
 			if (hexView.HasSelection) {
 				end = begin + hexView.SelectionEnd;
 				begin += hexView.SelectionStart;
 			}
-			ViewUtils.ShowRawData(Model, model.MetaData.PEImage, begin, end);
+			ViewUtils.ShowRawData(Model, Model.MetaData.PEImage, begin, end);
 		}
 
 		static ContextMenuStrip ctxMenu;
@@ -233,7 +229,7 @@ namespace dnExplorer.Views {
 				}
 			}
 
-			view = (MDTableHeapView)ViewLocator.LocateView(model);
+			view = (MDTableHeapView)ViewLocator.LocateViews(model).Single();
 		}
 
 		static void GotoToken(object sender, EventArgs e) {

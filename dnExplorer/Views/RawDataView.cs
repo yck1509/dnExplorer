@@ -4,7 +4,7 @@ using dnExplorer.Models;
 using dnlib.IO;
 
 namespace dnExplorer.Views {
-	public class RawDataView : ViewBase {
+	public class RawDataView : ViewBase<RawDataModel> {
 		HexViewer viewer;
 
 		public RawDataView() {
@@ -17,12 +17,11 @@ namespace dnExplorer.Views {
 		}
 
 		protected override void OnModelUpdated() {
-			var model = (RawDataModel)Model;
-			if (model == null) {
+			if (Model == null) {
 				viewer.Stream = null;
 			}
 			else {
-				viewer.Stream = new MemoryImageStream(0, model.Data, 0, model.Data.Length);
+				viewer.Stream = new MemoryImageStream(0, Model.Data, 0, Model.Data.Length);
 			}
 		}
 	}

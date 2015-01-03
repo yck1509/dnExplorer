@@ -6,8 +6,8 @@ using dnlib.DotNet;
 using dnlib.DotNet.MD;
 
 namespace dnExplorer.Views {
-	public class ModuleView : ViewBase {
-		public ModuleView() {
+	public class dnModuleView : ViewBase<dnModuleModel> {
+		public dnModuleView() {
 			var label = new Label {
 				Text = "This page is intentionally left blank\r\nI'm thinking of what to put here :P",
 				TextAlign = ContentAlignment.MiddleCenter,

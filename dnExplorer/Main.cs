@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using dnExplorer.Theme;
 using dnExplorer.Views;
 using ScintillaNET;
-using System.Linq;
 
 namespace dnExplorer {
 	public class Main : Form {
@@ -65,23 +65,23 @@ namespace dnExplorer {
 			}
 		}
 
-		ViewBase currentView;
+		IView currentView;
 
 		void OnNodeSelected(object sender, SelectionChangedEventArgs e) {
-			ViewBase newView;
+			IView newView;
 			if (e.Selection == null)
 				newView = null;
 			else
-				newView = ViewLocator.LocateView(e.Selection);
+				newView = ViewLocator.LocateViews(e.Selection).SingleOrDefault();
 
 			if (newView != currentView) {
 				if (currentView != null) {
-					content.Controls.Remove(currentView);
+					content.Controls.Remove(currentView.ViewControl);
 				}
 				currentView = newView;
 				if (currentView != null) {
 					currentView.Model = e.Selection;
-					content.Controls.Add(currentView);
+					content.Controls.Add(currentView.ViewControl);
 				}
 			}
 			else if (currentView != null)

@@ -8,7 +8,7 @@ using dnlib.DotNet.MD;
 using dnlib.PE;
 
 namespace dnExplorer.Views {
-	public class PECLIView : ViewBase {
+	public class PECLIView : ViewBase<PECLIModel> {
 		GridView view;
 
 		ContextMenuStrip showDataMenu;
@@ -33,41 +33,39 @@ namespace dnExplorer.Views {
 		}
 
 		protected override void OnModelUpdated() {
-			var model = (PECLIModel)Model;
 			view.Clear();
-			if (model != null) {
-				view.AddRow("CB", model.CLIHeader.CB);
-				view.AddRow("MajorRuntimeVersion", model.CLIHeader.MajorRuntimeVersion);
-				view.AddRow("MinorRuntimeVersion", model.CLIHeader.MinorRuntimeVersion);
+			if (Model != null) {
+				view.AddRow("CB", Model.CLIHeader.CB);
+				view.AddRow("MajorRuntimeVersion", Model.CLIHeader.MajorRuntimeVersion);
+				view.AddRow("MinorRuntimeVersion", Model.CLIHeader.MinorRuntimeVersion);
 
-				view.AddRow("MetaData RVA", model.CLIHeader.MetaData.VirtualAddress, showDataMenu);
-				view.AddRow("MetaData Size", model.CLIHeader.MetaData.Size, showDataMenu);
+				view.AddRow("MetaData RVA", Model.CLIHeader.MetaData.VirtualAddress, showDataMenu);
+				view.AddRow("MetaData Size", Model.CLIHeader.MetaData.Size, showDataMenu);
 
-				view.AddRow("Flags", model.CLIHeader.Flags);
-				view.AddRow("Entry Point", model.CLIHeader.EntryPointToken_or_RVA, showEntryMenu);
+				view.AddRow("Flags", Model.CLIHeader.Flags);
+				view.AddRow("Entry Point", Model.CLIHeader.EntryPointToken_or_RVA, showEntryMenu);
 
-				view.AddRow("Resources RVA", model.CLIHeader.Resources.VirtualAddress, showDataMenu);
-				view.AddRow("Resources Size", model.CLIHeader.Resources.Size, showDataMenu);
+				view.AddRow("Resources RVA", Model.CLIHeader.Resources.VirtualAddress, showDataMenu);
+				view.AddRow("Resources Size", Model.CLIHeader.Resources.Size, showDataMenu);
 
-				view.AddRow("StrongNameSignature RVA", model.CLIHeader.StrongNameSignature.VirtualAddress, showDataMenu);
-				view.AddRow("StrongNameSignature Size", model.CLIHeader.StrongNameSignature.Size, showDataMenu);
+				view.AddRow("StrongNameSignature RVA", Model.CLIHeader.StrongNameSignature.VirtualAddress, showDataMenu);
+				view.AddRow("StrongNameSignature Size", Model.CLIHeader.StrongNameSignature.Size, showDataMenu);
 
-				view.AddRow("CodeManagerTable RVA", model.CLIHeader.CodeManagerTable.VirtualAddress, showDataMenu);
-				view.AddRow("CodeManagerTable Size", model.CLIHeader.CodeManagerTable.Size, showDataMenu);
+				view.AddRow("CodeManagerTable RVA", Model.CLIHeader.CodeManagerTable.VirtualAddress, showDataMenu);
+				view.AddRow("CodeManagerTable Size", Model.CLIHeader.CodeManagerTable.Size, showDataMenu);
 
-				view.AddRow("VTableFixups RVA", model.CLIHeader.VTableFixups.VirtualAddress, showDataMenu);
-				view.AddRow("VTableFixups Size", model.CLIHeader.VTableFixups.Size, showDataMenu);
+				view.AddRow("VTableFixups RVA", Model.CLIHeader.VTableFixups.VirtualAddress, showDataMenu);
+				view.AddRow("VTableFixups Size", Model.CLIHeader.VTableFixups.Size, showDataMenu);
 
-				view.AddRow("ExportAddressTableJumps RVA", model.CLIHeader.ExportAddressTableJumps.VirtualAddress, showDataMenu);
-				view.AddRow("ExportAddressTableJumps Size", model.CLIHeader.ExportAddressTableJumps.Size, showDataMenu);
+				view.AddRow("ExportAddressTableJumps RVA", Model.CLIHeader.ExportAddressTableJumps.VirtualAddress, showDataMenu);
+				view.AddRow("ExportAddressTableJumps Size", Model.CLIHeader.ExportAddressTableJumps.Size, showDataMenu);
 
-				view.AddRow("ManagedNativeHeader RVA", model.CLIHeader.ManagedNativeHeader.VirtualAddress, showDataMenu);
-				view.AddRow("ManagedNativeHeader Size", model.CLIHeader.ManagedNativeHeader.Size, showDataMenu);
+				view.AddRow("ManagedNativeHeader RVA", Model.CLIHeader.ManagedNativeHeader.VirtualAddress, showDataMenu);
+				view.AddRow("ManagedNativeHeader Size", Model.CLIHeader.ManagedNativeHeader.Size, showDataMenu);
 			}
 		}
 
 		void OnShowData(object sender, EventArgs e) {
-			var model = (PECLIModel)Model;
 			var cell = view.SelectedCells[0];
 
 			RVA rva;
@@ -81,26 +79,25 @@ namespace dnExplorer.Views {
 				size = (uint)cell.Value;
 			}
 
-			var section = model.Image.ToImageSectionHeader(rva);
+			var section = Model.Image.ToImageSectionHeader(rva);
 			if (section == null) {
 				MessageBox.Show("Invalid address.", Main.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
-			var offset = (long)model.Image.ToFileOffset(rva);
-			ViewUtils.ShowRawData(Model, model.Image, offset, offset + size - 1);
+			var offset = (long)Model.Image.ToFileOffset(rva);
+			ViewUtils.ShowRawData(Model, Model.Image, offset, offset + size - 1);
 		}
 
 		void showEntryMenu_Opening(object sender, CancelEventArgs e) {
-			showEntryMenu.Items[0].Enabled = (((PECLIModel)Model).CLIHeader.Flags & ComImageFlags.NativeEntryPoint) == 0;
+			showEntryMenu.Items[0].Enabled = (Model.CLIHeader.Flags & ComImageFlags.NativeEntryPoint) == 0;
 		}
 
 		void OnShowEntry(object sender, EventArgs e) {
-			var model = (PECLIModel)Model;
 			var cell = view.SelectedCells[0];
 			var token = new MDToken((uint)cell.Value);
 
-			ViewUtils.ShowToken(Model, model.Image, token);
+			ViewUtils.ShowToken(Model, Model.Image, token);
 		}
 	}
 }

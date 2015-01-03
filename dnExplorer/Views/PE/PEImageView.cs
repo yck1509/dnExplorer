@@ -3,7 +3,7 @@ using dnExplorer.Controls;
 using dnExplorer.Models;
 
 namespace dnExplorer.Views {
-	public class PEImageView : ViewBase {
+	public class PEImageView : ViewBase<PEImageModel> {
 		GridView view;
 
 		public PEImageView() {
@@ -14,17 +14,16 @@ namespace dnExplorer.Views {
 		}
 
 		protected override void OnModelUpdated() {
-			var model = (PEImageModel)Model;
 			view.Clear();
-			if (model != null) {
-				view.AddRow("Location", new RawString(model.Image.FileName ?? "<Unknown>"));
-				view.AddRow("Machine", model.Image.ImageNTHeaders.FileHeader.Machine);
-				view.AddRow("Characteristics", model.Image.ImageNTHeaders.FileHeader.Characteristics);
-				view.AddRow("AddressOfEntryPoint", model.Image.ImageNTHeaders.OptionalHeader.AddressOfEntryPoint);
-				view.AddRow("CheckSum", model.Image.ImageNTHeaders.OptionalHeader.CheckSum);
-				view.AddRow("Subsystem", model.Image.ImageNTHeaders.OptionalHeader.Subsystem);
-				view.AddRow("DllCharacteristics", model.Image.ImageNTHeaders.OptionalHeader.DllCharacteristics);
-				view.AddRow("NumberOfRvaAndSizes", model.Image.ImageNTHeaders.OptionalHeader.NumberOfRvaAndSizes);
+			if (Model != null) {
+				view.AddRow("Location", new RawString(Model.Image.FileName ?? "<Unknown>"));
+				view.AddRow("Machine", Model.Image.ImageNTHeaders.FileHeader.Machine);
+				view.AddRow("Characteristics", Model.Image.ImageNTHeaders.FileHeader.Characteristics);
+				view.AddRow("AddressOfEntryPoint", Model.Image.ImageNTHeaders.OptionalHeader.AddressOfEntryPoint);
+				view.AddRow("CheckSum", Model.Image.ImageNTHeaders.OptionalHeader.CheckSum);
+				view.AddRow("Subsystem", Model.Image.ImageNTHeaders.OptionalHeader.Subsystem);
+				view.AddRow("DllCharacteristics", Model.Image.ImageNTHeaders.OptionalHeader.DllCharacteristics);
+				view.AddRow("NumberOfRvaAndSizes", Model.Image.ImageNTHeaders.OptionalHeader.NumberOfRvaAndSizes);
 			}
 		}
 	}
