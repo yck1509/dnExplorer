@@ -36,6 +36,9 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.Decompiler">
+      <HintPath>..\ICSharpCode.Decompiler\Release\bin\ICSharpCode.Decompiler.dll</HintPath>
+    </Reference>
     <Reference Include="ScintillaNET">
       <HintPath>..\libs\ScintillaNET.dll</HintPath>
     </Reference>
@@ -159,6 +162,9 @@
     <Compile Include="Views\dnModuleView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Views\ObjModels\MethodView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Views\RawDataView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -218,9 +224,7 @@
     <EmbeddedResource Include="Resources\Icons\error.png" />
     <EmbeddedResource Include="Resources\Icons\forward.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\ObjModels\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Resources\Icons\ObjModel\assembly.png" />
     <EmbeddedResource Include="Resources\Icons\ObjModel\constant.png" />

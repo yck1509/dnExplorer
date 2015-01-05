@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using dnExplorer.Models;
 using dnExplorer.Trees;
+using dnlib.DotNet;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace dnExplorer {
@@ -53,7 +54,7 @@ namespace dnExplorer {
 		}
 
 		public void LoadModule(string path) {
-			treeView.Nodes.Add(new dnModuleModel(new dnModule(path)).ToNode());
+			treeView.Nodes.Add(new dnModuleModel(new dnModule(path, new ModuleContext())).ToNode());
 		}
 
 		public event EventHandler<SelectionChangedEventArgs> SelectionChanged;

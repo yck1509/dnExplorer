@@ -44,11 +44,11 @@ namespace dnExplorer {
 		static SR.MethodInfo loadInternal = typeof(ModuleDefMD)
 			.GetMethod("Load", SR.BindingFlags.NonPublic | SR.BindingFlags.Static);
 
-		public dnModule(string fileName)
-			: this(File.ReadAllBytes(fileName), fileName) {
+		public dnModule(string fileName, ModuleContext ctx)
+			: this(File.ReadAllBytes(fileName), fileName, ctx) {
 		}
 
-		public dnModule(byte[] module, string fileName) {
+		public dnModule(byte[] module, string fileName, ModuleContext ctx) {
 			RawData = module;
 			ErrorMessage = null;
 			Name = Path.GetFileName(fileName);
@@ -77,7 +77,12 @@ namespace dnExplorer {
 			}
 
 			try {
-				ModuleDef = (ModuleDefMD)loadInternal.Invoke(null, new object[] { MetaData, null });
+				ModuleDef = (ModuleDefMD)loadInternal.Invoke(null, new object[] {
+					MetaData, new ModuleCreationOptions {
+						TryToLoadPdbFromDisk = true,
+						Context = ctx
+					}
+				});
 			}
 			catch (Exception ex) {
 				ErrorMessage = string.Format("Error while loading ModuleDef:{0}{1}{0}{0}",
