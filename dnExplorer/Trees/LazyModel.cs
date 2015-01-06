@@ -55,7 +55,7 @@ namespace dnExplorer.Trees {
 			}
 
 			loadOp = new ResponsiveOperation<ICollection<IDataModel>>(PopulateChildrenInternal);
-			loadOp.Loading += () => {
+			loadOp.Loading += (sender, e) => {
 				using (Children.BeginUpdate()) {
 					Children.Clear();
 					Children.Add(new Loading());
@@ -82,9 +82,9 @@ namespace dnExplorer.Trees {
 			return children;
 		}
 
-		void SetChildren(ICollection<IDataModel> result) {
+		void SetChildren(object sender, OperationResultEventArgs<ICollection<IDataModel>> e) {
 			lock (sync) {
-				if (result.Count > 0x200) {
+				if (e.Result.Count > 0x200) {
 					using (Children.BeginUpdate()) {
 						Children.Clear();
 						Children.Add(new Loading());
@@ -92,7 +92,7 @@ namespace dnExplorer.Trees {
 				}
 				using (Children.BeginUpdate()) {
 					Children.Clear();
-					foreach (var child in result)
+					foreach (var child in e.Result)
 						Children.Add(child);
 				}
 				loadOp = null;

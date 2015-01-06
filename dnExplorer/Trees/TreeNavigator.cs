@@ -69,7 +69,7 @@ namespace dnExplorer.Trees {
 
 			if (node.Model is LazyModel) {
 				var op = ((LazyModel)node.Model).Load();
-				op.Completed += r => SearchNodeChildren(node);
+				op.Completed += (sender, e) => SearchNodeChildren(node);
 				op.Begin();
 			}
 			else {

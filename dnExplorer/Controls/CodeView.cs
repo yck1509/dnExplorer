@@ -45,6 +45,17 @@ namespace dnExplorer.Controls {
 
 		CodeViewData data;
 
+		public void Clear() {
+			SetPlainText("");
+		}
+
+		public void SetPlainText(string text) {
+			data = null;
+			IsReadOnly = false;
+			Text = text;
+			IsReadOnly = true;
+		}
+
 		public void SetData(CodeViewData data) {
 			this.data = data;
 			IsReadOnly = false;
@@ -54,6 +65,9 @@ namespace dnExplorer.Controls {
 
 		protected override void OnStyleNeeded(StyleNeededEventArgs e) {
 			base.OnStyleNeeded(e);
+
+			if (data == null)
+				return;
 
 			for (int i = e.Range.Start; i < e.Range.End; i++) {
 				CodeViewData.TextType type;

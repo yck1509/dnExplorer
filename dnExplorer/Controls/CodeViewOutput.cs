@@ -40,6 +40,15 @@ namespace dnExplorer.Controls {
 		public string Code { get; internal set; }
 		public Dictionary<int, TextType> Types { get; internal set; }
 		public Dictionary<int, TextRef> References { get; internal set; }
+
+		internal CodeViewData() {
+		}
+
+		public CodeViewData(string text) {
+			Code = text;
+			Types = new Dictionary<int, TextType>();
+			References = new Dictionary<int, TextRef>();
+		}
 	}
 
 	public class CodeViewOutput : ITextOutput {

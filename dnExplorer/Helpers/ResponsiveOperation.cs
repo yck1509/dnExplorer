@@ -3,6 +3,14 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace dnExplorer {
+	public class OperationResultEventArgs<T> : EventArgs {
+		public T Result { get; private set; }
+
+		public OperationResultEventArgs(T result) {
+			Result = result;
+		}
+	}
+
 	public class ResponsiveOperation<T> {
 		const int STATE_IDLE = 0;
 		const int STATE_LOADING = 1;
@@ -16,8 +24,8 @@ namespace dnExplorer {
 		Task<T> task;
 		ManualResetEvent waitHnd = new ManualResetEvent(false);
 
-		public event Action<T> Completed;
-		public event Action Loading;
+		public event EventHandler<OperationResultEventArgs<T>> Completed;
+		public event EventHandler Loading;
 
 		public ResponsiveOperation(Func<T> operation) {
 			this.operation = operation;
@@ -41,7 +49,7 @@ namespace dnExplorer {
 				lock (sync) {
 					if (!waitHnd.WaitOne(0)) {
 						if (Loading != null)
-							Loading();
+							Loading(this, EventArgs.Empty);
 						task.ContinueWith(OnCompleted, TaskScheduler.FromCurrentSynchronizationContext());
 						return;
 					}
@@ -78,7 +86,7 @@ namespace dnExplorer {
 					Thread.Sleep(10);
 
 				if (Completed != null)
-					Completed(t.Result);
+					Completed(this, new OperationResultEventArgs<T>(t.Result));
 
 				state = STATE_COMPLETE;
 			}
