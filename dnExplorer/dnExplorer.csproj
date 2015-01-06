@@ -262,12 +262,12 @@
     <EmbeddedResource Include="Resources\Icons\check.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\libs\SciLexer.x64.dll">
-      <Link>SciLexer.x64.dll</Link>
+    <Content Include="..\libs\SciLexer.dll">
+      <Link>SciLexer.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\libs\SciLexer.x86.dll">
-      <Link>SciLexer.x86.dll</Link>
+    <Content Include="..\libs\SciLexer64.dll">
+      <Link>SciLexer64.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Theme\Dockindicator_PaneDiamond.png" />

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Windows.Forms;
 using dnExplorer.Theme;
 using dnExplorer.Views;
-using ScintillaNET;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace dnExplorer {
@@ -17,7 +16,6 @@ namespace dnExplorer {
 
 		public Main() {
 			ToolStripManager.Renderer = new VS2010Renderer();
-			Scintilla.SetModulePath(IntPtr.Size == 4 ? @"SciLexer.x86.dll" : @"SciLexer.x64.dll");
 
 			Initialize();
 		}

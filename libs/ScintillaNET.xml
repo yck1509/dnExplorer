@@ -153,103 +153,82 @@
         </member>
         <member name="T:ScintillaNET.AnnotationCollection">
             <summary>
-            Represents a collection of <see cref="T:ScintillaNET.Annotation"/> objects and options in a <see cref="T:ScintillaNET.Scintilla"/> control.
+                Represents a collection of <see cref="T:ScintillaNET.Annotation"/> objects and options in a <see cref="T:ScintillaNET.Scintilla"/> control.
             </summary>
             <remarks>
-            Annotations are customizable read-only blocks of text which can be displayed below
-            each line in a <see cref="T:ScintillaNET.Scintilla"/> control.
+                Annotations are customizable read-only blocks of text which can be displayed below
+                each line in a <see cref="T:ScintillaNET.Scintilla"/> control.
             </remarks>
-        </member>
-        <member name="T:ScintillaNET.TopLevelHelper">
-            <summary>
-            Top level ScintillaHelpers Like Style and Folding inherit from this class so they don't have
-            to reimplement the same Equals method
-            </summary>
-        </member>
-        <member name="M:ScintillaNET.ScintillaHelperBase.Equals(System.Object)">
-            <summary>
-            Abstract Equals Override. All Helpers must implement this. Use IsSameHelperFamily to
-            determine if the types are compatible and they have the same Scintilla. For most top 
-            level helpers like Caret and Lexing this should be enough. Helpers like Marker and
-            Line also need to take other variables into consideration.
-            </summary>
-            <param name="obj"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ScintillaNET.ScintillaHelperBase.IsSameHelperFamily(System.Object)">
-            <summary>
-            Determines if obj belongs to the same Scintilla and is of compatible type
-            </summary>
         </member>
         <member name="M:ScintillaNET.AnnotationCollection.ClearAll">
             <summary>
-            Removes all annotations from the document.
+                Removes all annotations from the document.
             </summary>
             <remarks>This is equivalent to setting the <see cref="P:ScintillaNET.Annotation.Text"/> property to null for each line.</remarks>
         </member>
         <member name="M:ScintillaNET.AnnotationCollection.CreateAnnotationInstance(System.Int32)">
             <summary>
-            Creates and returns a new <see cref="T:ScintillaNET.Annotation"/> object.
+                Creates and returns a new <see cref="T:ScintillaNET.Annotation"/> object.
             </summary>
             <returns>A new <see cref="T:ScintillaNET.Annotation"/> object.</returns>
         </member>
         <member name="M:ScintillaNET.AnnotationCollection.GetEnumerator">
             <summary>
-            Returns an enumerator for the <see cref="T:ScintillaNET.AnnotationCollection"/>.
+                Returns an enumerator for the <see cref="T:ScintillaNET.AnnotationCollection"/>.
             </summary>
             <returns>An <see cref="T:System.Collections.IEnumerator"/> for the <see cref="T:ScintillaNET.AnnotationCollection"/>.</returns>
         </member>
         <member name="M:ScintillaNET.AnnotationCollection.#ctor(ScintillaNET.Scintilla)">
             <summary>
-            Initializes a new instance of the <see cref="T:ScintillaNET.AnnotationCollection"/> class.
+                Initializes a new instance of the <see cref="T:ScintillaNET.AnnotationCollection"/> class.
             </summary>
             <param name="scintilla">The <see cref="T:ScintillaNET.Scintilla"/> control that created this object.</param>
         </member>
         <member name="P:ScintillaNET.AnnotationCollection.Count">
             <summary>
-            Gets the number of annotations in the <see cref="T:ScintillaNET.AnnotationCollection"/>.
+                Gets the number of annotations in the <see cref="T:ScintillaNET.AnnotationCollection"/>.
             </summary>
             <returns>The number of annotations contained in the <see cref="T:ScintillaNET.AnnotationCollection"/>.</returns>
             <remarks>
-            As there can be one annotation per document line,
-            this is equivalent to the <see cref="P:ScintillaNET.LineCollection.Count"/> property.
+                As there can be one annotation per document line,
+                this is equivalent to the <see cref="P:ScintillaNET.LineCollection.Count"/> property.
             </remarks>
         </member>
         <member name="P:ScintillaNET.AnnotationCollection.StyleOffset">
             <summary>
-            Gets or sets the offset applied to style indexes used in annotations.
+                Gets or sets the offset applied to style indexes used in annotations.
             </summary>
             <returns>The offset applied to style indexes used in annotations.</returns>
             <remarks>
-            Annotation styles may be completely separated from standard text styles by setting a style offset.
-            For example, a value of 512 would shift the range of possible annotation styles to be from 512 to 767
-            so they do not overlap with standard text styles. This adjustment is applied automatically when setting
-            <see cref="P:ScintillaNET.Annotation.Style"/> or calling <see cref="M:ScintillaNET.Annotation.SetStyles(System.Collections.Generic.IEnumerable{ScintillaNET.StyleRun})"/> so the offset should NOT be
-            manually factored in by the caller. This property is provided to maintain architectural symmetry with
-            the native Scintilla component but is an advanced feature and typically should never need to be changed.
+                Annotation styles may be completely separated from standard text styles by setting a style offset.
+                For example, a value of 512 would shift the range of possible annotation styles to be from 512 to 767
+                so they do not overlap with standard text styles. This adjustment is applied automatically when setting
+                <see cref="P:ScintillaNET.Annotation.Style"/> or calling <see cref="M:ScintillaNET.Annotation.SetStyles(System.Collections.Generic.IEnumerable{ScintillaNET.StyleRun})"/> so the offset should NOT be
+                manually factored in by the caller. This property is provided to maintain architectural symmetry with
+                the native Scintilla component but is an advanced feature and typically should never need to be changed.
             </remarks>
         </member>
         <member name="P:ScintillaNET.AnnotationCollection.Visibility">
             <summary>
-            Gets or sets the visibility style for all annotations.
+                Gets or sets the visibility style for all annotations.
             </summary>
             <returns>
-            One of the <see cref="T:ScintillaNET.AnnotationsVisibility"/> values.
-            The default is <see cref="F:ScintillaNET.AnnotationsVisibility.Hidden"/>.
+                One of the <see cref="T:ScintillaNET.AnnotationsVisibility"/> values.
+                The default is <see cref="F:ScintillaNET.AnnotationsVisibility.Hidden"/>.
             </returns>
             <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">
-            The value assigned is not one of the <see cref="T:ScintillaNET.AnnotationsVisibility"/> values.
+                The value assigned is not one of the <see cref="T:ScintillaNET.AnnotationsVisibility"/> values.
             </exception>
         </member>
         <member name="P:ScintillaNET.AnnotationCollection.Item(System.Int32)">
             <summary>
-            Gets the annotation at the specified line index.
+                Gets the annotation at the specified line index.
             </summary>
             <param name="lineIndex">The zero-based document line index of the annotation to get.</param>
             <returns>The <see cref="T:ScintillaNET.Annotation"/> at the specified line index.</returns>
             <exception cref="T:System.ArgumentOutOfRangeException">
-            <paramref name="lineIndex"/> is less than zero. -or-
-            <paramref name="lineIndex"/> is equal to or greater than <see cref="P:ScintillaNET.AnnotationCollection.Count"/>.
+                <paramref name="lineIndex"/> is less than zero. -or-
+                <paramref name="lineIndex"/> is equal to or greater than <see cref="P:ScintillaNET.AnnotationCollection.Count"/>.
             </exception>
         </member>
         <member name="T:ScintillaNET.AnnotationsVisibility">
@@ -281,6 +260,27 @@
                 Autocomplete is typically used in IDEs to automatically complete some kind
                 of identifier or keyword based on a partial name. 
             </remarks>
+        </member>
+        <member name="T:ScintillaNET.TopLevelHelper">
+            <summary>
+                Top level ScintillaHelpers Like Style and Folding inherit from this class so they don't have
+                to reimplement the same Equals method
+            </summary>
+        </member>
+        <member name="M:ScintillaNET.ScintillaHelperBase.Equals(System.Object)">
+            <summary>
+                Abstract Equals Override. All Helpers must implement this. Use IsSameHelperFamily to
+                determine if the types are compatible and they have the same Scintilla. For most top 
+                level helpers like Caret and Lexing this should be enough. Helpers like Marker and
+                Line also need to take other variables into consideration.
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ScintillaNET.ScintillaHelperBase.IsSameHelperFamily(System.Object)">
+            <summary>
+                Determines if obj belongs to the same Scintilla and is of compatible type
+            </summary>
         </member>
         <member name="M:ScintillaNET.AutoComplete.Accept">
             <summary>
@@ -994,118 +994,118 @@
         </member>
         <member name="T:ScintillaNET.CaretInfo">
             <summary>
-            Manages Caret Settings
+                Manages Caret Settings
             </summary>
             <remarks>
-            The caret is the blinking line that indicates the current document position. This
-            is sometimes referred to as cursor.
+                The caret is the blinking line that indicates the current document position. This
+                is sometimes referred to as cursor.
             </remarks>
         </member>
         <member name="M:ScintillaNET.CaretInfo.BringIntoView">
             <summary>
-            Places the caret somewhere within the document that is displayed in the
-            Scintilla Window
+                Places the caret somewhere within the document that is displayed in the
+                Scintilla Window
             </summary>
             <remarks>
-            If the caret is already visible in the current scrolled view this method does
-            nothing.
+                If the caret is already visible in the current scrolled view this method does
+                nothing.
             </remarks>
         </member>
         <member name="M:ScintillaNET.CaretInfo.ChooseCaretX">
             <summary>
-            Scintilla remembers the x value of the last position horizontally moved to explicitly by the user and this value is then 
-            used when moving vertically such as by using the up and down keys. This method sets the current x position of the caret as 
-            the remembered value.
+                Scintilla remembers the x value of the last position horizontally moved to explicitly by the user and this value is then 
+                used when moving vertically such as by using the up and down keys. This method sets the current x position of the caret as 
+                the remembered value.
             </summary>
         </member>
         <member name="M:ScintillaNET.CaretInfo.EnsureVisible">
             <summary>
-            Scrolls the Scintilla window so that the Caret is visible.
+                Scrolls the Scintilla window so that the Caret is visible.
             </summary>
         </member>
         <member name="M:ScintillaNET.CaretInfo.Goto(System.Int32)">
             <summary>
-            Places the caret at the specified document position
+                Places the caret at the specified document position
             </summary>
             <param name="position">Position in the document to place the caret</param>
         </member>
         <member name="P:ScintillaNET.CaretInfo.Anchor">
             <summary>
-            Gets/Sets the current anchor position
+                Gets/Sets the current anchor position
             </summary>
             <remarks>
-            If the anchor position is less than the Caret Position it acts as the _start of
-            the selection.
+                If the anchor position is less than the Caret Position it acts as the _start of
+                the selection.
             </remarks>
         </member>
         <member name="P:ScintillaNET.CaretInfo.BlinkRate">
             <summary>
-            Gets/Sets the time interval in milliseconds that the caret should blink.
+                Gets/Sets the time interval in milliseconds that the caret should blink.
             </summary>
             <remarks>
-            This defaults to the system default value.
+                This defaults to the system default value.
             </remarks>
         </member>
         <member name="P:ScintillaNET.CaretInfo.Color">
             <summary>
-            Gets/Sets the color of the Caret.
+                Gets/Sets the color of the Caret.
             </summary>
             <remarks>Defaults to black</remarks>
         </member>
         <member name="P:ScintillaNET.CaretInfo.CurrentLineBackgroundAlpha">
             <summary>
-            Gets/Sets the transparency alpha of the CurrentLine Background highlight
+                Gets/Sets the transparency alpha of the CurrentLine Background highlight
             </summary>
             <remarks>
-            Values range from 0 to 256. Default is 256.
+                Values range from 0 to 256. Default is 256.
             </remarks>
         </member>
         <member name="P:ScintillaNET.CaretInfo.CurrentLineBackgroundColor">
             <summary>
-            Gets/Sets the color of the document line where the caret currently resides
+                Gets/Sets the color of the document line where the caret currently resides
             </summary>
             <remarks>
-            The <see cref="!:HighlightCurrentList"/> property must be set to true in order
-            for this to to take effect.
+                The <see cref="!:HighlightCurrentList"/> property must be set to true in order
+                for this to to take effect.
             </remarks>
         </member>
         <member name="P:ScintillaNET.CaretInfo.HighlightCurrentLine">
             <summary>
-            Gets/Sets if the current document line where the caret resides is highlighted.
+                Gets/Sets if the current document line where the caret resides is highlighted.
             </summary>
             <remarks>
-            <see cref="P:ScintillaNET.CaretInfo.CurrentLineBackgroundColor"/> determines the color. 
+                <see cref="P:ScintillaNET.CaretInfo.CurrentLineBackgroundColor"/> determines the color. 
             </remarks>
         </member>
         <member name="P:ScintillaNET.CaretInfo.IsSticky">
             <summary>
-            Controls when the last position of the caret on the line is saved. When set to true, the position is not saved when you type a character, a tab, paste the clipboard content or press backspace
+                Controls when the last position of the caret on the line is saved. When set to true, the position is not saved when you type a character, a tab, paste the clipboard content or press backspace
             </summary>
             <remarks>
-            Defaults to false
+                Defaults to false
             </remarks>
         </member>
         <member name="P:ScintillaNET.CaretInfo.LineNumber">
             <summary>
-            Gets/Sets the current Line Number that the caret resides.
+                Gets/Sets the current Line Number that the caret resides.
             </summary>
         </member>
         <member name="P:ScintillaNET.CaretInfo.Position">
             <summary>
-            Gets/Sets the current document position where the caret resides
+                Gets/Sets the current document position where the caret resides
             </summary>
         </member>
         <member name="P:ScintillaNET.CaretInfo.Style">
             <summary>
-            Gets/Sets the <see cref="T:ScintillaNET.CaretStyle"/> displayed.
+                Gets/Sets the <see cref="T:ScintillaNET.CaretStyle"/> displayed.
             </summary>
         </member>
         <member name="P:ScintillaNET.CaretInfo.Width">
             <summary>
-            Gets/Sets the width in pixels of the Caret
+                Gets/Sets the width in pixels of the Caret
             </summary>
             <remarks>
-            This defaults to the system default.
+                This defaults to the system default.
             </remarks>
         </member>
         <member name="T:ScintillaNET.CaretStyle">
@@ -1982,46 +1982,46 @@
         </member>
         <member name="T:ScintillaNET.Indicators">
             <summary>
-            Manages indicators in a <see cref="T:ScintillaNET.Scintilla"/> control.
+                Manages indicators in a <see cref="T:ScintillaNET.Scintilla"/> control.
             </summary>
             <remarks>
-            Indicators are used to display additional information over the top of styling.
-            They can be used to show, for example, syntax errors, deprecated names, and bad indentation by drawing underlines under text or boxes around text.
+                Indicators are used to display additional information over the top of styling.
+                They can be used to show, for example, syntax errors, deprecated names, and bad indentation by drawing underlines under text or boxes around text.
             </remarks>
         </member>
         <member name="F:ScintillaNET.Indicators.MaxIndex">
             <summary>
-            Represents the largest possible index for an <see cref="T:ScintillaNET.Indicator"/> definition.
-            This field is constant.
+                Represents the largest possible index for an <see cref="T:ScintillaNET.Indicator"/> definition.
+                This field is constant.
             </summary>
         </member>
         <member name="M:ScintillaNET.Indicators.CreateIndicatorInstance(System.Int32)">
             <summary>
-            Creates and returns a new <see cref="T:ScintillaNET.Indicator"/> object.
+                Creates and returns a new <see cref="T:ScintillaNET.Indicator"/> object.
             </summary>
             <returns>A new <see cref="T:ScintillaNET.Indicator"/> object.</returns>
         </member>
         <member name="M:ScintillaNET.Indicators.GetEnumerator">
             <summary>
-            Returns an enumerator that iterates through the <see cref="T:ScintillaNET.Indicators"/>.
+                Returns an enumerator that iterates through the <see cref="T:ScintillaNET.Indicators"/>.
             </summary>
             <returns>An enumerator for the <see cref="T:ScintillaNET.Indicators"/>.</returns>
         </member>
         <member name="M:ScintillaNET.Indicators.#ctor(ScintillaNET.Scintilla)">
             <summary>
-            Initializes a new instance of the <see cref="T:ScintillaNET.Indicators"/> class.
+                Initializes a new instance of the <see cref="T:ScintillaNET.Indicators"/> class.
             </summary>
             <param name="owner">The <see cref="T:ScintillaNET.Scintilla"/> control that created this object.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="owner"/> is null.</exception>
         </member>
         <member name="P:ScintillaNET.Indicators.Item(System.Int32)">
             <summary>
-            Gets the <see cref="T:ScintillaNET.Indicator"/> definition at the specified index.
+                Gets the <see cref="T:ScintillaNET.Indicator"/> definition at the specified index.
             </summary>
             <param name="index">The index of the indicator definition to retrieve.</param>
             <returns>A <see cref="T:ScintillaNET.Indicator"/> representing the indicator defined for the specified index.</returns>
             <exception cref="T:System.ArgumentOutOfRangeException">
-            <paramref name="index"/> is less than 0 or greater than <see cref="F:ScintillaNET.Indicators.MaxIndex"/>.
+                <paramref name="index"/> is less than 0 or greater than <see cref="F:ScintillaNET.Indicators.MaxIndex"/>.
             </exception>
         </member>
         <member name="T:ScintillaNET.IndicatorStyle">
@@ -2257,80 +2257,80 @@
         </member>
         <member name="T:ScintillaNET.LineWrapping">
             <summary>
-            Controls line wrapping options in a <see cref="T:ScintillaNET.Scintilla"/> control.
+                Controls line wrapping options in a <see cref="T:ScintillaNET.Scintilla"/> control.
             </summary>
         </member>
         <member name="M:ScintillaNET.LineWrapping.GetWrapCount(System.Int32)">
             <summary>
-            The number of lines displayed when a line of text is wrapped.
+                The number of lines displayed when a line of text is wrapped.
             </summary>
             <param name="lineIndex">The zero-based index of the line to count.</param>
             <returns>The numbers of display lines the line of text occupies.</returns>
         </member>
         <member name="M:ScintillaNET.LineWrapping.WrapLines(System.Int32,System.Int32,System.Int32)">
             <summary>
-            Forces the line range specified to wrap at the given pixel width. This operates independently
-            of the current <see cref="T:ScintillaNET.Scintilla"/> line wrapping <see cref="P:ScintillaNET.LineWrapping.Mode"/> property.
+                Forces the line range specified to wrap at the given pixel width. This operates independently
+                of the current <see cref="T:ScintillaNET.Scintilla"/> line wrapping <see cref="P:ScintillaNET.LineWrapping.Mode"/> property.
             </summary>
             <param name="startLine">The zero-based line index to start wrapping.</param>
             <param name="endLine">The zero-based line index to stop wrapping.</param>
             <param name="width">
-            The maximum width in pixels of the lines to wrap. A value of zero resets forced line wrapping.
+                The maximum width in pixels of the lines to wrap. A value of zero resets forced line wrapping.
             </param>
         </member>
         <member name="M:ScintillaNET.LineWrapping.#ctor(ScintillaNET.Scintilla)">
             <summary>
-            Initializes a new instance of the <see cref="T:ScintillaNET.LineWrapping"/> class.
+                Initializes a new instance of the <see cref="T:ScintillaNET.LineWrapping"/> class.
             </summary>
             <param name="scintilla">The <see cref="T:ScintillaNET.Scintilla"/> control that created this object.</param>
         </member>
         <member name="P:ScintillaNET.LineWrapping.IndentMode">
             <summary>
-            Gets or sets how wrapped lines are indented.
+                Gets or sets how wrapped lines are indented.
             </summary>
             <returns>
-            One of the <see cref="T:ScintillaNET.LineWrappingIndentMode"/> values.
-            The default is <see cref="F:ScintillaNET.LineWrappingIndentMode.Fixed"/>.
+                One of the <see cref="T:ScintillaNET.LineWrappingIndentMode"/> values.
+                The default is <see cref="F:ScintillaNET.LineWrappingIndentMode.Fixed"/>.
             </returns>
             <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">
-            The value assigned is not one of the <see cref="T:ScintillaNET.LineWrappingIndentMode"/> values.
+                The value assigned is not one of the <see cref="T:ScintillaNET.LineWrappingIndentMode"/> values.
             </exception>
         </member>
         <member name="P:ScintillaNET.LineWrapping.IndentSize">
             <summary>
-            Gets or sets the size that wrapped lines are indented when <see cref="P:ScintillaNET.LineWrapping.IndentMode"/> is <see cref="F:ScintillaNET.LineWrappingIndentMode.Fixed"/>.
+                Gets or sets the size that wrapped lines are indented when <see cref="P:ScintillaNET.LineWrapping.IndentMode"/> is <see cref="F:ScintillaNET.LineWrappingIndentMode.Fixed"/>.
             </summary>
             <returns>An <see cref="T:System.Int32"/> representing the size (in characters) that wrapped lines are indented.</returns>
             <exception cref="T:System.ArgumentOutOfRangeException">The value is less that zero or greater than 256.</exception>
         </member>
         <member name="P:ScintillaNET.LineWrapping.Mode">
             <summary>
-            Gets or sets how and whether line wrapping is performed.
+                Gets or sets how and whether line wrapping is performed.
             </summary>
             <returns>
-            One of the <see cref="T:ScintillaNET.LineWrappingMode"/> values.
-            The default is <see cref="F:ScintillaNET.LineWrappingMode.None"/>.
+                One of the <see cref="T:ScintillaNET.LineWrappingMode"/> values.
+                The default is <see cref="F:ScintillaNET.LineWrappingMode.None"/>.
             </returns>
             <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">
-            The value assigned is not one of the <see cref="T:ScintillaNET.LineWrappingMode"/> values.
+                The value assigned is not one of the <see cref="T:ScintillaNET.LineWrappingMode"/> values.
             </exception>
         </member>
         <member name="P:ScintillaNET.LineWrapping.VisualFlags">
             <summary>
-            Gets or sets the visual glyphs displayed on wrapped lines.
+                Gets or sets the visual glyphs displayed on wrapped lines.
             </summary>
             <returns>
-            A bitwise combination of the <see cref="T:ScintillaNET.LineWrappingVisualFlags"/> values.
-            The default is <see cref="F:ScintillaNET.LineWrappingVisualFlags.None"/>.
+                A bitwise combination of the <see cref="T:ScintillaNET.LineWrappingVisualFlags"/> values.
+                The default is <see cref="F:ScintillaNET.LineWrappingVisualFlags.None"/>.
             </returns>
         </member>
         <member name="P:ScintillaNET.LineWrapping.VisualFlagsLocations">
             <summary>
-            Gets or sets the location of visual glyphs displayed on wrapped lines.
+                Gets or sets the location of visual glyphs displayed on wrapped lines.
             </summary>
             <returns>
-            A bitwise combination of the <see cref="T:ScintillaNET.LineWrappingVisualFlagsLocations"/> values.
-            The default is <see cref="F:ScintillaNET.LineWrappingVisualFlagsLocations.Default"/>.
+                A bitwise combination of the <see cref="T:ScintillaNET.LineWrappingVisualFlagsLocations"/> values.
+                The default is <see cref="F:ScintillaNET.LineWrappingVisualFlagsLocations.Default"/>.
             </returns>
         </member>
         <member name="T:ScintillaNET.LineWrappingIndentMode">
@@ -3059,9 +3059,24 @@
               resource lookups using this strongly typed resource class.
             </summary>
         </member>
-        <member name="P:ScintillaNET.Properties.Resources.DeleteHS">
+        <member name="P:ScintillaNET.Properties.Resources.Exception_CannotCreateDirectFunction">
             <summary>
-              Looks up a localized resource of type System.Drawing.Bitmap.
+              Looks up a localized string similar to Cannot create the Scintilla direct function..
+            </summary>
+        </member>
+        <member name="P:ScintillaNET.Properties.Resources.Exception_CannotCreateDirectPointer">
+            <summary>
+              Looks up a localized string similar to Cannot create the Scintilla direct pointer..
+            </summary>
+        </member>
+        <member name="P:ScintillaNET.Properties.Resources.Exception_CannotLoadModule">
+            <summary>
+              Looks up a localized string similar to Cannot load the &apos;{0}&apos; module into memory..
+            </summary>
+        </member>
+        <member name="P:ScintillaNET.Properties.Resources.Exception_EmptyStringArgument">
+            <summary>
+              Looks up a localized string similar to The &apos;{0}&apos; argument cannot be an empty string..
             </summary>
         </member>
         <member name="P:ScintillaNET.Properties.Resources.Exception_EnumeratorEnded">
@@ -3072,6 +3087,11 @@
         <member name="P:ScintillaNET.Properties.Resources.Exception_EnumeratorNotStarted">
             <summary>
               Looks up a localized string similar to Enumeration has not started. Call MoveNext..
+            </summary>
+        </member>
+        <member name="P:ScintillaNET.Properties.Resources.Exception_IllegalCrossThreadCall">
+            <summary>
+              Looks up a localized string similar to Cross-thread operation not valid: Control &apos;{0}&apos; accessed from a thread other than the thread it was created on..
             </summary>
         </member>
         <member name="P:ScintillaNET.Properties.Resources.Exception_IndexOutOfRange">
@@ -3109,6 +3129,11 @@
               Looks up a localized string similar to The start line must be greater than or equal to zero..
             </summary>
         </member>
+        <member name="P:ScintillaNET.Properties.Resources.Exception_ModuleAlreadyLoaded">
+            <summary>
+              Looks up a localized string similar to The module name must be set before any Scintilla object are created..
+            </summary>
+        </member>
         <member name="P:ScintillaNET.Properties.Resources.Exception_MustBeASCII">
             <summary>
               Looks up a localized string similar to Only ASCII characters are permitted..
@@ -3134,19 +3159,14 @@
               Looks up a localized string similar to The specified encoding is not supported..
             </summary>
         </member>
-        <member name="P:ScintillaNET.Properties.Resources.GoToNextMessage">
+        <member name="P:ScintillaNET.Properties.Resources.ModuleName">
             <summary>
-              Looks up a localized resource of type System.Drawing.Bitmap.
+              Looks up a localized string similar to SciLexer.dll.
             </summary>
         </member>
-        <member name="P:ScintillaNET.Properties.Resources.GoToPreviousMessage">
+        <member name="P:ScintillaNET.Properties.Resources.ModuleName64">
             <summary>
-              Looks up a localized resource of type System.Drawing.Bitmap.
-            </summary>
-        </member>
-        <member name="P:ScintillaNET.Properties.Resources.LineColorHS">
-            <summary>
-              Looks up a localized resource of type System.Drawing.Bitmap.
+              Looks up a localized string similar to SciLexer64.dll.
             </summary>
         </member>
         <member name="T:ScintillaNET.RangeToFormat">
@@ -3181,7 +3201,7 @@
         </member>
         <member name="T:ScintillaNET.Scintilla">
             <summary>
-            Represents a Scintilla text editor control.
+                Represents a Scintilla text editor control.
             </summary>
         </member>
         <member name="T:ScintillaNET.INativeScintilla">
@@ -3415,101 +3435,124 @@
         </member>
         <member name="F:ScintillaNET.Scintilla._isBraceMatching">
             <summary>
-            Enables the brace matching from current position.
+                Enables the brace matching from current position.
             </summary>
         </member>
         <member name="M:ScintillaNET.Scintilla.AddLastLineEnd">
             <summary>
-            Adds a line _end marker to the _end of the document
+                Adds a line _end marker to the _end of the document
             </summary>
         </member>
         <member name="M:ScintillaNET.Scintilla.AppendText(System.String)">
             <summary>
-            Appends a copy of the specified string to the _end of this instance.
+                Appends a copy of the specified string to the _end of this instance.
             </summary>
             <param name="text">The <see cref="T:System.String"/> to append.</param>
             <returns>A <see cref="T:ScintillaNET.Range"/> representing the appended text.</returns>
         </member>
-        <member name="M:ScintillaNET.Scintilla.CreateHelperInstance``1">
+        <member name="M:ScintillaNET.Scintilla.CreateAnnotationsInstance">
             <summary>
-            Creates and returns a new <see cref="T:ScintillaNET.Scintilla"/> helper.
+                Creates and returns a new <see cref="T:ScintillaNET.AnnotationCollection"/> object.
             </summary>
-            <returns>A new helper object.</returns>
+            <returns>A new <see cref="T:ScintillaNET.AnnotationCollection"/> object.</returns>
+        </member>
+        <member name="M:ScintillaNET.Scintilla.CreateFindReplaceInstance">
+            <summary>
+                Creates and returns a new <see cref="P:ScintillaNET.Scintilla.FindReplace"/> object.
+            </summary>
+            <returns>A new <see cref="P:ScintillaNET.Scintilla.FindReplace"/> object.</returns>
+        </member>
+        <member name="M:ScintillaNET.Scintilla.CreateHandle">
+            <summary>
+                Overridden. See <see cref="M:System.Windows.Forms.Control.CreateHandle"/>.
+            </summary>
+        </member>
+        <member name="M:ScintillaNET.Scintilla.CreateIndicatorsInstance">
+            <summary>
+                Creates and returns a new <see cref="P:ScintillaNET.Scintilla.Indicators"/> object.
+            </summary>
+            <returns>A new <see cref="P:ScintillaNET.Scintilla.Indicators"/> object.</returns>
+        </member>
+        <member name="M:ScintillaNET.Scintilla.CreateLineWrappingInstance">
+            <summary>
+                Creates and returns a new <see cref="P:ScintillaNET.Scintilla.LineWrapping"/> object.
+            </summary>
+            <returns>A new <see cref="P:ScintillaNET.Scintilla.LineWrapping"/> object.</returns>
+        </member>
+        <member name="M:ScintillaNET.Scintilla.CreateScrollingInstance">
+            <summary>
+                Creates and returns a new <see cref="P:ScintillaNET.Scintilla.Scrolling"/> object.
+            </summary>
+            <returns>A new <see cref="P:ScintillaNET.Scintilla.Scrolling"/> object.</returns>
         </member>
         <member name="M:ScintillaNET.Scintilla.DirectMessage(System.Int32,System.IntPtr,System.IntPtr)">
             <summary>
-            Sends the specified message directly to the native Scintilla window,
-            bypassing any managed APIs.
+                Sends the specified message directly to the native Scintilla window,
+                bypassing any managed APIs.
             </summary>
             <param name="msg">The message ID.</param>
             <param name="wParam">The message <c>wparam</c> field.</param>
             <param name="lParam">The message <c>lparam</c> field.</param>
             <returns>An <see cref="T:System.IntPtr"/> representing the result of the message request.</returns>
             <remarks>
-            Warning: The Surgeon General Has Determined that Calling the Underlying Scintilla
-            Window Directly May Result in Unexpected Behavior!
+                Warning: The Surgeon General Has Determined that Calling the Underlying Scintilla
+                Window Directly May Result in Unexpected Behavior!
             </remarks>
         </member>
         <member name="M:ScintillaNET.Scintilla.Dispose(System.Boolean)">
             <summary>
-            Overridden. Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control"/> and
-            its child controls and optionally releases the managed resources.
+                Overridden. Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control"/> and
+                its child controls and optionally releases the managed resources.
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.ExportHtml">
             <summary>
-            Exports a HTML representation of the current document.
+                Exports a HTML representation of the current document.
             </summary>
             <returns>A <see cref="T:System.String"/> containing the contents of the document formatted as HTML.</returns>
             <remarks>Only ASCII documents are supported. Other encoding types have undefined behavior.</remarks>
         </member>
         <member name="M:ScintillaNET.Scintilla.ExportHtml(System.IO.TextWriter,System.String,System.Boolean)">
             <summary>
-            Exports a HTML representation of the current document.
+                Exports a HTML representation of the current document.
             </summary>
             <param name="writer">The <see cref="T:System.IO.TextWriter"/>with which to write. </param>
             <param name="title">The title of the HTML document.</param>
             <param name="allStyles">
-            <c>true</c> to output all styles including those not
-            used in the document; otherwise, <c>false</c>.
+                <c>true</c> to output all styles including those not
+                used in the document; otherwise, <c>false</c>.
             </param>
             <remarks>Only ASCII documents are supported. Other encoding types have undefined behavior.</remarks>
         </member>
         <member name="M:ScintillaNET.Scintilla.GetCurrentLine">
             <summary>
-            Gets the text of the line containing the caret.
+                Gets the text of the line containing the caret.
             </summary>
             <returns>A <see cref="T:System.String"/> representing the text of the line containing the caret.</returns>
         </member>
         <member name="M:ScintillaNET.Scintilla.GetCurrentLine(System.Int32@)">
             <summary>
-            Gets the text of the line containing the caret and the current caret position within that line.
+                Gets the text of the line containing the caret and the current caret position within that line.
             </summary>
             <param name="caretPosition">When this method returns, contains the byte offset of the current caret position with the line.</param>
             <returns>A <see cref="T:System.String"/> representing the text of the line containing the caret.</returns>
         </member>
-        <member name="M:ScintillaNET.Scintilla.GetVersionInfo">
-            <summary>
-            Returns the version information of the native Scintilla library.
-            </summary>
-            <returns>An object representing the version information of the native Scintilla library.</returns>
-        </member>
         <member name="M:ScintillaNET.Scintilla.GetWordFromPosition(System.Int32)">
             <summary>
-            Gets a word from the specified position
+                Gets a word from the specified position
             </summary>
         </member>
         <member name="M:ScintillaNET.Scintilla.InsertText(System.String)">
             <summary>
-            Inserts text at the current cursor position
+                Inserts text at the current cursor position
             </summary>
             <param name="text">Text to insert</param>
             <returns>The range inserted</returns>
         </member>
         <member name="M:ScintillaNET.Scintilla.InsertText(System.Int32,System.String)">
             <summary>
-            Inserts text at the given position
+                Inserts text at the given position
             </summary>
             <param name="position">The position to insert text in</param>
             <param name="text">Text to insert</param>
@@ -3517,401 +3560,392 @@
         </member>
         <member name="M:ScintillaNET.Scintilla.IsInputKey(System.Windows.Forms.Keys)">
             <summary>
-            Overridden. See <see cref="M:System.Windows.Forms.Control.IsInputKey(System.Windows.Forms.Keys)"/>.
+                Overridden. See <see cref="M:System.Windows.Forms.Control.IsInputKey(System.Windows.Forms.Keys)"/>.
             </summary>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnAnnotationChanged(ScintillaNET.AnnotationChangedEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.AnnotationChanged"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.AnnotationChanged"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.AnnotationChangedEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnAutoCompleteAccepted(ScintillaNET.AutoCompleteAcceptedEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.AutoCompleteAccepted"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.AutoCompleteAccepted"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.AutoCompleteAcceptedEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnBackColorChanged(System.EventArgs)">
             <summary>
-            Raises the <see cref="!:BackColorChanged"/> event.
+                Raises the <see cref="!:BackColorChanged"/> event.
             </summary>
             <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data. </param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnBeforeTextDelete(ScintillaNET.TextModifiedEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.BeforeTextDelete"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.BeforeTextDelete"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.TextModifiedEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnBeforeTextInsert(ScintillaNET.TextModifiedEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.BeforeTextInsert"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.BeforeTextInsert"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.TextModifiedEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnBorderStyleChanged(System.EventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.BorderStyleChanged"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.BorderStyleChanged"/> event.
             </summary>
             <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnCallTipClick(ScintillaNET.CallTipClickEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.CallTipClick"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.CallTipClick"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.CallTipClickEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnCharAdded(ScintillaNET.CharAddedEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.CharAdded"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.CharAdded"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.CharAddedEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnCreateControl">
             <summary>
-            Overridden. See <see cref="M:System.Windows.Forms.Control.OnCreateControl"/>.
+                Overridden. See <see cref="M:System.Windows.Forms.Control.OnCreateControl"/>.
             </summary>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnDocumentChange(ScintillaNET.NativeScintillaEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.DocumentChange"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.DocumentChange"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.NativeScintillaEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnDoubleClick(System.EventArgs)">
             <summary>
-            Provides the support for code block selection
+                Provides the support for code block selection
             </summary>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnDropMarkerCollect(ScintillaNET.DropMarkerCollectEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.DropMarkerCollect"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.DropMarkerCollect"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.DropMarkerCollectEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnDwellEnd(ScintillaNET.ScintillaMouseEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.DwellEnd"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.DwellEnd"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.ScintillaMouseEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnDwellStart(ScintillaNET.ScintillaMouseEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.DwellStart"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.DwellStart"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.ScintillaMouseEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnFoldChanged(ScintillaNET.FoldChangedEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.FoldChanged"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.FoldChanged"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.FoldChangedEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnFontChanged(System.EventArgs)">
             <summary>
-            Raises the <see cref="!:FontChanged"/> event.
+                Raises the <see cref="!:FontChanged"/> event.
             </summary>
             <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnForeColorChanged(System.EventArgs)">
             <summary>
-            Raises the <see cref="!:ForeColorChanged"/> event.
+                Raises the <see cref="!:ForeColorChanged"/> event.
             </summary>
             <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data. </param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnGotFocus(System.EventArgs)">
             <summary>
-            Overridden. See <see cref="M:System.Windows.Forms.Control.OnGotFocus(System.EventArgs)"/>.
+                Overridden. See <see cref="M:System.Windows.Forms.Control.OnGotFocus(System.EventArgs)"/>.
             </summary>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnHandleCreated(System.EventArgs)">
             <summary>
-            Overridden. Raises the <see cref="E:System.Windows.Forms.Control.HandleCreated"/> event.
+                Overridden. Raises the <see cref="E:System.Windows.Forms.Control.HandleCreated"/> event.
             </summary>
             <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnHotspotClick(ScintillaNET.HotspotClickEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.HotspotClick"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.HotspotClick"/> event.
             </summary>
             <param name="e">A <see cref="T:ScintillaNET.HotspotClickEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnHotspotDoubleClick(ScintillaNET.HotspotClickEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.HotspotDoubleClick"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.HotspotDoubleClick"/> event.
             </summary>
             <param name="e">A <see cref="T:ScintillaNET.HotspotClickEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnHotspotReleaseClick(ScintillaNET.HotspotClickEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.HotspotReleaseClick"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.HotspotReleaseClick"/> event.
             </summary>
             <param name="e">A <see cref="T:ScintillaNET.HotspotClickEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnIndicatorClick(ScintillaNET.ScintillaMouseEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.IndicatorClick"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.IndicatorClick"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.ScintillaMouseEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnKeyDown(System.Windows.Forms.KeyEventArgs)">
             <summary>
-            Overridden. See <see cref="M:System.Windows.Forms.Control.OnKeyDown(System.Windows.Forms.KeyEventArgs)"/>.
+                Overridden. See <see cref="M:System.Windows.Forms.Control.OnKeyDown(System.Windows.Forms.KeyEventArgs)"/>.
             </summary>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnKeyPress(System.Windows.Forms.KeyPressEventArgs)">
             <summary>
-            Overridden. See <see cref="M:System.Windows.Forms.Control.OnKeyPress(System.Windows.Forms.KeyPressEventArgs)"/>.
+                Overridden. See <see cref="M:System.Windows.Forms.Control.OnKeyPress(System.Windows.Forms.KeyPressEventArgs)"/>.
             </summary>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnLinesNeedShown(ScintillaNET.LinesNeedShownEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.LinesNeedShown"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.LinesNeedShown"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.LinesNeedShownEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnLoad(System.EventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.Load"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.Load"/> event.
             </summary>
             <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnLostFocus(System.EventArgs)">
             <summary>
-            Overridden. See <see cref="M:System.Windows.Forms.Control.OnLostFocus(System.EventArgs)"/>.
+                Overridden. See <see cref="M:System.Windows.Forms.Control.OnLostFocus(System.EventArgs)"/>.
             </summary>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnMacroRecord(ScintillaNET.MacroRecordEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.MacroRecord"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.MacroRecord"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.MacroRecordEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnMarginClick(ScintillaNET.MarginClickEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.MarginClick"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.MarginClick"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.MarginClickEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnMarkerChanged(ScintillaNET.MarkerChangedEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.MarkerChanged"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.MarkerChanged"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.MarkerChangedEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnModifiedChanged(System.EventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.ModifiedChanged"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.ModifiedChanged"/> event.
             </summary>
             <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnPaint(System.Windows.Forms.PaintEventArgs)">
             <summary>
-            Overridden. See <see cref="M:System.Windows.Forms.Control.OnPaint(System.Windows.Forms.PaintEventArgs)"/>.
+                Overridden. See <see cref="M:System.Windows.Forms.Control.OnPaint(System.Windows.Forms.PaintEventArgs)"/>.
             </summary>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnReadOnlyModifyAttempt(System.EventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.ReadOnlyModifyAttempt"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.ReadOnlyModifyAttempt"/> event.
             </summary>
             <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnScroll(System.Windows.Forms.ScrollEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.Scroll"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.Scroll"/> event.
             </summary>
             <param name="e">An <see cref="T:System.Windows.Forms.ScrollEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnSelectionChanged(System.EventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.SelectionChanged"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.SelectionChanged"/> event.
             </summary>
             <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnStyleNeeded(ScintillaNET.StyleNeededEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.StyleNeeded"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.StyleNeeded"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.StyleNeededEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnTextDeleted(ScintillaNET.TextModifiedEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.TextDeleted"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.TextDeleted"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.TextModifiedEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnTextInserted(ScintillaNET.TextModifiedEventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.TextInserted"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.TextInserted"/> event.
             </summary>
             <param name="e">An <see cref="T:ScintillaNET.TextModifiedEventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.OnZoomFactorChanged(System.EventArgs)">
             <summary>
-            Raises the <see cref="E:ScintillaNET.Scintilla.ZoomFactorChanged"/> event.
+                Raises the <see cref="E:ScintillaNET.Scintilla.ZoomFactorChanged"/> event.
             </summary>
             <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.PositionIsOnComment(System.Int32)">
             <summary>
-            Checks that if the specified position is on comment.
+                Checks that if the specified position is on comment.
             </summary>
         </member>
         <member name="M:ScintillaNET.Scintilla.PositionIsOnComment(System.Int32,ScintillaNET.Lexer)">
             <summary>
-            Checks that if the specified position is on comment.
+                Checks that if the specified position is on comment.
             </summary>
         </member>
         <member name="M:ScintillaNET.Scintilla.ProcessKeyMessage(System.Windows.Forms.Message@)">
             <summary>
-            Overridden. See <see cref="M:System.Windows.Forms.Control.ProcessKeyMessage(System.Windows.Forms.Message@)"/>.
+                Overridden. See <see cref="M:System.Windows.Forms.Control.ProcessKeyMessage(System.Windows.Forms.Message@)"/>.
             </summary>
         </member>
         <member name="M:ScintillaNET.Scintilla.SafeBraceMatch(System.Int32)">
             <summary>
-            Custom way to find the matching brace when BraceMatch() does not work
+                Custom way to find the matching brace when BraceMatch() does not work
             </summary>
         </member>
-        <member name="M:ScintillaNET.Scintilla.SetModulePath(System.String)">
+        <member name="M:ScintillaNET.Scintilla.SetModuleName(System.String)">
             <summary>
-            Sets the application-wide default module path of the native Scintilla library.
+                Sets the application-wide default module name of the native Scintilla library.
             </summary>
-            <param name="modulePath">The native Scintilla module path.</param>
-            <remarks>
-            This method must be called prior to the first <see cref="T:ScintillaNET.Scintilla"/> control being created.
-            The <paramref name="modulePath"/> can be relative or absolute.
-            </remarks>
-            <exception cref="T:System.ArgumentNullException">The <paramref name="modulePath"/> is null.</exception>
-            <exception cref="T:System.ArgumentException">The <paramref name="modulePath"/> is an empty string.</exception>
+            <param name="moduleName">The native Scintilla module name.</param>
+            <remarks>This method must be called prior to the first <see cref="T:ScintillaNET.Scintilla"/> control being created.</remarks>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="moduleName"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentException">The <paramref name="moduleName"/> is an empty string.</exception>
             <exception cref="T:System.InvalidOperationException">This method was called after the first <see cref="T:ScintillaNET.Scintilla"/> control was created.</exception>
         </member>
         <member name="M:ScintillaNET.Scintilla.WndProc(System.Windows.Forms.Message@)">
             <summary>
-            Overridden. Processes Windows messages.
+                Overridden. Processes Windows messages.
             </summary>
             <param name="m">The Windows <see cref="T:System.Windows.Forms.Message"/> to process.</param>
         </member>
         <member name="M:ScintillaNET.Scintilla.ZoomIn">
             <summary>
-            Increases the <see cref="P:ScintillaNET.Scintilla.ZoomFactor"/> property by 1 point to a maximum of 20;
+                Increases the <see cref="P:ScintillaNET.Scintilla.ZoomFactor"/> property by 1 point to a maximum of 20;
             </summary>
         </member>
         <member name="M:ScintillaNET.Scintilla.ZoomOut">
             <summary>
-            Decreases the <see cref="P:ScintillaNET.Scintilla.ZoomFactor"/> property by 1 point to a minimum -10.
-            </summary>
-        </member>
-        <member name="M:ScintillaNET.Scintilla.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:ScintillaNET.Scintilla"/> class.
+                Decreases the <see cref="P:ScintillaNET.Scintilla.ZoomFactor"/> property by 1 point to a minimum -10.
             </summary>
         </member>
         <member name="P:ScintillaNET.Scintilla.AcceptsReturn">
             <summary>
-            Gets or sets a value indicating whether pressing ENTER creates a new line of text in the
-            control or activates the default button for the form.
+                Gets or sets a value indicating whether pressing ENTER creates a new line of text in the
+                control or activates the default button for the form.
             </summary>
             <returns>
-            <c>true</c> if the ENTER key creates a new line of text; <c>false</c> if the ENTER key activates
-            the default button for the form. The default is <c>false</c>.
+                <c>true</c> if the ENTER key creates a new line of text; <c>false</c> if the ENTER key activates
+                the default button for the form. The default is <c>false</c>.
             </returns>
         </member>
         <member name="P:ScintillaNET.Scintilla.AcceptsTab">
             <summary>
-            Gets or sets a value indicating whether pressing the TAB key types a TAB character in the control
-            instead of moving the focus to the next control in the tab order.
+                Gets or sets a value indicating whether pressing the TAB key types a TAB character in the control
+                instead of moving the focus to the next control in the tab order.
             </summary>
             <returns>
-            <c>true</c> if users can enter tabs using the TAB key; <c>false</c> if pressing the TAB key
-            moves the focus. The default is <c>false</c>.
+                <c>true</c> if users can enter tabs using the TAB key; <c>false</c> if pressing the TAB key
+                moves the focus. The default is <c>false</c>.
             </returns>
         </member>
         <member name="P:ScintillaNET.Scintilla.Annotations">
             <summary>
-            Gets a collection containing all annotations in the control.
+                Gets a collection containing all annotations in the control.
             </summary>
             <returns>
-            A <see cref="T:ScintillaNET.AnnotationCollection"/> that contains all the annotations in the <see cref="T:ScintillaNET.Scintilla"/> control.
+                A <see cref="T:ScintillaNET.AnnotationCollection"/> that contains all the annotations in the <see cref="T:ScintillaNET.Scintilla"/> control.
             </returns>
         </member>
         <member name="P:ScintillaNET.Scintilla.AutoComplete">
             <summary>
-            Controls autocompletion behavior.
+                Controls autocompletion behavior.
             </summary>
         </member>
         <member name="P:ScintillaNET.Scintilla.BackColor">
             <summary>
-            Gets or sets the background color for the control.
+                Gets or sets the background color for the control.
             </summary>
             <value>
-            A <see cref="T:System.Drawing.Color"/> that represents the background color of the control.
-            The default is <see cref="P:System.Drawing.SystemColors.Window"/>.
+                A <see cref="T:System.Drawing.Color"/> that represents the background color of the control.
+                The default is <see cref="P:System.Drawing.SystemColors.Window"/>.
             </value>
             <remarks>Settings this property resets any current document styling.</remarks>
         </member>
         <member name="P:ScintillaNET.Scintilla.BackgroundImage">
             <summary>
-            This property is not relevant for this class.
+                This property is not relevant for this class.
             </summary>
         </member>
         <member name="P:ScintillaNET.Scintilla.BackgroundImageLayout">
             <summary>
-            This property is not relevant for this class.
+                This property is not relevant for this class.
             </summary>
         </member>
         <member name="P:ScintillaNET.Scintilla.BorderStyle">
             <summary>
-            Gets or sets the border style of the control.
+                Gets or sets the border style of the control.
             </summary>
             <value>
-            A <see cref="P:ScintillaNET.Scintilla.BorderStyle"/> that represents the border type of the control.
-            The default is <see cref="!:BorderStyle.Fixed3D"/>.
+                A <see cref="P:ScintillaNET.Scintilla.BorderStyle"/> that represents the border type of the control.
+                The default is <see cref="!:BorderStyle.Fixed3D"/>.
             </value>
             <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">
-            The value assigned is not one of the <see cref="P:ScintillaNET.Scintilla.BorderStyle"/> values.
+                The value assigned is not one of the <see cref="P:ScintillaNET.Scintilla.BorderStyle"/> values.
             </exception>
         </member>
         <member name="P:ScintillaNET.Scintilla.CallTip">
             <summary>
-            Manages CallTip (Visual Studio-like code Tooltip) behaviors
+                Manages CallTip (Visual Studio-like code Tooltip) behaviors
             </summary>
         </member>
         <member name="P:ScintillaNET.Scintilla.Caption">
             <summary>
-            Gets/Sets the Win32 Window Caption. Defaults to Type's FullName
+                Gets/Sets the Win32 Window Caption. Defaults to Type's FullName
             </summary>
         </member>
         <member name="P:ScintillaNET.Scintilla.Caret">
             <summary>
-            Controls Caret Behavior
+                Controls Caret Behavior
             </summary>
         </member>
         <member name="P:ScintillaNET.Scintilla.Clipboard">
             <summary>
-            Gets Clipboard access for the control.
+                Gets Clipboard access for the control.
             </summary>
             <returns>A <see cref="P:ScintillaNET.Scintilla.Clipboard"/> object the provides Clipboard access for the control.</returns>
         </member>
         <member name="P:ScintillaNET.Scintilla.Commands">
             <summary>
-            Controls behavior of keyboard bound commands.
+                Controls behavior of keyboard bound commands.
             </summary>
         </member>
         <member name="P:ScintillaNET.Scintilla.ConfigurationManager">
             <summary>
-            Controls behavior of loading/managing ScintillaNET configurations.
+                Controls behavior of loading/managing ScintillaNET configurations.
             </summary>
         </member>
         <member name="P:ScintillaNET.Scintilla.CreateParams">
             <summary>
-            Gets the required creation parameters when the control handle is created.
+                Overridden. See <see cref="P:System.Windows.Forms.Control.CreateParams"/>.
             </summary>
-            <returns>A CreateParams that contains the required creation parameters when the handle to the control is created.</returns>
         </member>
         <member name="P:ScintillaNET.Scintilla.CurrentPos">
             <summary>
-            Gets or sets the character index of the current caret position.
+                Gets or sets the character index of the current caret position.
             </summary>
             <returns>The character index of the current caret position.</returns>
         </member>
@@ -3921,300 +3955,303 @@
         </member>
         <member name="P:ScintillaNET.Scintilla.DefaultSize">
             <summary>
-            Gets the default size of the control.
+                Overridden. See <see cref="P:System.Windows.Forms.Control.DefaultSize"/>.
             </summary>
-            <returns>The default Size of the control.</returns>
         </member>
         <member name="P:ScintillaNET.Scintilla.DocumentHandler">
             <summary>
-            Controls behavior of Documents
+                Controls behavior of Documents
             </summary>
         </member>
         <member name="P:ScintillaNET.Scintilla.DocumentNavigation">
             <summary>
-            Controls behavior of automatic document navigation
+                Controls behavior of automatic document navigation
             </summary>
         </member>
         <member name="P:ScintillaNET.Scintilla.DropMarkers">
             <summary>
-            Controls behavior of Drop Markers
+                Controls behavior of Drop Markers
             </summary>
         </member>
         <member name="P:ScintillaNET.Scintilla.Encoding">
             <summary>
-            Gets or sets the type of text encoding the <see cref="T:ScintillaNET.Scintilla"/> control uses internally.
+                Gets or sets the type of text encoding the <see cref="T:ScintillaNET.Scintilla"/> control uses internally.
             </summary>
             <returns>The text encoding to use. The default is <see cref="T:System.Text.UTF8Encoding"/>.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="value"/> is null.</exception>
             <exception cref="T:System.ArgumentException">The specified encoding is not supported.</exception>
             <remarks>
-            The default encoding is suitable for most users.
-            Changing it can have unintended consequences.
+                The default encoding is suitable for most users.
+                Changing it can have unintended consequences.
             </remarks>
         </member>
         <member name="P:ScintillaNET.Scintilla.EndOfLine">
             <summary>
-            Controls End Of Line Behavior
+                Controls End Of Line Behavior
             </summary>
         </member>
         <member name="P:ScintillaNET.Scintilla.Font">
             <summary>
-            Gets or sets the font of the text displayed by the control.
+                Gets or sets the font of the text displayed by the control.
             </summary>
             <value>
-            The <see cref="P:ScintillaNET.Scintilla.Font"/> to apply to the text displayed by the control.
-            The default is the value of the <see cref="!:DefaultFont"/> property.
+                The <see cref="P:ScintillaNET.Scintilla.Font"/> to apply to the text displayed by the control.
+                The default is the value of the <see cref="!:DefaultFont"/> property.
             </value>
             <remarks>Settings this property resets any current document styling.</remarks>
         </member>
         <member name="P:ScintillaNET.Scintilla.ForeColor">
             <summary>
-            Gets or sets the foreground color of the control.
+                Gets or sets the foreground color of the control.
             </summary>
             <value>
-            The foreground <see cref="T:System.Drawing.Color"/> of the control.
-            The default is <see cref="P:System.Drawing.SystemColors.WindowText"/>.
+                The foreground <see cref="T:System.Drawing.Color"/> of the control.
+                The default is <see cref="P:System.Drawing.SystemColors.WindowText"/>.
             </value>
             <remarks>Settings this property resets any current document styling.</remarks>
         </member>
         <member name="P:ScintillaNET.Scintilla.Indicators">
             <summary>
-            Gets an object used by the <see cref="T:ScintillaNET.Scintilla"/> control to manage indicators.
+                Gets an object used by the <see cref="T:ScintillaNET.Scintilla"/> control to manage indicators.
             </summary>
             <returns>An object used to manage indicators.</returns>
             <remarks>
-            Indicators are used to display additional information over the top of styling.
-            They can be used to show, for example, syntax errors, deprecated names, and bad indentation by drawing underlines under text or boxes around text.
+                Indicators are used to display additional information over the top of styling.
+                They can be used to show, for example, syntax errors, deprecated names, and bad indentation by drawing underlines under text or boxes around text.
             </remarks>
         </member>
         <member name="P:ScintillaNET.Scintilla.LayoutCacheMode">
             <summary>
-            Gets or sets the line layout caching strategy in a <see cref="T:ScintillaNET.Scintilla"/> control.
+                Gets or sets the line layout caching strategy in a <see cref="T:ScintillaNET.Scintilla"/> control.
             </summary>
             <returns>
-            One of the <see cref="P:ScintillaNET.Scintilla.LayoutCacheMode"/> enumeration values.
-            The default is <see cref="!:LayoutCacheMode.Caret"/>.
+                One of the <see cref="P:ScintillaNET.Scintilla.LayoutCacheMode"/> enumeration values.
+                The default is <see cref="!:LayoutCacheMode.Caret"/>.
             </returns>
             <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">
-            The value assigned is not one of the <see cref="P:ScintillaNET.Scintilla.LayoutCacheMode"/> values.
+                The value assigned is not one of the <see cref="P:ScintillaNET.Scintilla.LayoutCacheMode"/> values.
             </exception>
             <remarks>Larger cache sizes increase performance at the expense of memory.</remarks>
         </member>
-        <member name="P:ScintillaNET.Scintilla.Lines">
-            <summary>
-            Gets a collection representing lines of text in the <see cref="T:ScintillaNET.Scintilla"/> control.
-            </summary>
-            <returns>A collection of text lines.</returns>
-        </member>
         <member name="P:ScintillaNET.Scintilla.LineWrapping">
             <summary>
-            Gets an object that controls line wrapping options in the <see cref="T:ScintillaNET.Scintilla"/> control.
+                Gets an object that controls line wrapping options in the <see cref="T:ScintillaNET.Scintilla"/> control.
             </summary>
             <returns>A <see cref="P:ScintillaNET.Scintilla.LineWrapping"/> object that manages line wrapping options in a <see cref="T:ScintillaNET.Scintilla"/> control.</returns>
         </member>
         <member name="P:ScintillaNET.Scintilla.Markers">
             <summary>
-            Gets a collection representing the marker objects and options within the control.
+                Gets a collection representing the marker objects and options within the control.
             </summary>
             <returns>A <see cref="T:ScintillaNET.MarkerCollection"/> representing the marker objects and options within the control.</returns>
         </member>
         <member name="P:ScintillaNET.Scintilla.Modified">
             <summary>
-            Gets or sets a value that indicates that the control has been modified by the user since
-            the control was created or its contents were last set.
+                Gets or sets a value that indicates that the control has been modified by the user since
+                the control was created or its contents were last set.
             </summary>
             <returns>
-            <c>true</c> if the control's contents have been modified; otherwise, <c>false</c>.
-            The default is <c>false</c>.
+                <c>true</c> if the control's contents have been modified; otherwise, <c>false</c>.
+                The default is <c>false</c>.
             </returns>
+        </member>
+        <member name="P:ScintillaNET.Scintilla.Pointer">
+            <summary>
+                Gets the Scintilla direct object pointer that this control represents.
+            </summary>
+            <returns>An <see cref="T:System.IntPtr"/> that represents the Scintilla direct object pointer of the control.</returns>
+            <remarks>
+                Warning: The Surgeon General Has Determined that Calling the Underlying Scintilla
+                Window Directly May Result in Unexpected Behavior!
+            </remarks>
         </member>
         <member name="P:ScintillaNET.Scintilla.PositionCacheSize">
             <summary>
-            Gets or sets the position cache size used to layout short runs of text in a <see cref="T:ScintillaNET.Scintilla"/> control.
+                Gets or sets the position cache size used to layout short runs of text in a <see cref="T:ScintillaNET.Scintilla"/> control.
             </summary>
             <returns>The size of the position cache in bytes. The default is 1024.</returns>
             <remarks>Larger cache sizes increase performance at the expense of memory.</remarks>
         </member>
         <member name="P:ScintillaNET.Scintilla.Scrolling">
             <summary>
-            Gets an object that manages scrolling options in a <see cref="T:ScintillaNET.Scintilla"/> control.
+                Gets an object that manages scrolling options in a <see cref="T:ScintillaNET.Scintilla"/> control.
             </summary>
             <returns>A <see cref="P:ScintillaNET.Scintilla.Scrolling"/> object that manages scrolling options in a <see cref="T:ScintillaNET.Scintilla"/> control.</returns>
         </member>
         <member name="P:ScintillaNET.Scintilla.SupressControlCharacters">
             <summary>
-            Gets or sets a value indicating whether characters not considered alphanumeric (ASCII values 0 through 31)
-            are prevented as text input.
+                Gets or sets a value indicating whether characters not considered alphanumeric (ASCII values 0 through 31)
+                are prevented as text input.
             </summary>
             <returns>
-            <c>true</c> to prevent control characters as input; otherwise, <c>false</c>.
-            The default is <c>true</c>.
+                <c>true</c> to prevent control characters as input; otherwise, <c>false</c>.
+                The default is <c>true</c>.
             </returns>
         </member>
         <member name="P:ScintillaNET.Scintilla.Text">
             <summary>
-            Gets or sets the current text in the <see cref="T:ScintillaNET.Scintilla"/> control.
+                Gets or sets the current text in the <see cref="T:ScintillaNET.Scintilla"/> control.
             </summary>
             <returns>The text displayed in the control.</returns>
         </member>
         <member name="P:ScintillaNET.Scintilla.TextLength">
             <summary>
-            Gets the _length of text in the control.
+                Gets the _length of text in the control.
             </summary>
             <returns>The number of characters contained in the text of the control.</returns>
         </member>
         <member name="P:ScintillaNET.Scintilla.Whitespace">
             <summary>
-            Gets the <see cref="P:ScintillaNET.Scintilla.Whitespace"/> display mode and style behavior associated with the <see cref="T:ScintillaNET.Scintilla"/> control.
+                Gets the <see cref="P:ScintillaNET.Scintilla.Whitespace"/> display mode and style behavior associated with the <see cref="T:ScintillaNET.Scintilla"/> control.
             </summary>
             <returns>A <see cref="P:ScintillaNET.Scintilla.Whitespace"/> object that represents whitespace display mode and style behavior in a <see cref="T:ScintillaNET.Scintilla"/> control.</returns>
         </member>
         <member name="P:ScintillaNET.Scintilla.ZoomFactor">
             <summary>
-            Gets or sets the current number of points added to or subtracted from the
-            font size when text is rendered in a <see cref="T:ScintillaNET.Scintilla"/> control.
+                Gets or sets the current number of points added to or subtracted from the
+                font size when text is rendered in a <see cref="T:ScintillaNET.Scintilla"/> control.
             </summary>
             <returns>The number of points by which the contents of the control is zoomed.</returns>
         </member>
         <member name="E:ScintillaNET.Scintilla.AnnotationChanged">
             <summary>
-            Occurs when an annotation has changed.
+                Occurs when an annotation has changed.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.AutoCompleteAccepted">
             <summary>
-            Occurs when the user makes a selection from the auto-complete list.
+                Occurs when the user makes a selection from the auto-complete list.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.BeforeTextDelete">
             <summary>
-            Occurs when text is about to be removed from the document.
+                Occurs when text is about to be removed from the document.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.BeforeTextInsert">
             <summary>
-            Occurs when text is about to be inserted into the document.
+                Occurs when text is about to be inserted into the document.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.BorderStyleChanged">
             <summary>
-            Occurs when the value of the <see cref="P:ScintillaNET.Scintilla.BorderStyle"/> property has changed.
+                Occurs when the value of the <see cref="P:ScintillaNET.Scintilla.BorderStyle"/> property has changed.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.CallTipClick">
             <summary>
-            Occurs when a user clicks on a call tip.
+                Occurs when a user clicks on a call tip.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.CharAdded">
             <summary>
-            Occurs when the user types an ordinary text character (as opposed to a command character) into the text.
+                Occurs when the user types an ordinary text character (as opposed to a command character) into the text.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.DocumentChange">
             <summary>
-            Occurs when the text or styling of the document changes or is about to change.
+                Occurs when the text or styling of the document changes or is about to change.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.DropMarkerCollect">
             <summary>
-            Occurs when a <see cref="T:ScintillaNET.DropMarker"/> is about to be collected.
+                Occurs when a <see cref="T:ScintillaNET.DropMarker"/> is about to be collected.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.DwellEnd">
             <summary>
-            Occurs when a user actions such as a mouse move or key press ends a dwell (hover) activity.
+                Occurs when a user actions such as a mouse move or key press ends a dwell (hover) activity.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.DwellStart">
             <summary>
-            Occurs when the user hovers the mouse (dwells) in one position for the dwell period.
+                Occurs when the user hovers the mouse (dwells) in one position for the dwell period.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.FoldChanged">
             <summary>
-            Occurs when a folding change has occurred.
+                Occurs when a folding change has occurred.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.HotspotClick">
             <summary>
-            Occurs when a user clicks on text that is in a style with the hotspot attribute set.
+                Occurs when a user clicks on text that is in a style with the hotspot attribute set.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.HotspotDoubleClick">
             <summary>
-            Occurs when a user double-clicks on text that is in a style with the hotspot attribute set.
+                Occurs when a user double-clicks on text that is in a style with the hotspot attribute set.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.HotspotReleaseClick">
             <summary>
-            Occurs when a user releases a click on text that is in a style with the hotspot attribute set.
+                Occurs when a user releases a click on text that is in a style with the hotspot attribute set.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.IndicatorClick">
             <summary>
-            Occurs when the a clicks or releases the mouse on text that has an indicator.
+                Occurs when the a clicks or releases the mouse on text that has an indicator.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.LinesNeedShown">
             <summary>
-            Occurs when a range of lines that is currently invisible should be made visible.
+                Occurs when a range of lines that is currently invisible should be made visible.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.Load">
             <summary>
-            Occurs when the control is first loaded.
+                Occurs when the control is first loaded.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.MacroRecord">
             <summary>
-            Occurs each time a recordable change occurs.
+                Occurs each time a recordable change occurs.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.MarginClick">
             <summary>
-            Occurs when the mouse was clicked inside a margin that was marked as sensitive.
+                Occurs when the mouse was clicked inside a margin that was marked as sensitive.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.MarkerChanged">
             <summary>
-            Occurs when one or more markers has changed in a line of text.
+                Occurs when one or more markers has changed in a line of text.
             </summary>
         </member>
         <!-- Badly formed XML comment ignored for member "E:ScintillaNET.Scintilla.ModifiedChanged" -->
         <member name="E:ScintillaNET.Scintilla.ReadOnlyModifyAttempt">
             <summary>
-            Occurs when a user tries to modify text when in read-only mode.
+                Occurs when a user tries to modify text when in read-only mode.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.Scroll">
             <summary>
-            Occurs when the control is scrolled.
+                Occurs when the control is scrolled.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.SelectionChanged">
             <summary>
-            Occurs when the selection has changed.
+                Occurs when the selection has changed.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.StyleNeeded">
             <summary>
-            Occurs when the control is about to display or print text that requires styling.
+                Occurs when the control is about to display or print text that requires styling.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.TextDeleted">
             <summary>
-            Occurs when text has been removed from the document.
+                Occurs when text has been removed from the document.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.TextInserted">
             <summary>
-            Occurs when text has been inserted into the document.
+                Occurs when text has been inserted into the document.
             </summary>
         </member>
         <member name="E:ScintillaNET.Scintilla.ZoomFactorChanged">
             <summary>
-            Occurs when the value of the <see cref="P:ScintillaNET.Scintilla.ZoomFactor"/> property changes.
+                Occurs when the value of the <see cref="P:ScintillaNET.Scintilla.ZoomFactor"/> property changes.
             </summary>
         </member>
         <member name="T:ScintillaNET.Scintilla.LastSelection">
@@ -4417,89 +4454,89 @@
         </member>
         <member name="T:ScintillaNET.Scrolling">
             <summary>
-            Represents the scrolling options of a <see cref="T:ScintillaNET.Scintilla"/> control. 
+                Represents the scrolling options of a <see cref="T:ScintillaNET.Scintilla"/> control. 
             </summary>
         </member>
         <member name="M:ScintillaNET.Scrolling.ScrollBy(System.Int32,System.Int32)">
             <summary>
-            Scrolls the display by the specified number of lines and columns.
+                Scrolls the display by the specified number of lines and columns.
             </summary>
             <param name="lines">The number of display lines to scroll. Positive numbers scroll down, negative numbers scroll up.</param>
             <param name="columns">The number of columns to scroll. Positive numbers scroll right, negative numbers scroll left.</param>
         </member>
         <member name="M:ScintillaNET.Scrolling.ScrollToCaret">
             <summary>
-            Scrolls the contents of the control to the current caret position.
+                Scrolls the contents of the control to the current caret position.
             </summary>
         </member>
         <member name="M:ScintillaNET.Scrolling.ScrollToLine(System.Int32)">
             <summary>
-            Scrolls the contents of the control to the line index specified.
+                Scrolls the contents of the control to the line index specified.
             </summary>
             <param name="lineIndex">The zero-based index of the line to bring into view.</param>
             <remarks>
-            The current selection wil also be reset and the caret placed at the beginning
-            of the line specified. A value outside of the range of possible line indexes
-            will automatically be clamped to a valid index.
+                The current selection wil also be reset and the caret placed at the beginning
+                of the line specified. A value outside of the range of possible line indexes
+                will automatically be clamped to a valid index.
             </remarks>
         </member>
         <member name="M:ScintillaNET.Scrolling.#ctor(ScintillaNET.Scintilla)">
             <summary>
-            Initializes a new instance of the <see cref="T:ScintillaNET.Scrolling"/> class
-            for the given <see cref="T:ScintillaNET.Scintilla"/> control.
+                Initializes a new instance of the <see cref="T:ScintillaNET.Scrolling"/> class
+                for the given <see cref="T:ScintillaNET.Scintilla"/> control.
             </summary>
             <param name="scintilla">The <see cref="T:ScintillaNET.Scintilla"/> control that created this object.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="scintilla"/> is null.</exception>
         </member>
         <member name="P:ScintillaNET.Scrolling.HorizontalScrollOffset">
             <summary>
-            Gets or sets the number of pixels by which the <see cref="T:ScintillaNET.Scintilla"/> control is scrolled horizontally.
+                Gets or sets the number of pixels by which the <see cref="T:ScintillaNET.Scintilla"/> control is scrolled horizontally.
             </summary>
             <returns>
-            The number of pixels by which the <see cref="T:ScintillaNET.Scintilla"/> control is scrolled horizontally.
-            The default is 0.
+                The number of pixels by which the <see cref="T:ScintillaNET.Scintilla"/> control is scrolled horizontally.
+                The default is 0.
             </returns>
         </member>
         <member name="P:ScintillaNET.Scrolling.HorizontalScrollTracking">
             <summary>
-            Gets or sets whether the <see cref="T:ScintillaNET.Scintilla"/> control automatically increases the horizontal
-            scroll width based on the text width.
+                Gets or sets whether the <see cref="T:ScintillaNET.Scintilla"/> control automatically increases the horizontal
+                scroll width based on the text width.
             </summary>
             <returns>
-            true if the <see cref="T:ScintillaNET.Scintilla"/> control automatically increases the horizontal scroll
-            width based on the text width; otherwise, false. The default is true.
+                true if the <see cref="T:ScintillaNET.Scintilla"/> control automatically increases the horizontal scroll
+                width based on the text width; otherwise, false. The default is true.
             </returns>
         </member>
         <member name="P:ScintillaNET.Scrolling.HorizontalScrollWidth">
             <summary>
-            Gets or sets the number of pixels by which the <see cref="T:ScintillaNET.Scintilla"/> control can scroll horizontally.
+                Gets or sets the number of pixels by which the <see cref="T:ScintillaNET.Scintilla"/> control can scroll horizontally.
             </summary>
             <returns>
-            The number of pixels by which the <see cref="T:ScintillaNET.Scintilla"/> control can scroll horizontally.
-            The default is 1.
+                The number of pixels by which the <see cref="T:ScintillaNET.Scintilla"/> control can scroll horizontally.
+                The default is 1.
             </returns>
         </member>
         <member name="P:ScintillaNET.Scrolling.ScrollBars">
             <summary>
-            Gets or sets which scroll bars should appear in a <see cref="T:ScintillaNET.Scintilla"/> control.
+                Gets or sets which scroll bars should appear in a <see cref="T:ScintillaNET.Scintilla"/> control.
             </summary>
             <returns>
-            One of the <see cref="P:ScintillaNET.Scrolling.ScrollBars"/> enumeration values that indicates whether
-            a <see cref="T:ScintillaNET.Scintilla"/> control appears with no scroll bars, a horizontal scroll bar,
-            a vertical scroll bar, or both. The default is <see cref="!:ScrollBars.Both"/>.
+                One of the <see cref="P:ScintillaNET.Scrolling.ScrollBars"/> enumeration values that indicates whether
+                a <see cref="T:ScintillaNET.Scintilla"/> control appears with no scroll bars, a horizontal scroll bar,
+                a vertical scroll bar, or both. The default is <see cref="!:ScrollBars.Both"/>.
             </returns>
             <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">
-            The value assigned is not one of the <see cref="P:ScintillaNET.Scrolling.ScrollBars"/> values.
+                The value assigned is not one of the <see cref="P:ScintillaNET.Scrolling.ScrollBars"/> values.
             </exception>
         </member>
         <member name="P:ScintillaNET.Scrolling.ScrollPastEnd">
             <summary>
-            Gets or sets whether vertical scrolling is allowed past the last line of text
-            in a <see cref="T:ScintillaNET.Scintilla"/> control
+                Gets or sets whether vertical scrolling is allowed past the last line of text
+                in a <see cref="T:ScintillaNET.Scintilla"/> control
             </summary>
             <returns>
-            true to allow vertical scrolling past the last line of text in a <see cref="T:ScintillaNET.Scintilla"/> control;
-            otherwise, false. The default is false.
+                true to allow vertical scrolling past the last line of text in a <see cref="T:ScintillaNET.Scintilla"/> control;
+                otherwise, false. The default is false.
             </returns>
         </member>
         <member name="T:ScintillaNET.SmartIndent">
