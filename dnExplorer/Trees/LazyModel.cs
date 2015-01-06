@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace dnExplorer.Trees {
 	public abstract class LazyModel : DataModel {
@@ -23,24 +21,15 @@ namespace dnExplorer.Trees {
 			}
 		}
 
-		const int STATE_IDLE = 0;
-		const int STATE_LOADING = 1;
-		const int STATE_SETTING = 2;
-		const int STATE_CANCEL = 3;
-		const int STATE_COMPLETE = 4;
-		const int LOADING_THRESHOLD = 250;
-
-		object loadLock = new object();
-		Task<ICollection<IDataModel>> loadChildren;
-		int loadState = STATE_IDLE;
-		ManualResetEvent waitHnd = new ManualResetEvent(false);
+		object sync = new object();
+		ResponsiveOperation<ICollection<IDataModel>> loadOp;
 
 		protected abstract bool HasChildren { get; }
 		protected abstract bool IsVolatile { get; }
 
 		public override void OnCollapse() {
-			lock (loadLock) {
-				if (loadState == STATE_LOADING)
+			lock (sync) {
+				if (loadOp != null)
 					return;
 
 				if (Children.Count > 0 && (
@@ -53,42 +42,28 @@ namespace dnExplorer.Trees {
 		}
 
 		public override void OnExpand() {
-			LoadImmediate();
+			Load().Begin();
 		}
 
-		public Task<ICollection<IDataModel>> LoadImmediate() {
-			if (loadState == STATE_LOADING || loadState == STATE_SETTING)
+		public ResponsiveOperation<ICollection<IDataModel>> Load() {
+			if (loadOp != null)
 				return null;
 
-			lock (loadLock) {
-				if (loadState == STATE_LOADING || loadState == STATE_SETTING)
+			lock (sync) {
+				if (loadOp != null)
 					return null;
-				if (!HasChildren || Children[0] != NullModel.Instance)
-					return null;
-				loadState = STATE_LOADING;
 			}
 
-			waitHnd.Reset();
-
-			loadChildren = Task.Factory.StartNew<ICollection<IDataModel>>(PopulateChildrenInternal);
-
-			if (!waitHnd.WaitOne(LOADING_THRESHOLD)) {
-				lock (loadLock) {
-					if (!waitHnd.WaitOne(0)) {
-						using (Children.BeginUpdate()) {
-							Children.Clear();
-							Children.Add(new Loading());
-						}
-						loadChildren.ContinueWith(SetChildren, TaskScheduler.FromCurrentSynchronizationContext());
-						return loadChildren;
-					}
+			loadOp = new ResponsiveOperation<ICollection<IDataModel>>(PopulateChildrenInternal);
+			loadOp.Loading += () => {
+				using (Children.BeginUpdate()) {
+					Children.Clear();
+					Children.Add(new Loading());
 				}
-				SetChildren(loadChildren);
-			}
-			else
-				SetChildren(loadChildren);
+			};
+			loadOp.Completed += SetChildren;
 
-			return loadChildren;
+			return loadOp;
 		}
 
 		ICollection<IDataModel> PopulateChildrenInternal() {
@@ -104,24 +79,12 @@ namespace dnExplorer.Trees {
 				};
 			}
 
-			lock (loadLock) {
-				waitHnd.Set();
-			}
 			return children;
 		}
 
-		void SetChildren(Task<ICollection<IDataModel>> task) {
-			lock (loadLock) {
-				if (loadState == STATE_CANCEL)
-					return;
-
-				loadState = STATE_SETTING;
-				loadChildren = null;
-				while (!task.IsCompleted)
-					Thread.Sleep(10);
-				var models = task.Result;
-
-				if (models.Count > 0x200) {
+		void SetChildren(ICollection<IDataModel> result) {
+			lock (sync) {
+				if (result.Count > 0x200) {
 					using (Children.BeginUpdate()) {
 						Children.Clear();
 						Children.Add(new Loading());
@@ -129,10 +92,10 @@ namespace dnExplorer.Trees {
 				}
 				using (Children.BeginUpdate()) {
 					Children.Clear();
-					foreach (var child in models)
+					foreach (var child in result)
 						Children.Add(child);
 				}
-				loadState = STATE_COMPLETE;
+				loadOp = null;
 			}
 		}
 
@@ -145,10 +108,10 @@ namespace dnExplorer.Trees {
 			Refresh();
 			if (refreshChildren) {
 				OnCollapseRequested();
-				lock (loadLock) {
-					if (loadState == STATE_LOADING)
-						loadState = STATE_CANCEL;
 
+				lock (sync) {
+					if (loadOp != null)
+						loadOp.Cancel();
 					Children.Clear();
 					if (HasChildren) {
 						Children.Add(NullModel.Instance);

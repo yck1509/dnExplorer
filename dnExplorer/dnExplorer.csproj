@@ -60,6 +60,7 @@
     </Compile>
     <Compile Include="Controls\CodeViewOutput.cs" />
     <Compile Include="Helpers\IconCreator.cs" />
+    <Compile Include="Helpers\ResponsiveOperation.cs" />
     <Compile Include="ModuleManager\ModuleManager.cs">
       <SubType>Form</SubType>
     </Compile>
