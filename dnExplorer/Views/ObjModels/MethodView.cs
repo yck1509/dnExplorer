@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Windows.Forms;
+using dnExplorer.Controls;
 using dnExplorer.Models;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
-using ScintillaNET;
 
 namespace dnExplorer.Views {
 	public class MethodView : ViewBase<MethodModel> {
-		Scintilla view;
+		CodeView view;
 
 		public MethodView() {
-			view = new Scintilla {
-				Dock = DockStyle.Fill
-			};
+			view = new CodeView();
 			Controls.Add(view);
 		}
 
@@ -29,9 +26,9 @@ namespace dnExplorer.Views {
 				});
 				astBuilder.AddMethod(Model.Method);
 				astBuilder.RunTransformations();
-				var output = new PlainTextOutput();
+				var output = new CodeViewOutput();
 				astBuilder.GenerateCode(output);
-				view.Text = output.ToString();
+				view.SetData(output.GetResult());
 			}
 		}
 	}

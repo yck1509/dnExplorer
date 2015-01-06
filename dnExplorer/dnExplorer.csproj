@@ -39,6 +39,10 @@
     <Reference Include="ICSharpCode.Decompiler">
       <HintPath>..\ICSharpCode.Decompiler\Release\bin\ICSharpCode.Decompiler.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.NRefactory, Version=5.0.0.0, Culture=neutral, PublicKeyToken=d4bfe873e7598c49, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ICSharpCode.Decompiler\Release\bin\ICSharpCode.NRefactory.dll</HintPath>
+    </Reference>
     <Reference Include="ScintillaNET">
       <HintPath>..\libs\ScintillaNET.dll</HintPath>
     </Reference>
@@ -51,6 +55,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\CodeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\CodeViewOutput.cs" />
     <Compile Include="Helpers\IconCreator.cs" />
     <Compile Include="ModuleManager\ModuleManager.cs">
       <SubType>Form</SubType>
