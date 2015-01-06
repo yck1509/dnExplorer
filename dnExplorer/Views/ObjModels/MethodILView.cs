@@ -1,17 +1,17 @@
 ﻿using System;
+using System.Threading;
 using dnExplorer.Controls;
 using dnExplorer.Models;
-using ICSharpCode.Decompiler;
-using ICSharpCode.Decompiler.Ast;
+using ICSharpCode.Decompiler.Disassembler;
 
 namespace dnExplorer.Views {
-	public class MethodView : ViewBase<MethodModel> {
+	public class MethodILView : ViewBase<MethodModel> {
 		CodeView view;
 
-		public MethodView() {
+		public MethodILView() {
 			view = new CodeView();
 			Controls.Add(view);
-			Text = "C#";
+			Text = "IL";
 		}
 
 		object sync = new object();
@@ -25,34 +25,27 @@ namespace dnExplorer.Views {
 				view.Clear();
 			}
 			else {
-				op = new ResponsiveOperation<CodeViewData>(RunDecompilation);
+				op = new ResponsiveOperation<CodeViewData>(RunDisassembler);
 				op.Completed += OnCompleted;
 				op.Loading += OnLoading;
 				op.Begin();
 			}
 		}
 
-		CodeViewData RunDecompilation() {
+		CodeViewData RunDisassembler() {
 			try {
-				AstBuilder astBuilder = new AstBuilder(new DecompilerContext(Model.Method.Module) {
-					CurrentType = Model.Method.DeclaringType,
-					Settings = new DecompilerSettings {
-						UsingDeclarations = false
-					}
-				});
-				astBuilder.AddMethod(Model.Method);
-				astBuilder.RunTransformations();
 				var output = new CodeViewOutput();
-				astBuilder.GenerateCode(output);
+				var disassembler = new ReflectionDisassembler(output, true, CancellationToken.None);
+				disassembler.DisassembleMethod(Model.Method);
 				return output.GetResult();
 			}
 			catch (Exception ex) {
-				return new CodeViewData(string.Format("Error occured in decompilation:{0}{1}", Environment.NewLine, ex));
+				return new CodeViewData(string.Format("Error occured in disassembling:{0}{1}", Environment.NewLine, ex));
 			}
 		}
 
 		void OnLoading(object sender, EventArgs e) {
-			view.SetPlainText("Decompiling...");
+			view.SetPlainText("Disassembling...");
 		}
 
 		void OnCompleted(object sender, OperationResultEventArgs<CodeViewData> e) {

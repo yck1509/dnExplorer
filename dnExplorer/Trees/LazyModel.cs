@@ -42,7 +42,10 @@ namespace dnExplorer.Trees {
 		}
 
 		public override void OnExpand() {
-			Load().Begin();
+
+			if (Children.Count > 0 && Children[0] == NullModel.Instance) {
+				Load().Begin();
+			}
 		}
 
 		public ResponsiveOperation<ICollection<IDataModel>> Load() {
