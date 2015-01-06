@@ -18,6 +18,7 @@ namespace dnExplorer {
 
 		public InfoPanel() {
 			content = new Scintilla();
+			ScintillaHack.Apply(content);
 
 			//content.BorderStyle = BorderStyle.None;
 			content.Folding.IsEnabled = false;

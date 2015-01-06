@@ -15,6 +15,7 @@ namespace dnExplorer.Controls {
 			Indentation.TabWidth = 4;
 
 			SetupStyles();
+			ScintillaHack.Apply(this);
 		}
 
 		void SetupStyles() {
