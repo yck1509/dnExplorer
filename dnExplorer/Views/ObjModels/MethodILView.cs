@@ -2,10 +2,12 @@
 using System.Threading;
 using dnExplorer.Controls;
 using dnExplorer.Models;
+using dnlib.DotNet;
+using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Disassembler;
 
 namespace dnExplorer.Views {
-	public class MethodILView : ViewBase<MethodModel> {
+	public class MethodILView : ViewBase<ObjModel> {
 		CodeView view;
 
 		public MethodILView() {
@@ -32,11 +34,37 @@ namespace dnExplorer.Views {
 			}
 		}
 
+		void DoDisassemble(ITextOutput output, ReflectionDisassembler disassembler) {
+			if (Model.Definition is ModuleDef) {
+				var module = (ModuleDef)Model.Definition;
+				disassembler.WriteAssemblyReferences(module);
+				if (module.Assembly != null)
+					disassembler.WriteAssemblyHeader(module.Assembly);
+				output.WriteLine();
+				disassembler.WriteModuleHeader(module);
+			}
+			else if (Model.Definition is TypeDef) {
+				disassembler.DisassembleType((TypeDef)Model.Definition);
+			}
+			else if (Model.Definition is MethodDef) {
+				disassembler.DisassembleMethod((MethodDef)Model.Definition);
+			}
+			else if (Model.Definition is FieldDef) {
+				disassembler.DisassembleField((FieldDef)Model.Definition);
+			}
+			else if (Model.Definition is PropertyDef) {
+				disassembler.DisassembleProperty((PropertyDef)Model.Definition);
+			}
+			else if (Model.Definition is EventDef) {
+				disassembler.DisassembleEvent((EventDef)Model.Definition);
+			}
+		}
+
 		CodeViewData RunDisassembler() {
 			try {
 				var output = new CodeViewOutput();
 				var disassembler = new ReflectionDisassembler(output, true, CancellationToken.None);
-				disassembler.DisassembleMethod(Model.Method);
+				DoDisassemble(output, disassembler);
 				return output.GetResult();
 			}
 			catch (Exception ex) {

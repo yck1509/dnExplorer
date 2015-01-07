@@ -1,11 +1,12 @@
 ﻿using System;
 using dnExplorer.Controls;
 using dnExplorer.Models;
+using dnlib.DotNet;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 
 namespace dnExplorer.Views {
-	public class MethodView : ViewBase<MethodModel> {
+	public class MethodView : ViewBase<ObjModel> {
 		CodeView view;
 
 		public MethodView() {
@@ -32,18 +33,71 @@ namespace dnExplorer.Views {
 			}
 		}
 
+		AstBuilder CreateBuilder() {
+			ModuleDef moduleDef;
+
+			DecompilerContext ctx;
+			AstBuilder builder;
+
+			if (Model.Definition is ModuleDef) {
+				var def = (ModuleDef)Model.Definition;
+				moduleDef = def;
+				builder = new AstBuilder(ctx = new DecompilerContext(moduleDef));
+				builder.AddAssembly(def, true);
+			}
+			else if (Model.Definition is TypeDef) {
+				var def = (TypeDef)Model.Definition;
+				moduleDef = def.Module;
+				builder = new AstBuilder(ctx = new DecompilerContext(moduleDef));
+				builder.DecompileMethodBodies = false;
+				ctx.CurrentType = def;
+				builder.AddType(def);
+			}
+			else if (Model.Definition is MethodDef) {
+				var def = (MethodDef)Model.Definition;
+				moduleDef = def.Module;
+				builder = new AstBuilder(ctx = new DecompilerContext(moduleDef));
+				ctx.CurrentType = def.DeclaringType;
+				builder.AddMethod(def);
+			}
+			else if (Model.Definition is FieldDef) {
+				var def = (FieldDef)Model.Definition;
+				moduleDef = def.Module;
+				builder = new AstBuilder(ctx = new DecompilerContext(moduleDef));
+				ctx.CurrentType = def.DeclaringType;
+				builder.AddField(def);
+			}
+			else if (Model.Definition is PropertyDef) {
+				var def = (PropertyDef)Model.Definition;
+				moduleDef = def.Module;
+				builder = new AstBuilder(ctx = new DecompilerContext(moduleDef));
+				ctx.CurrentType = def.DeclaringType;
+				builder.AddProperty(def);
+			}
+			else if (Model.Definition is EventDef) {
+				var def = (EventDef)Model.Definition;
+				moduleDef = def.Module;
+				builder = new AstBuilder(ctx = new DecompilerContext(moduleDef));
+				ctx.CurrentType = def.DeclaringType;
+				builder.AddEvent(def);
+			}
+			else
+				return null;
+
+			ctx.Settings = new DecompilerSettings {
+				UsingDeclarations = false
+			};
+			return builder;
+		}
+
 		CodeViewData RunDecompilation() {
 			try {
-				AstBuilder astBuilder = new AstBuilder(new DecompilerContext(Model.Method.Module) {
-					CurrentType = Model.Method.DeclaringType,
-					Settings = new DecompilerSettings {
-						UsingDeclarations = false
-					}
-				});
-				astBuilder.AddMethod(Model.Method);
-				astBuilder.RunTransformations();
+				var builder = CreateBuilder();
+				if (builder == null)
+					return new CodeViewData("");
+				builder.RunTransformations();
 				var output = new CodeViewOutput();
-				astBuilder.GenerateCode(output);
+				builder.GenerateCode(output);
 				return output.GetResult();
 			}
 			catch (Exception ex) {

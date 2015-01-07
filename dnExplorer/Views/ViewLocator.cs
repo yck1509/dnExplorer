@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using dnExplorer.Trees;
 
 namespace dnExplorer.Views {
@@ -25,10 +24,13 @@ namespace dnExplorer.Views {
 		static readonly Dictionary<Type, IList<IView>> viewMap;
 
 		public static IEnumerable<IView> LocateViews(IDataModel model) {
-			IList<IView> views;
-			if (!viewMap.TryGetValue(model.GetType(), out views))
-				return Enumerable.Empty<IView>();
-			return views;
+			var modelType = model.GetType();
+			foreach (var viewType in viewMap) {
+				if (!viewType.Key.IsAssignableFrom(modelType))
+					continue;
+				foreach (var view in viewType.Value)
+					yield return view;
+			}
 		}
 	}
 }
