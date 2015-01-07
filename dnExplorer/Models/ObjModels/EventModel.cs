@@ -6,8 +6,12 @@ using dnExplorer.Trees;
 using dnlib.DotNet;
 
 namespace dnExplorer.Models {
-	public class EventModel : LazyModel, IHasInfo {
+	public class EventModel : ObjModel, IHasInfo {
 		public EventDef Event { get; set; }
+
+		public override IDnlibDef Definition {
+			get { return Event; }
+		}
 
 		public EventModel(EventDef evnt) {
 			Event = evnt;

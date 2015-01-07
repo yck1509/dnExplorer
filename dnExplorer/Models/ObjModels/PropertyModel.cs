@@ -6,8 +6,12 @@ using dnExplorer.Trees;
 using dnlib.DotNet;
 
 namespace dnExplorer.Models {
-	public class PropertyModel : LazyModel, IHasInfo {
+	public class PropertyModel : ObjModel, IHasInfo {
 		public PropertyDef Property { get; set; }
+
+		public override IDnlibDef Definition {
+			get { return Property; }
+		}
 
 		public PropertyModel(PropertyDef property) {
 			Property = property;

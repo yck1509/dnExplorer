@@ -5,8 +5,12 @@ using dnExplorer.Trees;
 using dnlib.DotNet;
 
 namespace dnExplorer.Models {
-	public class MethodModel : LazyModel, IHasInfo {
+	public class MethodModel : ObjModel, IHasInfo {
 		public MethodDef Method { get; set; }
+
+		public override IDnlibDef Definition {
+			get { return Method; }
+		}
 
 		public MethodModel(MethodDef method) {
 			Method = method;

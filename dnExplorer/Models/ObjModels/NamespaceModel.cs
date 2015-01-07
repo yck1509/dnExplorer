@@ -22,7 +22,7 @@ namespace dnExplorer.Models {
 		}
 
 		protected override bool IsVolatile {
-			get { return true; }
+			get { return false; }
 		}
 
 		protected override IEnumerable<IDataModel> PopulateChildren() {

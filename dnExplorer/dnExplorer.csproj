@@ -62,6 +62,7 @@
     <Compile Include="Helpers\IconCreator.cs" />
     <Compile Include="Helpers\ResponsiveOperation.cs" />
     <Compile Include="Helpers\ScintillaHack.cs" />
+    <Compile Include="Models\ObjModels\ObjModel.cs" />
     <Compile Include="ModuleManager\ModuleManager.cs">
       <SubType>Form</SubType>
     </Compile>
