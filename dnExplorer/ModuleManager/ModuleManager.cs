@@ -8,8 +8,9 @@ using WeifenLuo.WinFormsUI.Docking;
 namespace dnExplorer {
 	internal class ModuleManager : DockContent {
 		InfoPanel infos;
-		TreeViewX treeView;
+		ModuleTreeView treeView;
 		NavigationHistory history = new NavigationHistory();
+		ModuleResolver resolver;
 
 		public ModuleManager() {
 			Text = "Modules";
@@ -23,7 +24,7 @@ namespace dnExplorer {
 			};
 			Controls.Add(split);
 
-			treeView = new TreeViewX {
+			treeView = new ModuleTreeView(this) {
 				Dock = DockStyle.Fill,
 				BorderStyle = BorderStyle.None
 			};
@@ -47,6 +48,7 @@ namespace dnExplorer {
 					navCount--;
 				}
 			};
+			resolver = new ModuleResolver(this);
 		}
 
 		int navCount;
@@ -70,7 +72,24 @@ namespace dnExplorer {
 		}
 
 		public void LoadModule(string path) {
-			treeView.Nodes.Add(new dnModuleModel(new dnModule(path, new ModuleContext())).ToNode());
+			if (treeView.InvokeRequired) {
+				treeView.Invoke(new Action<string>(LoadModule), path);
+				return;
+			}
+
+			var module = new dnModule(path, new ModuleContext(resolver));
+			if (module.ModuleDef != null) {
+				ModuleDefMD cached;
+				if (!resolver.AddModuleDef(module.ModuleDef, out cached))
+					return;
+			}
+			treeView.Nodes.Add(new dnModuleModel(module).ToNode());
+		}
+
+		public void RemoveModule(dnModule module) {
+			if (treeView.InvokeRequired) {
+				treeView.Invoke(new Action<dnModule>(RemoveModule), module);
+			}
 		}
 
 		public event EventHandler<SelectionChangedEventArgs> SelectionChanged;
@@ -78,6 +97,14 @@ namespace dnExplorer {
 		public NavigationHistory History {
 			get { return history; }
 		}
+	}
+
+	internal class ModuleTreeView : TreeViewX {
+		public ModuleTreeView(ModuleManager manager) {
+			Manager = manager;
+		}
+
+		public ModuleManager Manager { get; private set; }
 	}
 
 	internal class SelectionChangedEventArgs : EventArgs {

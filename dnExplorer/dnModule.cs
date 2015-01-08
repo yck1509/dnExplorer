@@ -83,6 +83,7 @@ namespace dnExplorer {
 						Context = ctx
 					}
 				});
+				ModuleDef.EnableTypeDefFindCache = true;
 			}
 			catch (Exception ex) {
 				ErrorMessage = string.Format("Error while loading ModuleDef:{0}{1}{0}{0}",
