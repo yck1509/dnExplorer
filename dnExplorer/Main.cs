@@ -12,7 +12,13 @@ namespace dnExplorer {
 		public static readonly string AppName = typeof(InputBox).Assembly.GetName().Name;
 
 		ModuleManager modMgr;
+
 		DockPanel dockPanel;
+		ToolStripPanel toolStripPanel;
+		ToolStrip mainStrip;
+
+		ToolStripButton backBtn;
+		ToolStripButton forwardBtn;
 
 		public Main() {
 			ToolStripManager.Renderer = new VS2010Renderer();
@@ -28,6 +34,7 @@ namespace dnExplorer {
 
 			modMgr = new ModuleManager();
 			modMgr.SelectionChanged += OnNodeSelected;
+			modMgr.History.Navigated += (sender, e) => UpdateHistoryButtons();
 
 			dockPanel = new DockPanel {
 				Dock = DockStyle.Fill,
@@ -41,6 +48,28 @@ namespace dnExplorer {
 			};
 			Controls.Add(dockPanel);
 			modMgr.Show(dockPanel, DockState.DockLeft);
+
+			toolStripPanel = new ToolStripPanel {
+				Dock = DockStyle.Top
+			};
+			Controls.Add(toolStripPanel);
+
+			mainStrip = new ToolStrip();
+			toolStripPanel.Join(mainStrip);
+
+			backBtn = new ToolStripButton(Resources.GetResource<Image>("Icons.back.png")) {
+				ToolTipText = "Go Back",
+				Enabled = false
+			};
+			backBtn.Click += (sender, e) => modMgr.History.GoBack();
+			mainStrip.Items.Add(backBtn);
+
+			forwardBtn = new ToolStripButton(Resources.GetResource<Image>("Icons.forward.png")) {
+				ToolTipText = "Go Forward",
+				Enabled = false
+			};
+			forwardBtn.Click += (sender, e) => modMgr.History.GoForward();
+			mainStrip.Items.Add(forwardBtn);
 
 			PerformLayout();
 		}
@@ -67,6 +96,8 @@ namespace dnExplorer {
 		Dictionary<IView, DockContent> currentViews = new Dictionary<IView, DockContent>();
 
 		void OnNodeSelected(object sender, SelectionChangedEventArgs e) {
+			UpdateHistoryButtons();
+
 			IView[] newViews;
 			if (e.Selection == null)
 				newViews = new IView[0];
@@ -129,6 +160,11 @@ namespace dnExplorer {
 				activeView.DockHandler.PanelPane.ActiveContent = activeView;
 			modMgr.Activate();
 			dockPanel.ResumeLayout(true, true);
+		}
+
+		void UpdateHistoryButtons() {
+			backBtn.Enabled = modMgr.History.CanGoBack;
+			forwardBtn.Enabled = modMgr.History.CanGoForward;
 		}
 	}
 }
