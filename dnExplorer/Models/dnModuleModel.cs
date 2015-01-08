@@ -29,7 +29,7 @@ namespace dnExplorer.Models {
 				yield return new PEImageModel(Module.Image, cor20);
 
 			if (Module.MetaData != null)
-				yield return new MetaDataModel(Module.MetaData);
+				yield return new MetaDataModel(Module);
 
 			if (Module.ModuleDef != null)
 				yield return new ModuleModel(Module.ModuleDef);

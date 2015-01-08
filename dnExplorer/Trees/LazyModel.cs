@@ -42,7 +42,6 @@ namespace dnExplorer.Trees {
 		}
 
 		public override void OnExpand() {
-
 			if (Children.Count > 0 && Children[0] == NullModel.Instance) {
 				Load().Begin();
 			}
@@ -50,11 +49,11 @@ namespace dnExplorer.Trees {
 
 		public ResponsiveOperation<ICollection<IDataModel>> Load() {
 			if (loadOp != null)
-				return null;
+				return loadOp;
 
 			lock (sync) {
-				if (loadOp != null)
-					return null;
+				if (loadOp != null || (Children.Count == 0 || Children[0] != NullModel.Instance))
+					return loadOp;
 			}
 
 			loadOp = new ResponsiveOperation<ICollection<IDataModel>>(PopulateChildrenInternal);

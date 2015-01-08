@@ -173,10 +173,10 @@
     <Compile Include="Views\dnModuleView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Views\ObjModels\MethodILView.cs">
+    <Compile Include="Views\ObjModels\ILView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Views\ObjModels\MethodView.cs">
+    <Compile Include="Views\ObjModels\CSharpView.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Views\RawDataView.cs">

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Drawing;
 using System.Threading;
+using System.Windows.Forms;
 using dnExplorer.Controls;
 using dnExplorer.Models;
 using dnlib.DotNet;
@@ -7,10 +9,10 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Disassembler;
 
 namespace dnExplorer.Views {
-	public class MethodILView : ViewBase<ObjModel> {
+	public class ILView : ViewBase<ObjModel> {
 		CodeView view;
 
-		public MethodILView() {
+		public ILView() {
 			view = new CodeView();
 			Controls.Add(view);
 			Text = "IL";
@@ -79,6 +81,33 @@ namespace dnExplorer.Views {
 		void OnCompleted(object sender, OperationResultEventArgs<CodeViewData> e) {
 			view.SetData(e.Result);
 			op = null;
+		}
+
+		static ContextMenuStrip ctxMenu;
+
+		protected internal override ContextMenuStrip GetContextMenu() {
+			if (ctxMenu != null)
+				return ctxMenu;
+
+			ctxMenu = new ContextMenuStrip();
+
+			var gotoMD = new ToolStripMenuItem("Go To MetaData View");
+			gotoMD.Click += GotoMD;
+			ctxMenu.Items.Add(gotoMD);
+
+			return ctxMenu;
+		}
+
+		static void GotoMD(object sender, EventArgs e) {
+			var model = sender.GetContextMenuModel<ObjModel>();
+			var module = model.Definition as ModuleDefMD;
+			if (module == null)
+				module = (ModuleDefMD)((IMemberDef)model.Definition).Module;
+			ViewUtils.ShowToken(model, module.MetaData.PEImage, model.Definition.MDToken);
+		}
+
+		public override Icon Icon {
+			get { return IconCreator.CreateIcon((Bitmap)Resources.GetResource<Image>("Icons.code.png"), 16); }
 		}
 	}
 }

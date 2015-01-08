@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using dnExplorer.Models;
@@ -17,7 +18,7 @@ namespace dnExplorer.Views {
 					var targetView = (RawDataView)ViewLocator.LocateViews(node.Model).Single();
 					targetView.Select(begin, end);
 				})
-				.Navigate(model);
+				.Goto(model);
 		}
 
 		public static void ShowToken(IDataModel model, IPEImage image, MDToken token) {
@@ -30,7 +31,7 @@ namespace dnExplorer.Views {
 					var targetView = (MDTableHeapView)ViewLocator.LocateViews(node.Model).Single();
 					targetView.SelectItem(token);
 				})
-				.Navigate(model);
+				.Goto(model);
 		}
 
 		public static void ShowStream(IDataModel model, IPEImage image, DotNetStream stream, uint begin, uint size) {
@@ -49,7 +50,45 @@ namespace dnExplorer.Views {
 						targetView.SelectHexRange(begin, begin + size - 1);
 					}
 				})
-				.Navigate(model);
+				.Goto(model);
+		}
+
+		public static void ShowMember(IDataModel model, IMemberDef member) {
+			var declTypes = new HashSet<TypeDef>();
+			var declType = member.DeclaringType;
+			var ns = (member is TypeDef) ? ((TypeDef)member).Namespace : null;
+			while (declType != null) {
+				ns = declType.Namespace;
+				declTypes.Add(declType);
+				declType = declType.DeclaringType;
+			}
+
+			TreeNavigator.Create()
+				.Path<dnModuleModel>(m => m.Module.ModuleDef == member.Module ? NavigationState.In : NavigationState.Next)
+				.Path<ModuleModel>(m => NavigationState.In)
+				.Path<NamespaceModel>(m => m.Namespace == ns ? NavigationState.In : NavigationState.Next)
+				.Path<TypeModel>(
+					m =>
+						m.Type == member ? NavigationState.Done : (declTypes.Contains(m.Type) ? NavigationState.In : NavigationState.Next))
+				.Path<MethodModel>(m => m.Method == member ? NavigationState.Done : NavigationState.Next)
+				.Path<FieldModel>(m => m.Field == member ? NavigationState.Done : NavigationState.Next)
+				.Path<PropertyModel>(
+					m =>
+						m.Property == member
+							? NavigationState.Done
+							: (m.Property.GetMethods().Contains(member) ? NavigationState.In : NavigationState.Next))
+				.Path<EventModel>(
+					m =>
+						m.Event == member
+							? NavigationState.Done
+							: (m.Event.GetMethods().Contains(member) ? NavigationState.In : NavigationState.Next))
+				.Goto(model);
+		}
+
+		public static void FindModule(IDataModel model, IPEImage image, Action<dnModule> handler) {
+			TreeNavigator.Create()
+				.Path<dnModuleModel>(m => m.Module.Image == image ? NavigationState.Done : NavigationState.Next)
+				.Find(model, (dnModuleModel m) => handler(m.Module));
 		}
 
 		public static TModel GetContextMenuModel<TModel>(this object sender)

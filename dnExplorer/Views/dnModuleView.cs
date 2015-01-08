@@ -28,9 +28,13 @@ namespace dnExplorer.Views {
 
 			ctxMenu = new ContextMenuStrip();
 
-			var gotoEntryMD = new ToolStripMenuItem("Go To Entry Point");
-			gotoEntryMD.Click += GotoEntryPoint;
-			ctxMenu.Items.Add(gotoEntryMD);
+			var gotoEntry = new ToolStripMenuItem("Go To Entry Point");
+			gotoEntry.Click += GotoEntryPoint;
+			ctxMenu.Items.Add(gotoEntry);
+
+			var gotoGlobal = new ToolStripMenuItem("Go To Global Type");
+			gotoGlobal.Click += GotoGlobalType;
+			ctxMenu.Items.Add(gotoGlobal);
 
 			ctxMenu.Items.Add(new ToolStripSeparator());
 
@@ -41,17 +45,24 @@ namespace dnExplorer.Views {
 			ctxMenu.Opening += (sender, e) => {
 				var model = sender.GetContextMenuModel<dnModuleModel>();
 
-				bool canGoEntry = model.Module.MetaData != null;
-				if (canGoEntry) {
+				bool hasMD = model.Module.MetaData != null;
+				if (hasMD) {
+					gotoEntry.Enabled = true;
+
 					var flags = model.Module.MetaData.ImageCor20Header.Flags;
 					if ((flags & ComImageFlags.NativeEntryPoint) != 0)
-						canGoEntry = false;
+						gotoEntry.Enabled = false;
 
 					var entryPoint = model.Module.MetaData.ImageCor20Header.EntryPointToken_or_RVA;
 					if (entryPoint == 0)
-						canGoEntry = false;
+						gotoEntry.Enabled = false;
+
+					gotoGlobal.Enabled = model.Module.MetaData.TablesStream.TypeDefTable.Rows > 0;
 				}
-				gotoEntryMD.Enabled = canGoEntry;
+				else {
+					gotoEntry.Enabled = false;
+					gotoGlobal.Enabled = false;
+				}
 			};
 
 			return ctxMenu;
@@ -59,8 +70,24 @@ namespace dnExplorer.Views {
 
 		static void GotoEntryPoint(object sender, EventArgs e) {
 			var model = sender.GetContextMenuModel<dnModuleModel>();
-			var token = new MDToken(model.Module.MetaData.ImageCor20Header.EntryPointToken_or_RVA);
-			ViewUtils.ShowToken(model, model.Module.Image, token);
+			if (model.Module.ModuleDef != null && model.Module.ModuleDef.EntryPoint != null) {
+				ViewUtils.ShowMember(model, model.Module.ModuleDef.EntryPoint);
+			}
+			else {
+				var token = new MDToken(model.Module.MetaData.ImageCor20Header.EntryPointToken_or_RVA);
+				ViewUtils.ShowToken(model, model.Module.Image, token);
+			}
+		}
+
+		static void GotoGlobalType(object sender, EventArgs e) {
+			var model = sender.GetContextMenuModel<dnModuleModel>();
+			if (model.Module.ModuleDef != null && model.Module.ModuleDef.GlobalType != null) {
+				ViewUtils.ShowMember(model, model.Module.ModuleDef.GlobalType);
+			}
+			else {
+				var token = new MDToken(Table.TypeDef, 1);
+				ViewUtils.ShowToken(model, model.Module.Image, token);
+			}
 		}
 
 		static void Remove(object sender, EventArgs e) {

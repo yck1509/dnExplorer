@@ -6,11 +6,16 @@ using dnlib.DotNet.MD;
 
 namespace dnExplorer.Models {
 	public class MDTableHeapModel : LazyModel {
-		public IMetaData MetaData { get; set; }
+		public dnModule Module { get; set; }
+
+		public IMetaData MetaData {
+			get { return Module.MetaData; }
+		}
+
 		public TablesStream Stream { get; set; }
 
-		public MDTableHeapModel(IMetaData metadata, TablesStream stream) {
-			MetaData = metadata;
+		public MDTableHeapModel(dnModule module, TablesStream stream) {
+			Module = module;
 			Stream = stream;
 			Text = "Tables";
 		}

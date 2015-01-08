@@ -30,24 +30,47 @@ namespace dnExplorer.Trees {
 			return new TreeNavigator();
 		}
 
-		public void Navigate(TreeNodeX node) {
+		public void Goto(TreeNodeX node) {
 			if (node.TreeView == null)
 				throw new ArgumentException("node");
-			Navigate((TreeViewX)node.TreeView);
+			Goto((TreeViewX)node.TreeView);
 		}
 
-		public void Navigate(IDataModel model) {
+		public void Goto(IDataModel model) {
 			if (model.Node == null || model.Node.TreeView == null)
 				throw new ArgumentException("model");
-			Navigate((TreeViewX)model.Node.TreeView);
+			Goto((TreeViewX)model.Node.TreeView);
 		}
 
-		public void Navigate(TreeViewX treeView) {
+		public void Goto(TreeViewX treeView) {
 			foreach (var child in treeView.Nodes)
-				NavigateChild(child as DataTreeNodeX);
+				NavigateChild(child as DataTreeNodeX,
+					node => {
+						node.TreeView.SelectedNode = node;
+						if (onNavigated != null)
+							onNavigated(node);
+					}, SearchNodeGoto);
 		}
 
-		void NavigateChild(DataTreeNodeX node) {
+		public void Find<T>(TreeNodeX node, Action<T> handler) where T : IDataModel {
+			if (node.TreeView == null)
+				throw new ArgumentException("node");
+			Find((TreeViewX)node.TreeView, handler);
+		}
+
+		public void Find<T>(IDataModel model, Action<T> handler) where T : IDataModel {
+			if (model.Node == null || model.Node.TreeView == null)
+				throw new ArgumentException("model");
+			Find((TreeViewX)model.Node.TreeView, handler);
+		}
+
+		public void Find<T>(TreeViewX treeView, Action<T> handler) where T : IDataModel {
+			foreach (var child in treeView.Nodes)
+				NavigateChild(child as DataTreeNodeX,
+					node => { handler((T)node.Model); }, SearchNodeFind);
+		}
+
+		void NavigateChild(DataTreeNodeX node, Action<DataTreeNodeX> done, Action<DataTreeNodeX, Action<DataTreeNodeX>> search) {
 			if (node == null || node.TreeView == null)
 				return;
 
@@ -61,27 +84,34 @@ namespace dnExplorer.Trees {
 				case NavigationState.In:
 					break;
 				case NavigationState.Done:
-					node.TreeView.SelectedNode = node;
-					if (onNavigated != null)
-						onNavigated(node);
+					done(node);
 					return;
 			}
 
 			if (node.Model is LazyModel) {
 				var op = ((LazyModel)node.Model).Load();
-				op.Completed += (sender, e) => SearchNodeChildren(node);
-				op.Begin();
+				if (op != null) {
+					op.Completed += (sender, e) => search(node, done);
+					op.Begin();
+				}
+				else
+					search(node, done);
 			}
 			else {
-				SearchNodeChildren(node);
+				search(node, done);
 			}
 		}
 
-		void SearchNodeChildren(DataTreeNodeX node) {
+		void SearchNodeGoto(DataTreeNodeX node, Action<DataTreeNodeX> done) {
 			node.Expand();
 
 			foreach (var child in node.Nodes)
-				NavigateChild(child as DataTreeNodeX);
+				NavigateChild(child as DataTreeNodeX, done, SearchNodeGoto);
+		}
+
+		void SearchNodeFind(DataTreeNodeX node, Action<DataTreeNodeX> done) {
+			foreach (var child in node.Nodes)
+				NavigateChild(child as DataTreeNodeX, done, SearchNodeFind);
 		}
 	}
 

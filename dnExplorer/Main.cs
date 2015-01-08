@@ -106,9 +106,17 @@ namespace dnExplorer {
 
 			dockPanel.SuspendLayout(true);
 
+			IDockContent activeView = null;
+			if (currentViews.Count > 0)
+				activeView = currentViews.Values.First().PanelPane.ActiveContent;
+			if (!newActualViews.Values.Contains(activeView))
+				activeView = null;
+
 			foreach (var view in newActualViews) {
 				view.Key.Model = e.Selection;
 				view.Value.Show(dockPanel, DockState.Document);
+				if (activeView == null)
+					activeView = view.Value;
 			}
 
 			foreach (var prevView in currentViews) {
@@ -117,6 +125,8 @@ namespace dnExplorer {
 			}
 			currentViews = newActualViews;
 
+			if (activeView != null)
+				activeView.DockHandler.PanelPane.ActiveContent = activeView;
 			modMgr.Activate();
 			dockPanel.ResumeLayout(true, true);
 		}

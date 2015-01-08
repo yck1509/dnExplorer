@@ -6,10 +6,14 @@ using dnlib.DotNet.MD;
 
 namespace dnExplorer.Models {
 	public class MetaDataModel : LazyModel {
-		public IMetaData MetaData { get; set; }
+		public dnModule Module { get; set; }
 
-		public MetaDataModel(IMetaData metadata) {
-			MetaData = metadata;
+		public IMetaData MetaData {
+			get { return Module.MetaData; }
+		}
+
+		public MetaDataModel(dnModule module) {
+			Module = module;
 			Text = "Metadata";
 		}
 
@@ -24,7 +28,7 @@ namespace dnExplorer.Models {
 		protected override IEnumerable<IDataModel> PopulateChildren() {
 			foreach (var stream in MetaData.AllStreams) {
 				if (stream is TablesStream)
-					yield return new MDTablesStreamModel(MetaData, (TablesStream)stream);
+					yield return new MDTablesStreamModel(Module, (TablesStream)stream);
 				else
 					yield return new MDStreamModel(MetaData, stream);
 			}

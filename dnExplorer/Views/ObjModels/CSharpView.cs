@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using dnExplorer.Controls;
 using dnExplorer.Models;
 using dnlib.DotNet;
@@ -6,10 +7,10 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 
 namespace dnExplorer.Views {
-	public class MethodView : ViewBase<ObjModel> {
+	public class CSharpView : ViewBase<ObjModel> {
 		CodeView view;
 
-		public MethodView() {
+		public CSharpView() {
 			view = new CodeView();
 			Controls.Add(view);
 			Text = "C#";
@@ -112,6 +113,10 @@ namespace dnExplorer.Views {
 		void OnCompleted(object sender, OperationResultEventArgs<CodeViewData> e) {
 			view.SetData(e.Result);
 			op = null;
+		}
+
+		public override Icon Icon {
+			get { return IconCreator.CreateIcon((Bitmap)Resources.GetResource<Image>("Icons.code.png"), 16); }
 		}
 	}
 }

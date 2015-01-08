@@ -71,7 +71,7 @@ namespace dnExplorer.Views {
 			TreeNavigator.Create()
 				.Path<MDTableModel>(m => m.MDTable == table ? NavigationState.In : NavigationState.Next)
 				.Path<MDRowModel>(m => m.Rid == rid ? NavigationState.Done : NavigationState.Next)
-				.Navigate(treeView);
+				.Goto(treeView);
 		}
 
 		public void SelectHexRange(uint begin, uint end) {
