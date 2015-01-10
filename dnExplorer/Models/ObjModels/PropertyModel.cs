@@ -18,7 +18,7 @@ namespace dnExplorer.Models {
 		}
 
 		protected override bool HasChildren {
-			get { return Property.GetMethod != null || Property.SetMethod != null || Property.HasOtherMethods; }
+			get { return !Property.IsEmpty; }
 		}
 
 		protected override bool IsVolatile {
@@ -26,7 +26,7 @@ namespace dnExplorer.Models {
 		}
 
 		protected override IEnumerable<IDataModel> PopulateChildren() {
-			foreach (var child in Property.GetMethods())
+			foreach (var child in Property.GetAccessors())
 				yield return new MethodModel(child);
 		}
 
@@ -69,7 +69,7 @@ namespace dnExplorer.Models {
 			g.DrawImageUnscaledAndClipped(icon, bounds);
 			if (visibility != null)
 				g.DrawImageUnscaledAndClipped(visibility, bounds);
-			if (Property.GetMethods().Any(m => m.IsStatic))
+			if (Property.GetAccessors().Any(m => m.IsStatic))
 				g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.ObjModel.static.png"), bounds);
 		}
 

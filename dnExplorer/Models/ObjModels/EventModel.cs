@@ -19,8 +19,7 @@ namespace dnExplorer.Models {
 
 		protected override bool HasChildren {
 			get {
-				return Event.AddMethod != null || Event.RemoveMethod != null ||
-				       Event.InvokeMethod != null || Event.HasOtherMethods;
+				return !Event.IsEmpty;
 			}
 		}
 
@@ -29,7 +28,7 @@ namespace dnExplorer.Models {
 		}
 
 		protected override IEnumerable<IDataModel> PopulateChildren() {
-			foreach (var child in Event.GetMethods())
+			foreach (var child in Event.GetAccessors())
 				yield return new MethodModel(child);
 		}
 
@@ -64,7 +63,7 @@ namespace dnExplorer.Models {
 			g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.ObjModel.event.png"), bounds);
 			if (visibility != null)
 				g.DrawImageUnscaledAndClipped(visibility, bounds);
-			if (Event.GetMethods().Any(m => m.IsStatic))
+			if (Event.GetAccessors().Any(m => m.IsStatic))
 				g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.ObjModel.static.png"), bounds);
 		}
 

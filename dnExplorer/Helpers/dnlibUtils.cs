@@ -35,18 +35,18 @@ namespace dnExplorer {
 			return fullName == "System.Delegate" || fullName == "System.MulticastDelegate";
 		}
 
-		public static IEnumerable<MethodDef> GetMethods(this PropertyDef property) {
-			if (property.GetMethod != null)
-				yield return property.GetMethod;
+		public static IEnumerable<MethodDef> GetAccessors(this PropertyDef property) {
+			foreach (var getter in property.GetMethods)
+				yield return getter;
 
-			if (property.SetMethod != null)
-				yield return property.SetMethod;
+			foreach (var setter in property.SetMethods)
+				yield return setter;
 
 			foreach (var other in property.OtherMethods)
 				yield return other;
 		}
 
-		public static IEnumerable<MethodDef> GetMethods(this EventDef evnt) {
+		public static IEnumerable<MethodDef> GetAccessors(this EventDef evnt) {
 			if (evnt.AddMethod != null)
 				yield return evnt.AddMethod;
 
@@ -63,7 +63,7 @@ namespace dnExplorer {
 		public static MethodAttributes GetVisibility(this PropertyDef property) {
 			var ret = MethodAttributes.CompilerControlled;
 
-			foreach (var other in property.GetMethods()) {
+			foreach (var other in property.GetAccessors()) {
 				if (other.Access > ret)
 					ret = other.Access;
 			}
@@ -74,7 +74,7 @@ namespace dnExplorer {
 		public static MethodAttributes GetVisibility(this EventDef evnt) {
 			var ret = MethodAttributes.CompilerControlled;
 
-			foreach (var other in evnt.GetMethods()) {
+			foreach (var other in evnt.GetAccessors()) {
 				if (other.Access > ret)
 					ret = other.Access;
 			}

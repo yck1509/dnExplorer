@@ -76,12 +76,12 @@ namespace dnExplorer.Views {
 					m =>
 						m.Property == member
 							? NavigationState.Done
-							: (m.Property.GetMethods().Contains(member) ? NavigationState.In : NavigationState.Next))
+							: (m.Property.GetAccessors().Contains(member) ? NavigationState.In : NavigationState.Next))
 				.Path<EventModel>(
 					m =>
 						m.Event == member
 							? NavigationState.Done
-							: (m.Event.GetMethods().Contains(member) ? NavigationState.In : NavigationState.Next))
+							: (m.Event.GetAccessors().Contains(member) ? NavigationState.In : NavigationState.Next))
 				.Goto(model);
 		}
 

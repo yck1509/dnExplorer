@@ -105,6 +105,8 @@
     <Compile Include="Models\PE\PESectionsModel.cs" />
     <Compile Include="Models\PE\PEImageModel.cs" />
     <Compile Include="Models\PE\PESectionModel.cs" />
+    <Compile Include="ModuleManager\ModuleResolver.cs" />
+    <Compile Include="ModuleManager\NavigationHistory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\RawString.cs" />
