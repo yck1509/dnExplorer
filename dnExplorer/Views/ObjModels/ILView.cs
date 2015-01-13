@@ -64,10 +64,19 @@ namespace dnExplorer.Views {
 
 		CodeViewData RunDisassembler() {
 			try {
-				var output = new CodeViewOutput();
-				var disassembler = new ReflectionDisassembler(output, true, CancellationToken.None);
-				DoDisassemble(output, disassembler);
-				return output.GetResult();
+				try {
+					var output = new CodeViewOutput();
+					var disassembler = new ReflectionDisassembler(output, true, CancellationToken.None);
+					DoDisassemble(output, disassembler);
+					return output.GetResult();
+				}
+				catch {
+					// Retry if ILStructure failed.
+					var output = new CodeViewOutput();
+					var disassembler = new ReflectionDisassembler(output, false, CancellationToken.None);
+					DoDisassemble(output, disassembler);
+					return output.GetResult();
+				}
 			}
 			catch (Exception ex) {
 				return new CodeViewData(string.Format("Error occured in disassembling:{0}{1}", Environment.NewLine, ex));

@@ -12,6 +12,7 @@ namespace dnExplorer {
 				new Dictionary<AssemblyNameInfo, AssemblyDef>(new AssemblyNameComparer(AssemblyNameComparerFlags.All));
 		}
 
+		object sync = new object();
 		AssemblyResolver defaultResolver;
 		public ModuleManager Manager { get; private set; }
 		public AssemblyResolver Resolver { get; set; }
@@ -26,13 +27,15 @@ namespace dnExplorer {
 		}
 
 		AssemblyResolver GetDefaultResolver() {
-			if (defaultResolver == null)
-				defaultResolver = new AssemblyResolver(new ModuleContext(this));
-			foreach (var asm in new List<AssemblyDef>(defaultResolver.GetCachedAssemblies()))
-				defaultResolver.Remove(asm);
-			foreach (var assembly in LoadedAssemblies.Values)
-				defaultResolver.AddToCache(assembly);
-			return defaultResolver;
+			lock (sync) {
+				if (defaultResolver == null)
+					defaultResolver = new AssemblyResolver(new ModuleContext(this));
+				foreach (var asm in new List<AssemblyDef>(defaultResolver.GetCachedAssemblies()))
+					defaultResolver.Remove(asm);
+				foreach (var assembly in LoadedAssemblies.Values)
+					defaultResolver.AddToCache(assembly);
+				return defaultResolver;
+			}
 		}
 
 		public bool AddModuleDef(ModuleDefMD module, out ModuleDefMD cached) {
