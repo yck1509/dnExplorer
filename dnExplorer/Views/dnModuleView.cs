@@ -20,7 +20,7 @@ namespace dnExplorer.Views {
 		protected override void OnModelUpdated() {
 		}
 
-		static ContextMenuStrip ctxMenu;
+		ContextMenuStrip ctxMenu;
 
 		protected internal override ContextMenuStrip GetContextMenu() {
 			if (ctxMenu != null)
@@ -68,29 +68,29 @@ namespace dnExplorer.Views {
 			return ctxMenu;
 		}
 
-		static void GotoEntryPoint(object sender, EventArgs e) {
+		void GotoEntryPoint(object sender, EventArgs e) {
 			var model = sender.GetContextMenuModel<dnModuleModel>();
 			if (model.Module.ModuleDef != null && model.Module.ModuleDef.EntryPoint != null) {
 				ViewUtils.ShowMember(model, model.Module.ModuleDef.EntryPoint);
 			}
 			else {
 				var token = new MDToken(model.Module.MetaData.ImageCor20Header.EntryPointToken_or_RVA);
-				ViewUtils.ShowToken(model, model.Module.Image, token);
+				ViewUtils.ShowToken(App, model, model.Module.Image, token);
 			}
 		}
 
-		static void GotoGlobalType(object sender, EventArgs e) {
+		void GotoGlobalType(object sender, EventArgs e) {
 			var model = sender.GetContextMenuModel<dnModuleModel>();
 			if (model.Module.ModuleDef != null && model.Module.ModuleDef.GlobalType != null) {
 				ViewUtils.ShowMember(model, model.Module.ModuleDef.GlobalType);
 			}
 			else {
 				var token = new MDToken(Table.TypeDef, 1);
-				ViewUtils.ShowToken(model, model.Module.Image, token);
+				ViewUtils.ShowToken(App, model, model.Module.Image, token);
 			}
 		}
 
-		static void Remove(object sender, EventArgs e) {
+		void Remove(object sender, EventArgs e) {
 			var node = sender.GetContextMenuModel<dnModuleModel>().Node;
 			node.TreeView.Nodes.Remove(node);
 		}

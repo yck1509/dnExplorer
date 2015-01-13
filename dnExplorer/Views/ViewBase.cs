@@ -39,6 +39,8 @@ namespace dnExplorer.Views {
 			get { return this; }
 		}
 
+		public IApp App { get; internal set; }
+
 		public virtual Icon Icon {
 			get { return null; }
 		}

@@ -4,7 +4,7 @@ using dnExplorer.Trees;
 
 namespace dnExplorer.Views {
 	public class ViewLocator {
-		static ViewLocator() {
+		internal ViewLocator(IApp app) {
 			viewMap = new Dictionary<Type, IList<IView>>();
 			foreach (var type in typeof(IView).Assembly.GetTypes()) {
 				if (!type.IsAbstract && typeof(IView).IsAssignableFrom(type)) {
@@ -12,18 +12,19 @@ namespace dnExplorer.Views {
 
 					if (baseType != null && baseType.IsGenericType &&
 					    baseType.GetGenericTypeDefinition() == typeof(ViewBase<>)) {
-						var modelType = baseType.GetGenericArguments()[0];
 						var view = (IView)Activator.CreateInstance(type);
+						type.GetProperty("App").SetValue(view, app, null);
 
+						var modelType = baseType.GetGenericArguments()[0];
 						viewMap.AddListEntry(modelType, view);
 					}
 				}
 			}
 		}
 
-		static readonly Dictionary<Type, IList<IView>> viewMap;
+		readonly Dictionary<Type, IList<IView>> viewMap;
 
-		public static IEnumerable<IView> LocateViews(IDataModel model) {
+		public IEnumerable<IView> LocateViews(IDataModel model) {
 			var modelType = model.GetType();
 			foreach (var viewType in viewMap) {
 				if (!viewType.Key.IsAssignableFrom(modelType))

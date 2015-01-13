@@ -10,31 +10,31 @@ using dnlib.PE;
 
 namespace dnExplorer.Views {
 	public static class ViewUtils {
-		public static void ShowRawData(IDataModel model, IPEImage image, long begin, long end) {
+		public static void ShowRawData(IApp app, IDataModel model, IPEImage image, long begin, long end) {
 			TreeNavigator.Create()
 				.Path<dnModuleModel>(m => m.Module.Image == image ? NavigationState.In : NavigationState.Next)
 				.Path<RawDataModel>(m => NavigationState.Done)
 				.Handler(node => {
-					var targetView = (RawDataView)ViewLocator.LocateViews(node.Model).Single();
+					var targetView = (RawDataView)app.Views.LocateViews(node.Model).Single();
 					targetView.Select(begin, end);
 				})
 				.Goto(model);
 		}
 
-		public static void ShowToken(IDataModel model, IPEImage image, MDToken token) {
+		public static void ShowToken(IApp app, IDataModel model, IPEImage image, MDToken token) {
 			TreeNavigator.Create()
 				.Path<dnModuleModel>(m => m.Module.Image == image ? NavigationState.In : NavigationState.Next)
 				.Path<MetaDataModel>(m => NavigationState.In)
 				.Path<MDTablesStreamModel>(m => NavigationState.In)
 				.Path<MDTableHeapModel>(m => NavigationState.Done)
 				.Handler(node => {
-					var targetView = (MDTableHeapView)ViewLocator.LocateViews(node.Model).Single();
+					var targetView = (MDTableHeapView)app.Views.LocateViews(node.Model).Single();
 					targetView.SelectItem(token);
 				})
 				.Goto(model);
 		}
 
-		public static void ShowStream(IDataModel model, IPEImage image, DotNetStream stream, uint begin, uint size) {
+		public static void ShowStream(IApp app, IDataModel model, IPEImage image, DotNetStream stream, uint begin, uint size) {
 			TreeNavigator.Create()
 				.Path<dnModuleModel>(m => m.Module.Image == image ? NavigationState.In : NavigationState.Next)
 				.Path<MetaDataModel>(m => NavigationState.In)
@@ -42,11 +42,11 @@ namespace dnExplorer.Views {
 				.Path<MDTablesStreamModel>(m => m.Stream == stream ? NavigationState.Done : NavigationState.Next)
 				.Handler(node => {
 					if (node.Model is MDStreamModel) {
-						var targetView = (MDStreamView)ViewLocator.LocateViews(node.Model).Single();
+						var targetView = (MDStreamView)app.Views.LocateViews(node.Model).Single();
 						targetView.SelectHexRange(begin, begin + size - 1);
 					}
 					else if (node.Model is MDTablesStreamModel) {
-						var targetView = (MDTablesStreamView)ViewLocator.LocateViews(node.Model).Single();
+						var targetView = (MDTablesStreamView)app.Views.LocateViews(node.Model).Single();
 						targetView.SelectHexRange(begin, begin + size - 1);
 					}
 				})

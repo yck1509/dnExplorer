@@ -33,7 +33,7 @@ namespace dnExplorer.Views {
 				end = begin + viewer.SelectionEnd;
 				begin += viewer.SelectionStart;
 			}
-			ViewUtils.ShowRawData(Model, Model.MetaData.PEImage, begin, end);
+			ViewUtils.ShowRawData(App, Model, Model.MetaData.PEImage, begin, end);
 		}
 
 		public void SelectHexRange(uint begin, uint end) {

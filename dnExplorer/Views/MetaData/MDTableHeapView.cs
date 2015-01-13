@@ -17,6 +17,8 @@ namespace dnExplorer.Views {
 		Dictionary<Table, HexViewer.HighLight[]> hls;
 		bool followInHex;
 
+		Action initTreeView;
+
 		public MDTableHeapView() {
 			var split1 = new SplitContainer {
 				Orientation = Orientation.Vertical,
@@ -24,12 +26,16 @@ namespace dnExplorer.Views {
 			};
 			Controls.Add(split1);
 
-			treeView = new TreeViewX {
-				Dock = DockStyle.Fill
+			// Since App property isn't initialized in this moment,
+			// a callback is setup to initialize treeview later.
+			initTreeView = () => {
+				treeView = new TreeViewX(App) {
+					Dock = DockStyle.Fill
+				};
+				treeView.AfterSelect += OnNodeSelected;
+				treeView.ContextMenuStrip = GetContextMenu();
+				split1.Panel1.Controls.Add(treeView);
 			};
-			treeView.AfterSelect += OnNodeSelected;
-			treeView.ContextMenuStrip = GetContextMenu();
-			split1.Panel1.Controls.Add(treeView);
 
 			var split2 = new SplitContainer {
 				Orientation = Orientation.Horizontal,
@@ -64,7 +70,7 @@ namespace dnExplorer.Views {
 			var table = Model.Stream.Get(token.Table);
 			var rid = token.Rid;
 			if (table == null || !table.IsValidRID(rid)) {
-				MessageBox.Show("Invalid token.", Main.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show("Invalid token.", App.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
@@ -168,6 +174,10 @@ namespace dnExplorer.Views {
 		}
 
 		protected override void OnModelUpdated() {
+			if (initTreeView != null) {
+				initTreeView();
+				initTreeView = null;
+			}
 			treeView.BeginUpdate();
 			treeView.Nodes.Clear();
 			hls.Clear();
@@ -193,10 +203,10 @@ namespace dnExplorer.Views {
 				end = begin + hexView.SelectionEnd;
 				begin += hexView.SelectionStart;
 			}
-			ViewUtils.ShowRawData(Model, Model.MetaData.PEImage, begin, end);
+			ViewUtils.ShowRawData(App, Model, Model.MetaData.PEImage, begin, end);
 		}
 
-		static ContextMenuStrip ctxMenu;
+		ContextMenuStrip ctxMenu;
 
 		protected internal override ContextMenuStrip GetContextMenu() {
 			if (ctxMenu != null)
@@ -216,7 +226,7 @@ namespace dnExplorer.Views {
 			return ctxMenu;
 		}
 
-		static void GetThisModelView(object sender, out MDTableHeapView view, out MDTableHeapModel model) {
+		void GetThisModelView(object sender, out MDTableHeapView view, out MDTableHeapModel model) {
 			model = sender.GetContextMenuModel<MDTableHeapModel>();
 			if (model == null) {
 				var m1 = sender.GetContextMenuModel<MDTableModel>();
@@ -229,10 +239,10 @@ namespace dnExplorer.Views {
 				}
 			}
 
-			view = (MDTableHeapView)ViewLocator.LocateViews(model).Single();
+			view = (MDTableHeapView)App.Views.LocateViews(model).Single();
 		}
 
-		static void GotoToken(object sender, EventArgs e) {
+		void GotoToken(object sender, EventArgs e) {
 			MDTableHeapView view;
 			MDTableHeapModel model;
 			GetThisModelView(sender, out view, out model);

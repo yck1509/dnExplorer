@@ -7,7 +7,9 @@ namespace dnExplorer.Trees {
 	public class TreeViewX : TreeView {
 		Control scratch;
 
-		public TreeViewX() {
+		public TreeViewX(IApp app) {
+			App = app;
+
 			HotTracking = true;
 			HideSelection = false;
 			ShowLines = false;
@@ -22,6 +24,8 @@ namespace dnExplorer.Trees {
 			Font = new Font("Segoe UI", 9);
 			SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
 		}
+
+		public IApp App { get; private set; }
 
 		[DllImport("user32.dll")]
 		static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);

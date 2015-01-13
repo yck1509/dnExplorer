@@ -41,6 +41,9 @@ namespace dnExplorer.Controls {
 
 			Styles[CodeViewData.TYPE_REF_TARGET].ForeColor = Color.FromArgb(0x00, 0x80, 0x00);
 			Styles[CodeViewData.TYPE_REF_TARGET].IsHotspot = true;
+
+			HotspotStyle.ActiveBackColor = BackColor;
+			HotspotStyle.UseActiveBackColor = false;
 		}
 
 		CodeViewData data;

@@ -18,9 +18,7 @@ namespace dnExplorer.Models {
 		}
 
 		protected override bool HasChildren {
-			get {
-				return !Event.IsEmpty;
-			}
+			get { return !Event.IsEmpty; }
 		}
 
 		protected override bool IsVolatile {

@@ -36,7 +36,7 @@ namespace dnExplorer.Views {
 				offset += viewer.SelectionStart;
 				size = viewer.SelectionSize;
 			}
-			ViewUtils.ShowRawData(Model, Model.Image, offset, offset + size - 1);
+			ViewUtils.ShowRawData(App, Model, Model.Image, offset, offset + size - 1);
 		}
 	}
 }

@@ -62,6 +62,11 @@
     <Compile Include="Helpers\IconCreator.cs" />
     <Compile Include="Helpers\ResponsiveOperation.cs" />
     <Compile Include="Helpers\ScintillaHack.cs" />
+    <Compile Include="IApp.cs" />
+    <Compile Include="Language\CILLanguage.cs" />
+    <Compile Include="Language\CSharpLanguage.cs" />
+    <Compile Include="Language\ILanguage.cs" />
+    <Compile Include="Language\LanguageManager.cs" />
     <Compile Include="Models\ObjModels\ObjModel.cs" />
     <Compile Include="ModuleManager\ModuleManager.cs">
       <SubType>Form</SubType>
@@ -175,10 +180,7 @@
     <Compile Include="Views\dnModuleView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Views\ObjModels\ILView.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Views\ObjModels\CSharpView.cs">
+    <Compile Include="Views\ObjModels\ObjCodeView.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Views\RawDataView.cs">

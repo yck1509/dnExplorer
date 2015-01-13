@@ -3,7 +3,6 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using dnExplorer.Views;
 
 namespace dnExplorer.Trees {
 	public class DataTreeNodeX : TreeNodeX {
@@ -23,7 +22,7 @@ namespace dnExplorer.Trees {
 				if (TreeView == null)
 					return null;
 
-				var views = ViewLocator.LocateViews(Model);
+				var views = ((TreeViewX)TreeView).App.Views.LocateViews(Model);
 				ContextMenuStrip ctxMenu = null;
 				foreach (var view in views) {
 					ctxMenu = view.GetContextMenu();

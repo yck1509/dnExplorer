@@ -68,12 +68,12 @@ namespace dnExplorer.Views {
 
 			var section = Model.Image.ToImageSectionHeader(dd.VirtualAddress);
 			if (section == null) {
-				MessageBox.Show("Invalid address.", Main.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show("Invalid address.", App.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
 			var offset = (long)Model.Image.ToFileOffset(dd.VirtualAddress);
-			ViewUtils.ShowRawData(Model, Model.Image, offset, offset + dd.Size - 1);
+			ViewUtils.ShowRawData(App, Model, Model.Image, offset, offset + dd.Size - 1);
 		}
 	}
 }

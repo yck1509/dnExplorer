@@ -10,7 +10,7 @@ namespace dnExplorer.Views {
 		protected override void OnModelUpdated() {
 		}
 
-		static ContextMenuStrip ctxMenu;
+		ContextMenuStrip ctxMenu;
 
 		protected internal override ContextMenuStrip GetContextMenu() {
 			if (ctxMenu != null)
@@ -39,7 +39,7 @@ namespace dnExplorer.Views {
 			ctxMenu.Items.Add(new ToolStripSeparator());
 			ctxMenu.Opening += (sender, e) => {
 				var model = sender.GetContextMenuModel<MDRowModel>();
-				var view = (MDTableHeapView)ViewLocator.LocateViews(model.Parent.Parent).Single();
+				var view = (MDTableHeapView)App.Views.LocateViews(model.Parent.Parent).Single();
 				ToolStripManager.Merge(view.GetContextMenu(), (ContextMenuStrip)sender);
 
 				var canShowBrowser = GetBrowserToken(model) != null;
@@ -48,16 +48,16 @@ namespace dnExplorer.Views {
 			};
 			ctxMenu.Closed += (sender, e) => {
 				var model = sender.GetContextMenuModel<MDRowModel>();
-				var view = (MDTableHeapView)ViewLocator.LocateViews(model.Parent.Parent).Single();
+				var view = (MDTableHeapView)App.Views.LocateViews(model.Parent.Parent).Single();
 				ToolStripManager.RevertMerge((ContextMenuStrip)sender, view.GetContextMenu());
 			};
 
 			return ctxMenu;
 		}
 
-		static void ShowHex(object sender, EventArgs e) {
+		void ShowHex(object sender, EventArgs e) {
 			var model = sender.GetContextMenuModel<MDRowModel>();
-			var view = (MDTableHeapView)ViewLocator.LocateViews(model.Parent.Parent).Single();
+			var view = (MDTableHeapView)App.Views.LocateViews(model.Parent.Parent).Single();
 
 			var offset = model.Parent.MDTable.StartOffset - model.Parent.Tables.StartOffset;
 			offset += (model.Rid - 1) * model.Parent.MDTable.RowSize;
@@ -79,7 +79,7 @@ namespace dnExplorer.Views {
 			}
 		}
 
-		static void ShowBrowser(object sender, EventArgs e) {
+		void ShowBrowser(object sender, EventArgs e) {
 			var model = sender.GetContextMenuModel<MDRowModel>();
 			var token = GetBrowserToken(model);
 			var module = model.Parent.Parent.Module.ModuleDef;
@@ -89,13 +89,13 @@ namespace dnExplorer.Views {
 			ViewUtils.ShowMember(model.Parent.Parent, (IMemberDef)item);
 		}
 
-		static void CopyToken(object sender, EventArgs e) {
+		void CopyToken(object sender, EventArgs e) {
 			var model = sender.GetContextMenuModel<MDRowModel>();
 			var token = new MDToken(model.Parent.MDTable.Table, model.Rid);
 			Clipboard.SetText(token.ToDescription());
 		}
 
-		static void CopyTokenRaw(object sender, EventArgs e) {
+		void CopyTokenRaw(object sender, EventArgs e) {
 			var model = sender.GetContextMenuModel<MDRowModel>();
 			var token = new MDToken(model.Parent.MDTable.Table, model.Rid);
 			Clipboard.SetText(token.Raw.ToString("x8"));

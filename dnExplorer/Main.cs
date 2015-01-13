@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using dnExplorer.Language;
 using dnExplorer.Theme;
+using dnExplorer.Trees;
 using dnExplorer.Views;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace dnExplorer {
-	public class Main : Form {
-		public static readonly string AppName = typeof(InputBox).Assembly.GetName().Name;
-
-		ModuleManager modMgr;
-
+	public class Main : Form, IApp {
 		DockPanel dockPanel;
 		ToolStripPanel toolStripPanel;
 		ToolStrip mainStrip;
@@ -21,20 +19,28 @@ namespace dnExplorer {
 		ToolStripButton forwardBtn;
 
 		public Main() {
+			AppName = typeof(IApp).Assembly.GetName().Name;
+			Views = new ViewLocator(this);
+
 			ToolStripManager.Renderer = new VS2010Renderer();
 
 			Initialize();
+
+			Module.LoadModule(@"E:\Source\Public\Confuser2\Confuser.Test\RenamingTest\TestC\bin\Debug\TestC.exe");
+			Module.LoadModule(@"E:\Source\Public\Confuser2\Confuser.Test\RenamingTest\TestC\bin\Debug\dnlib.dll");
 		}
 
 		void Initialize() {
 			ClientSize = new Size(800, 600);
-			Text = "dnExplorer";
+			Text = AppName;
 			AllowDrop = true;
 			IsMdiContainer = true;
 
-			modMgr = new ModuleManager();
-			modMgr.SelectionChanged += OnNodeSelected;
-			modMgr.History.Navigated += (sender, e) => UpdateHistoryButtons();
+			Language = new LanguageManager();
+
+			Module = new ModuleManager(this);
+			Module.SelectionChanged += OnNodeSelected;
+			Module.History.Navigated += (sender, e) => UpdateHistoryButtons();
 
 			dockPanel = new DockPanel {
 				Dock = DockStyle.Fill,
@@ -47,7 +53,7 @@ namespace dnExplorer {
 				AllowEndUserNestedDocking = false
 			};
 			Controls.Add(dockPanel);
-			modMgr.Show(dockPanel, DockState.DockLeft);
+			Module.Show(dockPanel, DockState.DockLeft);
 
 			toolStripPanel = new ToolStripPanel {
 				Dock = DockStyle.Top
@@ -61,15 +67,31 @@ namespace dnExplorer {
 				ToolTipText = "Go Back",
 				Enabled = false
 			};
-			backBtn.Click += (sender, e) => modMgr.History.GoBack();
+			backBtn.Click += (sender, e) => Module.History.GoBack();
 			mainStrip.Items.Add(backBtn);
 
 			forwardBtn = new ToolStripButton(Resources.GetResource<Image>("Icons.forward.png")) {
 				ToolTipText = "Go Forward",
 				Enabled = false
 			};
-			forwardBtn.Click += (sender, e) => modMgr.History.GoForward();
+			forwardBtn.Click += (sender, e) => Module.History.GoForward();
 			mainStrip.Items.Add(forwardBtn);
+
+
+			mainStrip.Items.Add(new ToolStripSeparator());
+			var langCombo = new ToolStripComboBox();
+			mainStrip.Items.Add(langCombo);
+
+			langCombo.ComboBox.DataSource = Language.Languages;
+			Language.PropertyChanged += (sender, e) => langCombo.ComboBox.SelectedItem = Language.ActiveLanguage;
+			Shown += (sender, e) => {
+				langCombo.ComboBox.SelectedItem = Language.ActiveLanguage;
+				langCombo.ComboBox.SelectedValueChanged +=
+					(s, ee) => Language.ActiveLanguage = (ILanguage)langCombo.ComboBox.SelectedItem;
+			};
+
+			langCombo.ComboBox.DisplayMember = "Name";
+			langCombo.ComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
 
 			PerformLayout();
 		}
@@ -89,11 +111,27 @@ namespace dnExplorer {
 
 		void LoadModules(string[] files) {
 			foreach (var module in files) {
-				modMgr.LoadModule(module);
+				Module.LoadModule(module);
 			}
 		}
 
 		Dictionary<IView, DockContent> currentViews = new Dictionary<IView, DockContent>();
+
+		void UpdateViewContainer(DataTreeNodeX node, IView view, DockContent container) {
+			if (string.IsNullOrEmpty(view.ViewControl.Text))
+				container.Text = node.Text;
+			else
+				container.Text = view.ViewControl.Text;
+
+			if (view.Icon != null)
+				container.Icon = view.Icon;
+			else {
+				var bmp = new Bitmap(16, 16);
+				using (var g = Graphics.FromImage(bmp))
+					node.DrawIcon(g, new Rectangle(0, 0, 16, 16));
+				container.Icon = IconCreator.CreateIcon(bmp, 16);
+			}
+		}
 
 		void OnNodeSelected(object sender, SelectionChangedEventArgs e) {
 			UpdateHistoryButtons();
@@ -102,7 +140,7 @@ namespace dnExplorer {
 			if (e.Selection == null)
 				newViews = new IView[0];
 			else
-				newViews = ViewLocator.LocateViews(e.Selection).ToArray();
+				newViews = Views.LocateViews(e.Selection).ToArray();
 
 			var newActualViews = new Dictionary<IView, DockContent>();
 			foreach (var view in newViews) {
@@ -115,20 +153,7 @@ namespace dnExplorer {
 					};
 					content.DockHandler.ActivateOnShow = false;
 					view.ViewControl.Dock = DockStyle.Fill;
-
-					if (string.IsNullOrEmpty(view.ViewControl.Text))
-						content.Text = e.Selection.Node.Text;
-					else
-						content.Text = view.ViewControl.Text;
-
-					if (view.Icon != null)
-						content.Icon = view.Icon;
-					else {
-						var bmp = new Bitmap(16, 16);
-						using (var g = Graphics.FromImage(bmp))
-							e.Selection.Node.DrawIcon(g, new Rectangle(0, 0, 16, 16));
-						content.Icon = IconCreator.CreateIcon(bmp, 16);
-					}
+					UpdateViewContainer(e.Selection.Node, view, content);
 
 					content.Controls.Add(view.ViewControl);
 				}
@@ -151,20 +176,32 @@ namespace dnExplorer {
 			}
 
 			foreach (var prevView in currentViews) {
-				if (!newActualViews.ContainsKey(prevView.Key))
+				if (!newActualViews.ContainsKey(prevView.Key)) {
 					prevView.Value.Hide();
+					prevView.Key.Model = null;
+				}
+				else
+					UpdateViewContainer(e.Selection.Node, prevView.Key, prevView.Value);
 			}
 			currentViews = newActualViews;
 
 			if (activeView != null)
 				activeView.DockHandler.PanelPane.ActiveContent = activeView;
-			modMgr.Activate();
+			Module.Activate();
 			dockPanel.ResumeLayout(true, true);
 		}
 
 		void UpdateHistoryButtons() {
-			backBtn.Enabled = modMgr.History.CanGoBack;
-			forwardBtn.Enabled = modMgr.History.CanGoForward;
+			backBtn.Enabled = Module.History.CanGoBack;
+			forwardBtn.Enabled = Module.History.CanGoForward;
 		}
+
+
+		public string AppName { get; private set; }
+		public ViewLocator Views { get; private set; }
+
+		public ModuleManager Module { get; set; }
+
+		public LanguageManager Language { get; set; }
 	}
 }

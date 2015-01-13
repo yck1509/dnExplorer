@@ -148,7 +148,7 @@ namespace dnExplorer.Views {
 				end = begin + hexView.SelectionEnd;
 				begin += hexView.SelectionStart;
 			}
-			ViewUtils.ShowRawData(Model, Model.MetaData.PEImage, begin, end);
+			ViewUtils.ShowRawData(App, Model, Model.MetaData.PEImage, begin, end);
 		}
 	}
 }

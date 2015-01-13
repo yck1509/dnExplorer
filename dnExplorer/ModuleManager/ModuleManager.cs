@@ -6,13 +6,13 @@ using dnlib.DotNet;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace dnExplorer {
-	internal class ModuleManager : DockContent {
+	public class ModuleManager : DockContent {
 		InfoPanel infos;
 		ModuleTreeView treeView;
 		NavigationHistory history = new NavigationHistory();
 		ModuleResolver resolver;
 
-		public ModuleManager() {
+		public ModuleManager(IApp app) {
 			Text = "Modules";
 			Height = 600;
 			CloseButtonVisible = false;
@@ -24,7 +24,7 @@ namespace dnExplorer {
 			};
 			Controls.Add(split);
 
-			treeView = new ModuleTreeView(this) {
+			treeView = new ModuleTreeView(app, this) {
 				Dock = DockStyle.Fill,
 				BorderStyle = BorderStyle.None
 			};
@@ -100,14 +100,15 @@ namespace dnExplorer {
 	}
 
 	internal class ModuleTreeView : TreeViewX {
-		public ModuleTreeView(ModuleManager manager) {
+		public ModuleTreeView(IApp app, ModuleManager manager)
+			: base(app) {
 			Manager = manager;
 		}
 
 		public ModuleManager Manager { get; private set; }
 	}
 
-	internal class SelectionChangedEventArgs : EventArgs {
+	public class SelectionChangedEventArgs : EventArgs {
 		public IDataModel Selection { get; private set; }
 
 		public SelectionChangedEventArgs(IDataModel selection) {

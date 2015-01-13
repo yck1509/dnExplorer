@@ -16,7 +16,8 @@ namespace dnExplorer {
 		const int STATE_LOADING = 1;
 		const int STATE_CANCEL = 2;
 		const int STATE_COMPLETE = 3;
-		const int LOADING_THRESHOLD = 250;
+
+		public int LoadingThreshold { get; set; }
 
 		Func<T> operation;
 		object sync = new object();
@@ -29,6 +30,7 @@ namespace dnExplorer {
 
 		public ResponsiveOperation(Func<T> operation) {
 			this.operation = operation;
+			LoadingThreshold = 250;
 		}
 
 		public void Begin() {
@@ -45,7 +47,7 @@ namespace dnExplorer {
 
 			task = Task.Factory.StartNew<T>(DoOperation);
 
-			if (!waitHnd.WaitOne(LOADING_THRESHOLD)) {
+			if (!waitHnd.WaitOne(LoadingThreshold)) {
 				lock (sync) {
 					if (!waitHnd.WaitOne(0)) {
 						if (Loading != null)

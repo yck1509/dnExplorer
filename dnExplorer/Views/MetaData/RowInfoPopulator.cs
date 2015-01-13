@@ -343,7 +343,7 @@ namespace dnExplorer.Views {
 				var rowIndex = gridView.SelectedCells[0].RowIndex;
 
 				if (gridView[4, rowIndex].Value == InvalidValue) {
-					MessageBox.Show("Invalid token.", Main.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show("Invalid token.", view.App.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return;
 				}
 
@@ -364,7 +364,7 @@ namespace dnExplorer.Views {
 				var rowIndex = gridView.SelectedCells[0].RowIndex;
 
 				if (gridView[4, rowIndex].Value == InvalidValue) {
-					MessageBox.Show("Invalid offset.", Main.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show("Invalid offset.", view.App.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return;
 				}
 
@@ -387,7 +387,7 @@ namespace dnExplorer.Views {
 				}
 
 
-				ViewUtils.ShowStream(view.Model, metadata.PEImage, stream, offset, size);
+				ViewUtils.ShowStream(view.App, view.Model, metadata.PEImage, stream, offset, size);
 			};
 			menu.Items.Add(show);
 

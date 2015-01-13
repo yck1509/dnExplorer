@@ -8,7 +8,7 @@ namespace dnExplorer.Views {
 		protected override void OnModelUpdated() {
 		}
 
-		static ContextMenuStrip ctxMenu;
+		ContextMenuStrip ctxMenu;
 
 		protected internal override ContextMenuStrip GetContextMenu() {
 			if (ctxMenu != null)
@@ -23,21 +23,21 @@ namespace dnExplorer.Views {
 			ctxMenu.Items.Add(new ToolStripSeparator());
 			ctxMenu.Opening += (sender, e) => {
 				var model = sender.GetContextMenuModel<MDTableModel>();
-				var view = (MDTableHeapView)ViewLocator.LocateViews(model.Parent).Single();
+				var view = (MDTableHeapView)App.Views.LocateViews(model.Parent).Single();
 				ToolStripManager.Merge(view.GetContextMenu(), (ContextMenuStrip)sender);
 			};
 			ctxMenu.Closed += (sender, e) => {
 				var model = sender.GetContextMenuModel<MDTableModel>();
-				var view = (MDTableHeapView)ViewLocator.LocateViews(model.Parent).Single();
+				var view = (MDTableHeapView)App.Views.LocateViews(model.Parent).Single();
 				ToolStripManager.RevertMerge((ContextMenuStrip)sender, view.GetContextMenu());
 			};
 
 			return ctxMenu;
 		}
 
-		static void ShowHex(object sender, EventArgs e) {
+		void ShowHex(object sender, EventArgs e) {
 			var model = sender.GetContextMenuModel<MDTableModel>();
-			var view = (MDTableHeapView)ViewLocator.LocateViews(model.Parent).Single();
+			var view = (MDTableHeapView)App.Views.LocateViews(model.Parent).Single();
 
 			var offset = model.MDTable.StartOffset - model.Tables.StartOffset;
 			var size = model.MDTable.Rows * model.MDTable.RowSize;

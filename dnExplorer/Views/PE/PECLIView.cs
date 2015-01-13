@@ -81,12 +81,12 @@ namespace dnExplorer.Views {
 
 			var section = Model.Image.ToImageSectionHeader(rva);
 			if (section == null) {
-				MessageBox.Show("Invalid address.", Main.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show("Invalid address.", App.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
 			var offset = (long)Model.Image.ToFileOffset(rva);
-			ViewUtils.ShowRawData(Model, Model.Image, offset, offset + size - 1);
+			ViewUtils.ShowRawData(App, Model, Model.Image, offset, offset + size - 1);
 		}
 
 		void showEntryMenu_Opening(object sender, CancelEventArgs e) {
@@ -97,7 +97,7 @@ namespace dnExplorer.Views {
 			var cell = view.SelectedCells[0];
 			var token = new MDToken((uint)cell.Value);
 
-			ViewUtils.ShowToken(Model, Model.Image, token);
+			ViewUtils.ShowToken(App, Model, Model.Image, token);
 		}
 	}
 }

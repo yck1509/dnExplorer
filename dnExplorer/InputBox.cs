@@ -60,14 +60,6 @@ namespace dnExplorer {
 			}
 		}
 
-		public static string Show(string message) {
-			var dialog = new InputBoxDialog(Main.AppName, message);
-			if (dialog.ShowDialog() == DialogResult.OK) {
-				return dialog.Result;
-			}
-			return null;
-		}
-
 		public static string Show(string title, string message) {
 			var dialog = new InputBoxDialog(title, message);
 			if (dialog.ShowDialog() == DialogResult.OK) {

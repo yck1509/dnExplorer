@@ -132,7 +132,7 @@ namespace dnExplorer.Controls {
 			var data = hexView.GetSelection();
 
 			var dataObj = new DataObject();
-			dataObj.SetData(Main.AppName + " Binary", true, new MemoryStream(data));
+			dataObj.SetData("Binary Data", true, new MemoryStream(data));
 
 			dataObj.SetText(Encoding.ASCII.GetString(data));
 
