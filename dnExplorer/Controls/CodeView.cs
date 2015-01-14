@@ -62,6 +62,7 @@ namespace dnExplorer.Controls {
 		}
 
 		CodeViewData data;
+		public CodeViewData Data { get { return data; } }
 
 		public void Clear() {
 			SetPlainText("");

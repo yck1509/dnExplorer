@@ -112,7 +112,11 @@ namespace dnExplorer.Views {
 			else
 				return null;
 
-			var node = menu.Tag as DataTreeNodeX;
+			var view = ((ContextMenuStrip)menu).SourceControl as TreeViewX;
+			if (view == null)
+				return null;
+
+			var node = view.SelectedNode as DataTreeNodeX;
 			if (node != null)
 				return (TModel)node.Model;
 			return (TModel)menu.Tag;

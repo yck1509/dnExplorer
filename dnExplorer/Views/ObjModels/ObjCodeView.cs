@@ -5,6 +5,7 @@ using dnExplorer.Controls;
 using dnExplorer.Language;
 using dnExplorer.Models;
 using dnlib.DotNet;
+using ScintillaNET;
 
 namespace dnExplorer.Views {
 	public class ObjCodeView : ViewBase<ObjModel> {
@@ -136,6 +137,19 @@ namespace dnExplorer.Views {
 					MessageBox.Show("Unsupported navigation target '" + e.Target.GetType().FullName + "'.", App.AppName,
 						MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
+			else if (!e.IsDefinition)
+				NavigateLocal(e.Target);
+		}
+
+		void NavigateLocal(object target) {
+			foreach (var textRef in view.Data.References) {
+				if (textRef.Value.Reference == target && textRef.Value.IsDefinition) {
+					new Range(textRef.Key, textRef.Key + textRef.Value.Length, view).Select();
+					return;
+				}
+			}
+			MessageBox.Show("Cannot find definition of '" + target + "'.", App.AppName, MessageBoxButtons.OK,
+				MessageBoxIcon.Error);
 		}
 
 		ContextMenuStrip ctxMenu;

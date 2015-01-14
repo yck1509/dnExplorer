@@ -26,10 +26,8 @@ namespace dnExplorer.Trees {
 				ContextMenuStrip ctxMenu = null;
 				foreach (var view in views) {
 					ctxMenu = view.GetContextMenu();
-					if (ctxMenu != null) {
-						ctxMenu.Tag = this;
+					if (ctxMenu != null)
 						break;
-					}
 				}
 				return ctxMenu;
 			}

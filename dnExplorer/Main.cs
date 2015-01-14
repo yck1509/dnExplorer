@@ -25,9 +25,6 @@ namespace dnExplorer {
 			ToolStripManager.Renderer = new VS2010Renderer();
 
 			Initialize();
-
-			Modules.LoadModule(@"E:\Source\Public\Confuser2\Confuser.Test\RenamingTest\TestC\bin\Debug\TestC.exe");
-			Modules.LoadModule(@"E:\Source\Public\Confuser2\Confuser.Test\RenamingTest\TestC\bin\Debug\dnlib.dll");
 		}
 
 		void Initialize() {

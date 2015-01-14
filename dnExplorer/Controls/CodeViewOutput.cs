@@ -151,7 +151,7 @@ namespace dnExplorer.Controls {
 		public void WriteReference(string text, object reference, bool isLocal) {
 			WriteIndent();
 			Debug.Assert(reference != null);
-			SetType(isLocal ? CodeViewData.TYPE_REF : CodeViewData.TYPE_REF_TARGET);
+			SetType(CodeViewData.TYPE_REF_TARGET);
 
 			int pos = (int)result.Position;
 			writer.Write(text);
