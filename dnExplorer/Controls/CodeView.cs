@@ -53,7 +53,6 @@ namespace dnExplorer.Controls {
 			HotspotStyle.ActiveBackColor = BackColor;
 			HotspotStyle.UseActiveForeColor = false;
 			HotspotStyle.ActiveForeColor = ForeColor;
-			HotspotStyle.ActiveUnderline = false;
 
 			Indicators[INDI_REFERENCE].Style = IndicatorStyle.RoundBox;
 			Indicators[INDI_REFERENCE].Color = Color.Red;
