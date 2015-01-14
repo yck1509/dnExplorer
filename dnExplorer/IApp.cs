@@ -6,8 +6,8 @@ namespace dnExplorer {
 	public interface IApp {
 		string AppName { get; }
 
-		ModuleManager Module { get; }
-		LanguageManager Language { get; }
+		ModuleManager Modules { get; }
+		LanguageManager Languages { get; }
 
 		ViewLocator Views { get; }
 	}

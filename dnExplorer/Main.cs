@@ -26,8 +26,8 @@ namespace dnExplorer {
 
 			Initialize();
 
-			Module.LoadModule(@"E:\Source\Public\Confuser2\Confuser.Test\RenamingTest\TestC\bin\Debug\TestC.exe");
-			Module.LoadModule(@"E:\Source\Public\Confuser2\Confuser.Test\RenamingTest\TestC\bin\Debug\dnlib.dll");
+			Modules.LoadModule(@"E:\Source\Public\Confuser2\Confuser.Test\RenamingTest\TestC\bin\Debug\TestC.exe");
+			Modules.LoadModule(@"E:\Source\Public\Confuser2\Confuser.Test\RenamingTest\TestC\bin\Debug\dnlib.dll");
 		}
 
 		void Initialize() {
@@ -36,11 +36,11 @@ namespace dnExplorer {
 			AllowDrop = true;
 			IsMdiContainer = true;
 
-			Language = new LanguageManager();
+			Languages = new LanguageManager();
 
-			Module = new ModuleManager(this);
-			Module.SelectionChanged += OnNodeSelected;
-			Module.History.Navigated += (sender, e) => UpdateHistoryButtons();
+			Modules = new ModuleManager(this);
+			Modules.SelectionChanged += OnNodeSelected;
+			Modules.History.Navigated += (sender, e) => UpdateHistoryButtons();
 
 			dockPanel = new DockPanel {
 				Dock = DockStyle.Fill,
@@ -53,7 +53,7 @@ namespace dnExplorer {
 				AllowEndUserNestedDocking = false
 			};
 			Controls.Add(dockPanel);
-			Module.Show(dockPanel, DockState.DockLeft);
+			Modules.Show(dockPanel, DockState.DockLeft);
 
 			toolStripPanel = new ToolStripPanel {
 				Dock = DockStyle.Top
@@ -67,14 +67,14 @@ namespace dnExplorer {
 				ToolTipText = "Go Back",
 				Enabled = false
 			};
-			backBtn.Click += (sender, e) => Module.History.GoBack();
+			backBtn.Click += (sender, e) => Modules.History.GoBack();
 			mainStrip.Items.Add(backBtn);
 
 			forwardBtn = new ToolStripButton(Resources.GetResource<Image>("Icons.forward.png")) {
 				ToolTipText = "Go Forward",
 				Enabled = false
 			};
-			forwardBtn.Click += (sender, e) => Module.History.GoForward();
+			forwardBtn.Click += (sender, e) => Modules.History.GoForward();
 			mainStrip.Items.Add(forwardBtn);
 
 
@@ -82,12 +82,12 @@ namespace dnExplorer {
 			var langCombo = new ToolStripComboBox();
 			mainStrip.Items.Add(langCombo);
 
-			langCombo.ComboBox.DataSource = Language.Languages;
-			Language.PropertyChanged += (sender, e) => langCombo.ComboBox.SelectedItem = Language.ActiveLanguage;
+			langCombo.ComboBox.DataSource = Languages.Languages;
+			Languages.PropertyChanged += (sender, e) => langCombo.ComboBox.SelectedItem = Languages.ActiveLanguage;
 			Shown += (sender, e) => {
-				langCombo.ComboBox.SelectedItem = Language.ActiveLanguage;
+				langCombo.ComboBox.SelectedItem = Languages.ActiveLanguage;
 				langCombo.ComboBox.SelectedValueChanged +=
-					(s, ee) => Language.ActiveLanguage = (ILanguage)langCombo.ComboBox.SelectedItem;
+					(s, ee) => Languages.ActiveLanguage = (ILanguage)langCombo.ComboBox.SelectedItem;
 			};
 
 			langCombo.ComboBox.DisplayMember = "Name";
@@ -111,7 +111,7 @@ namespace dnExplorer {
 
 		void LoadModules(string[] files) {
 			foreach (var module in files) {
-				Module.LoadModule(module);
+				Modules.LoadModule(module);
 			}
 		}
 
@@ -187,21 +187,21 @@ namespace dnExplorer {
 
 			if (activeView != null)
 				activeView.DockHandler.PanelPane.ActiveContent = activeView;
-			Module.Activate();
+			Modules.Activate();
 			dockPanel.ResumeLayout(true, true);
 		}
 
 		void UpdateHistoryButtons() {
-			backBtn.Enabled = Module.History.CanGoBack;
-			forwardBtn.Enabled = Module.History.CanGoForward;
+			backBtn.Enabled = Modules.History.CanGoBack;
+			forwardBtn.Enabled = Modules.History.CanGoForward;
 		}
 
 
 		public string AppName { get; private set; }
 		public ViewLocator Views { get; private set; }
 
-		public ModuleManager Module { get; set; }
+		public ModuleManager Modules { get; set; }
 
-		public LanguageManager Language { get; set; }
+		public LanguageManager Languages { get; set; }
 	}
 }

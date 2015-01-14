@@ -12,6 +12,7 @@ namespace dnExplorer.Views {
 
 		public ObjCodeView() {
 			view = new CodeView();
+			view.Navigate += OnNavigateTarget;
 			Controls.Add(view);
 		}
 
@@ -30,7 +31,7 @@ namespace dnExplorer.Views {
 			if (appInited)
 				return;
 
-			App.Language.PropertyChanged += (sender, e) => GenerateCode();
+			App.Languages.PropertyChanged += (sender, e) => GenerateCode();
 			appInited = true;
 		}
 
@@ -50,7 +51,7 @@ namespace dnExplorer.Views {
 			}
 			else {
 				cancellation = new CancellationTokenSource();
-				var state = new RunState(Model.Definition, App.Language.ActiveLanguage, cancellation.Token);
+				var state = new RunState(Model.Definition, App.Languages.ActiveLanguage, cancellation.Token);
 				op = new ResponsiveOperation<CodeViewData>(state.Run);
 				op.LoadingThreshold = 50;
 				op.Completed += OnCompleted;
@@ -88,6 +89,53 @@ namespace dnExplorer.Views {
 			view.SetData(e.Result);
 			op = null;
 			cancellation = null;
+		}
+
+		void OnNavigateTarget(object sender, CodeViewNavigateEventArgs e) {
+			if (!e.IsLocal) {
+				if (e.Target is IMemberDef)
+					ViewUtils.ShowMember(Model, (IMemberDef)e.Target);
+				else if (e.Target is IAssembly) {
+					var resolver = App.Modules.Resolver;
+					var assemblyRef = (IAssembly)e.Target;
+					var assemblyDef = App.Modules.Resolver.Resolve(assemblyRef, null);
+					if (assemblyDef != null)
+						ViewUtils.ShowModule(Model, assemblyDef.ManifestModule);
+					else
+						MessageBox.Show("Failed to resolve '" + assemblyRef.FullName + "'.", App.AppName, MessageBoxButtons.OK,
+							MessageBoxIcon.Error);
+				}
+				else if (e.Target is MemberRef) {
+					var memberRef = (MemberRef)e.Target;
+					var memberDef = (IMemberDef)memberRef.Resolve();
+					if (memberDef != null)
+						ViewUtils.ShowMember(Model, memberDef);
+					else
+						MessageBox.Show("Failed to resolve '" + memberRef.FullName + "'.", App.AppName, MessageBoxButtons.OK,
+							MessageBoxIcon.Error);
+				}
+				else if (e.Target is TypeRef) {
+					var typeRef = (TypeRef)e.Target;
+					var typeDef = typeRef.Resolve();
+					if (typeDef != null)
+						ViewUtils.ShowMember(Model, typeDef);
+					else
+						MessageBox.Show("Failed to resolve '" + typeRef.FullName + "'.", App.AppName, MessageBoxButtons.OK,
+							MessageBoxIcon.Error);
+				}
+				else if (e.Target is MethodSpec) {
+					var methodRef = ((MethodSpec)e.Target).Method;
+					var methodDef = methodRef.ResolveMethodDef();
+					if (methodDef != null)
+						ViewUtils.ShowMember(Model, methodDef);
+					else
+						MessageBox.Show("Failed to resolve '" + methodRef.FullName + "'.", App.AppName, MessageBoxButtons.OK,
+							MessageBoxIcon.Error);
+				}
+				else
+					MessageBox.Show("Unsupported navigation target '" + e.Target.GetType().FullName + "'.", App.AppName,
+						MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 
 		ContextMenuStrip ctxMenu;

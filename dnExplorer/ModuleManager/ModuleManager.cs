@@ -97,6 +97,10 @@ namespace dnExplorer {
 		public NavigationHistory History {
 			get { return history; }
 		}
+
+		public IAssemblyResolver Resolver {
+			get { return resolver; }
+		}
 	}
 
 	internal class ModuleTreeView : TreeViewX {

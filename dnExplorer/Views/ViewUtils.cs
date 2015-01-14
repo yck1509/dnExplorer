@@ -85,10 +85,10 @@ namespace dnExplorer.Views {
 				.Goto(model);
 		}
 
-		public static void FindModule(IDataModel model, IPEImage image, Action<dnModule> handler) {
+		public static void ShowModule(IDataModel model, ModuleDef module) {
 			TreeNavigator.Create()
-				.Path<dnModuleModel>(m => m.Module.Image == image ? NavigationState.Done : NavigationState.Next)
-				.Find(model, (dnModuleModel m) => handler(m.Module));
+				.Path<dnModuleModel>(m => m.Module.ModuleDef == module ? NavigationState.Done : NavigationState.Next)
+				.Goto(model);
 		}
 
 		public static TModel GetContextMenuModel<TModel>(this object sender)

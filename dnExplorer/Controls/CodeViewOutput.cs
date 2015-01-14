@@ -22,9 +22,27 @@ namespace dnExplorer.Controls {
 			public readonly int Length;
 			public readonly object Reference;
 
-			public TextRef(int len, object reference) {
+			const byte FLAG_LOCAL = 1;
+			const byte FLAG_DEF = 2;
+
+			readonly byte Flags;
+
+			public bool IsLocal {
+				get { return (Flags & FLAG_LOCAL) != 0; }
+			}
+
+			public bool IsDefinition {
+				get { return (Flags & FLAG_DEF) != 0; }
+			}
+
+			public TextRef(int len, object reference, bool isLocal, bool isDef) {
 				Length = len;
 				Reference = reference;
+				Flags = 0;
+				if (isLocal)
+					Flags |= FLAG_LOCAL;
+				if (isDef)
+					Flags |= FLAG_DEF;
 			}
 		}
 
@@ -127,8 +145,7 @@ namespace dnExplorer.Controls {
 
 			int pos = (int)result.Position;
 			writer.Write(text);
-			if (!isLocal)
-				refs.Add(pos, new CodeViewData.TextRef(text.Length, definition));
+			refs.Add(pos, new CodeViewData.TextRef(text.Length, definition, isLocal, true));
 		}
 
 		public void WriteReference(string text, object reference, bool isLocal) {
@@ -138,8 +155,7 @@ namespace dnExplorer.Controls {
 
 			int pos = (int)result.Position;
 			writer.Write(text);
-			if (!isLocal)
-				refs.Add(pos, new CodeViewData.TextRef(text.Length, reference));
+			refs.Add(pos, new CodeViewData.TextRef(text.Length, reference, isLocal, false));
 		}
 
 		public void WriteKeyword(string text) {
