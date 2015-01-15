@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using dnExplorer.Models;
 using dnExplorer.Trees;
@@ -9,7 +10,7 @@ using WeifenLuo.WinFormsUI.Docking;
 namespace dnExplorer {
 	public class ModuleManager : DockContent {
 		InfoPanel infos;
-		ModuleTreeView treeView;
+		TreeViewX treeView;
 		NavigationHistory history = new NavigationHistory();
 		ModuleResolver resolver;
 
@@ -25,11 +26,12 @@ namespace dnExplorer {
 			};
 			Controls.Add(split);
 
-			treeView = new ModuleTreeView(app, this) {
+			treeView = new TreeViewX(app) {
 				Dock = DockStyle.Fill,
 				BorderStyle = BorderStyle.None
 			};
 			treeView.AfterSelect += OnNodeSelected;
+			treeView.KeyDown += OnTreeViewKeyDown;
 			split.Panel1.Controls.Add(treeView);
 
 			infos = new InfoPanel {
@@ -72,19 +74,31 @@ namespace dnExplorer {
 				SelectionChanged(this, new SelectionChangedEventArgs(newModel));
 		}
 
-		public void LoadModule(string path) {
+		void OnTreeViewKeyDown(object sender, KeyEventArgs e) {
+			if (e.KeyCode == Keys.Delete) {
+				var selectedNode = treeView.SelectedNode as DataTreeNodeX;
+				if (selectedNode != null && selectedNode.Model is dnModuleModel)
+					RemoveModule(((dnModuleModel)selectedNode.Model).Module);
+			}
+		}
+
+		public Task LoadModule(string path) {
 			if (treeView.InvokeRequired) {
-				treeView.Invoke(new Action<string>(LoadModule), path);
-				return;
+				return (Task)treeView.Invoke(new Func<string, Task>(LoadModule), path);
 			}
 
-			var module = new dnModule(path, new ModuleContext(resolver));
-			if (module.ModuleDef != null) {
-				ModuleDefMD cached;
-				if (!resolver.AddModuleDef(module.ModuleDef, out cached))
-					return;
-			}
-			treeView.Nodes.Add(new dnModuleModel(module).ToNode());
+			return Task.Factory.StartNew(() => {
+				var module = new dnModule(path, new ModuleContext(resolver));
+				if (module.ModuleDef != null) {
+					ModuleDefMD cached;
+					if (!resolver.AddModuleDef(module.ModuleDef, out cached))
+						return null;
+				}
+				return module;
+			}).ContinueWith(task => {
+				if (task.Result != null)
+					treeView.Nodes.Add(new dnModuleModel(task.Result).ToNode());
+			}, TaskScheduler.FromCurrentSynchronizationContext());
 		}
 
 		public void RemoveModule(dnModule module) {
@@ -100,6 +114,7 @@ namespace dnExplorer {
 					var nodeModule = ((dnModuleModel)node.Model).Module;
 					if (nodeModule == module) {
 						treeView.Nodes.Remove(node);
+						OnNodeSelected(treeView, new TreeViewEventArgs(treeView.SelectedNode));
 					}
 				}
 			}
@@ -118,15 +133,6 @@ namespace dnExplorer {
 		public IAssemblyResolver Resolver {
 			get { return resolver; }
 		}
-	}
-
-	internal class ModuleTreeView : TreeViewX {
-		public ModuleTreeView(IApp app, ModuleManager manager)
-			: base(app) {
-			Manager = manager;
-		}
-
-		public ModuleManager Manager { get; private set; }
 	}
 
 	public class SelectionChangedEventArgs : EventArgs {

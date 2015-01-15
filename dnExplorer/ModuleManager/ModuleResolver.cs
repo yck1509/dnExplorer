@@ -129,7 +129,7 @@ namespace dnExplorer {
 			AssemblyDef cachedResult;
 			if (!LoadedAssemblies.TryGetValue(new AssemblyNameInfo(result), out cachedResult)) {
 				Debug.Assert(!string.IsNullOrEmpty(result.ManifestModule.Location));
-				Manager.LoadModule(result.ManifestModule.Location);
+				Manager.LoadModule(result.ManifestModule.Location).Wait();
 				cachedResult = LoadedAssemblies[new AssemblyNameInfo(result)];
 				ResolveNetModules(cachedResult);
 			}

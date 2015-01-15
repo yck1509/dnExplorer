@@ -20,7 +20,7 @@ namespace dnExplorer {
 			content = new Scintilla();
 			ScintillaHack.Apply(content);
 
-			//content.BorderStyle = BorderStyle.None;
+			content.BorderStyle = BorderStyle.None;
 			content.Folding.IsEnabled = false;
 			foreach (var i in content.Margins)
 				i.Width = 0;

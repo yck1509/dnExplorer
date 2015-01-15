@@ -101,6 +101,9 @@ namespace dnExplorer.Trees {
 				Nodes.Add(childNode);
 			}
 			ImageIndex = model.HasIcon ? 0 : -1;
+
+			if (TreeView != null)
+				TreeView.Invalidate();
 		}
 
 		void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e) {
