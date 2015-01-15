@@ -90,6 +90,18 @@ namespace dnExplorer {
 			if (treeView.InvokeRequired) {
 				treeView.Invoke(new Action<dnModule>(RemoveModule), module);
 			}
+			if (module.ModuleDef != null) {
+				if (!resolver.RemoveModuleDef(module.ModuleDef))
+					return;
+			}
+			foreach (DataTreeNodeX node in treeView.Nodes) {
+				if (node != null && node.Model is dnModuleModel) {
+					var nodeModule = ((dnModuleModel)node.Model).Module;
+					if (nodeModule == module) {
+						treeView.Nodes.Remove(node);
+					}
+				}
+			}
 		}
 
 		public event EventHandler<SelectionChangedEventArgs> SelectionChanged;

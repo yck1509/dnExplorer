@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using dnExplorer.Analysis;
 using dnExplorer.Trees;
 using dnlib.DotNet;
 
@@ -19,16 +20,23 @@ namespace dnExplorer.Models {
 
 		protected override bool HasChildren {
 			get {
-				return Type.HasNestedTypes || Type.HasMethods || Type.HasProperties ||
+				return Type.BaseType != null || Type.HasInterfaces || !Type.IsSealed ||
+				       Type.HasNestedTypes || Type.HasMethods || Type.HasProperties ||
 				       Type.HasEvents || Type.HasFields;
 			}
 		}
 
 		protected override bool IsVolatile {
-			get { return false; }
+			get { return true; }
 		}
 
 		protected override IEnumerable<IDataModel> PopulateChildren() {
+			IAnalysis analysis;
+
+			analysis = new BaseTypeAnalysis(Type);
+			if (analysis.HasResult)
+				yield return new AnalysisModel(analysis, true);
+
 			foreach (var nestedType in Type.NestedTypes.OrderBy(type => type.Name))
 				yield return new TypeModel(nestedType);
 
@@ -53,49 +61,7 @@ namespace dnExplorer.Models {
 		}
 
 		public override void DrawIcon(Graphics g, Rectangle bounds) {
-			Image icon, visibility;
-
-			icon = Resources.GetResource<Image>("Icons.ObjModel.type.png");
-			if (Type.IsInterface) {
-				icon = Resources.GetResource<Image>("Icons.ObjModel.interface.png");
-			}
-			else if (Type.BaseType != null) {
-				if (Type.IsEnum) {
-					icon = Resources.GetResource<Image>("Icons.ObjModel.enum.png");
-				}
-				else if (Type.IsValueType && !Type.IsAbstract) {
-					icon = Resources.GetResource<Image>("Icons.ObjModel.valuetype.png");
-				}
-				else if (Type.IsDelegate()) {
-					icon = Resources.GetResource<Image>("Icons.ObjModel.delegate.png");
-				}
-			}
-
-			switch (Type.Visibility) {
-				case TypeAttributes.NotPublic:
-				case TypeAttributes.NestedAssembly:
-				case TypeAttributes.NestedFamANDAssem:
-					visibility = Resources.GetResource<Image>("Icons.ObjModel.internal.png");
-					break;
-				case TypeAttributes.NestedPrivate:
-					visibility = Resources.GetResource<Image>("Icons.ObjModel.private.png");
-					break;
-				case TypeAttributes.NestedFamily:
-					visibility = Resources.GetResource<Image>("Icons.ObjModel.protected.png");
-					break;
-				case TypeAttributes.NestedFamORAssem:
-					visibility = Resources.GetResource<Image>("Icons.ObjModel.famasm.png");
-					break;
-				case TypeAttributes.Public:
-				case TypeAttributes.NestedPublic:
-				default:
-					visibility = null;
-					break;
-			}
-
-			g.DrawImageUnscaledAndClipped(icon, bounds);
-			if (visibility != null)
-				g.DrawImageUnscaledAndClipped(visibility, bounds);
+			ObjectIconRenderer.RenderType(Type, g, bounds);
 		}
 
 		protected override void Refresh() {

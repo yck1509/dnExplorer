@@ -76,7 +76,7 @@ namespace dnExplorer.Trees {
 			catch (Exception ex) {
 				children = new IDataModel[] {
 					new ErrorModel(
-						string.Format("Error while loading ModuleDef:{0}{1}{0}{0}",
+						string.Format("Error while loading:{0}{1}{0}{0}",
 							Environment.NewLine, ex))
 				};
 			}

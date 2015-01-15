@@ -36,7 +36,7 @@ namespace dnExplorer.Models {
 		}
 
 		public override void DrawIcon(Graphics g, Rectangle bounds) {
-			g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.ObjModel.module.png"), bounds);
+			ObjectIconRenderer.RenderModule(Module, g, bounds);
 		}
 
 		string IHasInfo.Header {

@@ -143,7 +143,7 @@ namespace dnExplorer.Views {
 
 		void NavigateLocal(object target) {
 			foreach (var textRef in view.Data.References) {
-				if (textRef.Value.Reference == target && textRef.Value.IsDefinition) {
+				if (textRef.Value.Reference.Equals(target) && textRef.Value.IsDefinition) {
 					new Range(textRef.Key, textRef.Key + textRef.Value.Length, view).Select();
 					return;
 				}

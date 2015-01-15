@@ -91,8 +91,8 @@ namespace dnExplorer.Views {
 		}
 
 		void Remove(object sender, EventArgs e) {
-			var node = sender.GetContextMenuModel<dnModuleModel>().Node;
-			node.TreeView.Nodes.Remove(node);
+			var model = sender.GetContextMenuModel<dnModuleModel>();
+			App.Modules.RemoveModule(model.Module);
 		}
 	}
 }

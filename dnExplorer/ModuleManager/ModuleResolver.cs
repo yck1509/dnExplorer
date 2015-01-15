@@ -78,16 +78,20 @@ namespace dnExplorer {
 			return true;
 		}
 
-		public void RemoveModuleDef(ModuleDefMD module) {
+		public bool RemoveModuleDef(ModuleDefMD module) {
 			if (!NetModules.Remove(module.Name)) {
 				foreach (var assembly in LoadedAssemblies.Values)
 					foreach (var asmModule in assembly.Modules)
 						if (asmModule == module) {
-							assembly.Modules.Remove(asmModule);
-							return;
+							if (assembly.Modules.Count == 1)
+								LoadedAssemblies.Remove(new AssemblyNameInfo(assembly));
+							else
+								assembly.Modules.Remove(asmModule);
+							return true;
 						}
-				Debug.Assert(false);
+				return false;
 			}
+			return true;
 		}
 
 		void ResolveNetModules(AssemblyDef assembly) {

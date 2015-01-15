@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using dnExplorer.Trees;
 using dnlib.DotNet;
 
@@ -35,34 +34,7 @@ namespace dnExplorer.Models {
 		}
 
 		public override void DrawIcon(Graphics g, Rectangle bounds) {
-			Image visibility;
-
-			switch (Event.GetVisibility()) {
-				case MethodAttributes.CompilerControlled:
-				case MethodAttributes.Private:
-					visibility = Resources.GetResource<Image>("Icons.ObjModel.private.png");
-					break;
-				case MethodAttributes.FamANDAssem:
-				case MethodAttributes.Assembly:
-					visibility = Resources.GetResource<Image>("Icons.ObjModel.internal.png");
-					break;
-				case MethodAttributes.Family:
-					visibility = Resources.GetResource<Image>("Icons.ObjModel.protected.png");
-					break;
-				case MethodAttributes.FamORAssem:
-					visibility = Resources.GetResource<Image>("Icons.ObjModel.famasm.png");
-					break;
-				case MethodAttributes.Public:
-				default:
-					visibility = null;
-					break;
-			}
-
-			g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.ObjModel.event.png"), bounds);
-			if (visibility != null)
-				g.DrawImageUnscaledAndClipped(visibility, bounds);
-			if (Event.GetAccessors().Any(m => m.IsStatic))
-				g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.ObjModel.static.png"), bounds);
+			ObjectIconRenderer.RenderEvent(Event, g, bounds);
 		}
 
 		protected override void Refresh() {

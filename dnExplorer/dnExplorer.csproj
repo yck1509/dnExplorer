@@ -55,11 +55,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analysis\AnalysisError.cs" />
+    <Compile Include="Analysis\BaseTypeAnalysis.cs" />
+    <Compile Include="Analysis\IAnalysis.cs" />
     <Compile Include="Controls\CodeView.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\CodeViewOutput.cs" />
     <Compile Include="Helpers\IconCreator.cs" />
+    <Compile Include="Helpers\ObjectIconRenderer.cs" />
     <Compile Include="Helpers\ResponsiveOperation.cs" />
     <Compile Include="Helpers\ScintillaHack.cs" />
     <Compile Include="IApp.cs" />
@@ -67,6 +71,7 @@
     <Compile Include="Language\CSharpLanguage.cs" />
     <Compile Include="Language\ILanguage.cs" />
     <Compile Include="Language\LanguageManager.cs" />
+    <Compile Include="Models\Analysis\AnalysisModel.cs" />
     <Compile Include="Models\ObjModels\ObjModel.cs" />
     <Compile Include="ModuleManager\ModuleManager.cs">
       <SubType>Form</SubType>
@@ -279,6 +284,7 @@
       <Link>SciLexer64.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Resources\Icons\arrow.png" />
     <Content Include="Theme\Dockindicator_PaneDiamond.png" />
     <Content Include="Theme\Dockindicator_PaneDiamond_Fill.png" />
     <Content Include="Theme\Dockindicator_PaneDiamond_Hotspot.png" />
