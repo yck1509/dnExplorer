@@ -7,6 +7,7 @@ namespace dnExplorer {
 	internal class ModuleResolver : IAssemblyResolver {
 		public ModuleResolver(ModuleManager manager) {
 			Manager = manager;
+			Modules = new HashSet<ModuleDefMD>();
 			NetModules = new Dictionary<UTF8String, ModuleDefMD>();
 			LoadedAssemblies =
 				new Dictionary<AssemblyNameInfo, AssemblyDef>(new AssemblyNameComparer(AssemblyNameComparerFlags.All));
@@ -16,6 +17,7 @@ namespace dnExplorer {
 		AssemblyResolver defaultResolver;
 		public ModuleManager Manager { get; private set; }
 		public AssemblyResolver Resolver { get; set; }
+		public HashSet<ModuleDefMD> Modules { get; private set; }
 		public Dictionary<UTF8String, ModuleDefMD> NetModules { get; private set; }
 		public Dictionary<AssemblyNameInfo, AssemblyDef> LoadedAssemblies { get; private set; }
 
@@ -55,6 +57,7 @@ namespace dnExplorer {
 						var name = asmModule.StringsStream.ReadNoNull(file.Name);
 						if (name == module.Name) {
 							assembly.Value.Modules.Add(module);
+							Modules.Add(module);
 							cached = null;
 							return true;
 						}
@@ -65,6 +68,7 @@ namespace dnExplorer {
 					return false;
 				}
 				NetModules.Add(module.Name, module);
+				Modules.Add(module);
 				return true;
 			}
 			var asmName = new AssemblyNameInfo(module.Assembly);
@@ -74,6 +78,7 @@ namespace dnExplorer {
 				return false;
 			}
 			LoadedAssemblies[asmName] = module.Assembly;
+			Modules.Add(module);
 			cached = null;
 			return true;
 		}
@@ -87,10 +92,12 @@ namespace dnExplorer {
 								LoadedAssemblies.Remove(new AssemblyNameInfo(assembly));
 							else
 								assembly.Modules.Remove(asmModule);
+							Modules.Remove(module);
 							return true;
 						}
 				return false;
 			}
+			Modules.Remove(module);
 			return true;
 		}
 

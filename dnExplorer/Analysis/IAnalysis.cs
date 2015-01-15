@@ -8,7 +8,7 @@ namespace dnExplorer.Analysis {
 		bool HasResult { get; }
 		IFullName TargetObject { get; }
 
-		IEnumerable<object> Run();
+		IEnumerable<object> Run(IApp app);
 		IAnalysis GetChildAnalysis(object child);
 	}
 }

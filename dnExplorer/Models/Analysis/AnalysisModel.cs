@@ -24,7 +24,10 @@ namespace dnExplorer.Models {
 		}
 
 		protected override IEnumerable<IDataModel> PopulateChildren() {
-			foreach (var item in analysis.Run()) {
+			if (Node == null)
+				yield break;
+
+			foreach (var item in analysis.Run(((TreeViewX)Node.TreeView).App)) {
 				if (item is AnalysisError)
 					yield return new ErrorModel(((AnalysisError)item).Message);
 				else if (item is IDataModel)

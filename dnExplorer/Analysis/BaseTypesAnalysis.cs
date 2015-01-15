@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using dnlib.DotNet;
 
 namespace dnExplorer.Analysis {
-	public class BaseTypeAnalysis : IAnalysis {
+	public class BaseTypesAnalysis : IAnalysis {
 		public string Name {
 			get { return "Base Types"; }
 		}
@@ -11,7 +11,7 @@ namespace dnExplorer.Analysis {
 		ITypeDefOrRef type;
 		TypeDef typeDef;
 
-		public BaseTypeAnalysis(ITypeDefOrRef type) {
+		public BaseTypesAnalysis(ITypeDefOrRef type) {
 			this.type = type;
 			typeDef = type.ResolveTypeDef();
 		}
@@ -28,7 +28,7 @@ namespace dnExplorer.Analysis {
 			}
 		}
 
-		public IEnumerable<object> Run() {
+		public IEnumerable<object> Run(IApp app) {
 			if (typeDef == null) {
 				yield return new AnalysisError("Failed to resolve '" + type.FullName + "'.");
 			}
@@ -42,7 +42,7 @@ namespace dnExplorer.Analysis {
 
 		public IAnalysis GetChildAnalysis(object child) {
 			if (child is ITypeDefOrRef)
-				return new BaseTypeAnalysis((ITypeDefOrRef)child);
+				return new BaseTypesAnalysis((ITypeDefOrRef)child);
 			return null;
 		}
 	}

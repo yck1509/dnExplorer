@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using dnExplorer.Models;
 using dnExplorer.Trees;
@@ -102,6 +103,10 @@ namespace dnExplorer {
 					}
 				}
 			}
+		}
+
+		public IEnumerable<ModuleDefMD> GetModules() {
+			return new List<ModuleDefMD>(resolver.Modules);
 		}
 
 		public event EventHandler<SelectionChangedEventArgs> SelectionChanged;

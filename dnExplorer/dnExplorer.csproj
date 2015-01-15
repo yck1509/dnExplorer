@@ -56,7 +56,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\AnalysisError.cs" />
-    <Compile Include="Analysis\BaseTypeAnalysis.cs" />
+    <Compile Include="Analysis\BaseTypesAnalysis.cs" />
+    <Compile Include="Analysis\DerivedTypesAnalysis.cs" />
     <Compile Include="Analysis\IAnalysis.cs" />
     <Compile Include="Controls\CodeView.cs">
       <SubType>Component</SubType>

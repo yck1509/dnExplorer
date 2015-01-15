@@ -33,7 +33,11 @@ namespace dnExplorer.Models {
 		protected override IEnumerable<IDataModel> PopulateChildren() {
 			IAnalysis analysis;
 
-			analysis = new BaseTypeAnalysis(Type);
+			analysis = new BaseTypesAnalysis(Type);
+			if (analysis.HasResult)
+				yield return new AnalysisModel(analysis, true);
+
+			analysis = new DerivedTypesAnalysis(Type);
 			if (analysis.HasResult)
 				yield return new AnalysisModel(analysis, true);
 
