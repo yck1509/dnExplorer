@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using ICSharpCode.Decompiler;
 using ICSharpCode.NRefactory;
+using dnlib.DotNet.Emit;
 
 namespace dnExplorer.Controls {
 	public class CodeViewData {
@@ -151,11 +152,14 @@ namespace dnExplorer.Controls {
 		public void WriteReference(string text, object reference, bool isLocal) {
 			WriteIndent();
 			Debug.Assert(reference != null);
-			SetType(CodeViewData.TYPE_REF_TARGET);
+			bool isOpCode = reference is OpCode;
+
+			SetType(isOpCode ? CodeViewData.TYPE_REF : CodeViewData.TYPE_REF_TARGET);
 
 			int pos = (int)result.Position;
 			writer.Write(text);
-			refs.Add(pos, new CodeViewData.TextRef(text.Length, reference, isLocal, false));
+			if (!isOpCode)
+				refs.Add(pos, new CodeViewData.TextRef(text.Length, reference, isLocal, false));
 		}
 
 		public void WriteKeyword(string text) {
