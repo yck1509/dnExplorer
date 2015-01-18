@@ -164,6 +164,10 @@ namespace dnExplorer.Views {
 			gotoMD.Click += GotoMD;
 			ctxMenu.Items.Add(gotoMD);
 
+			var analyze = new ToolStripMenuItem("Analyze");
+			analyze.Click += Analyze;
+			ctxMenu.Items.Add(analyze);
+
 			return ctxMenu;
 		}
 
@@ -173,6 +177,11 @@ namespace dnExplorer.Views {
 			if (module == null)
 				module = (ModuleDefMD)((IMemberDef)model.Definition).Module;
 			ViewUtils.ShowToken(App, model, module.MetaData.PEImage, model.Definition.MDToken);
+		}
+
+		void Analyze(object sender, EventArgs e) {
+			var model = sender.GetContextMenuModel<ObjModel>();
+			App.Analyzer.Display(model.Definition);
 		}
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using dnExplorer.Analysis;
 using dnExplorer.Language;
 using dnExplorer.Theme;
 using dnExplorer.Trees;
@@ -11,7 +12,6 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace dnExplorer {
 	public class Main : Form, IApp {
-		DockPanel dockPanel;
 		ToolStripPanel toolStripPanel;
 		ToolStrip mainStrip;
 
@@ -33,24 +33,27 @@ namespace dnExplorer {
 			AllowDrop = true;
 			IsMdiContainer = true;
 
-			Languages = new LanguageManager();
-
-			Modules = new ModuleManager(this);
-			Modules.SelectionChanged += OnNodeSelected;
-			Modules.History.Navigated += (sender, e) => UpdateHistoryButtons();
-
-			dockPanel = new DockPanel {
+			DockArea = new DockPanel {
 				Dock = DockStyle.Fill,
 				Theme = new VS2010Theme(),
-				DockLeftPortion = 0.4,
-				DockBottomPortion = 0.4,
+				DockLeftPortion = 0.35,
+				DockBottomPortion = 0.3,
 				DocumentStyle = DocumentStyle.DockingMdi,
 				ShowDocumentIcon = true,
 				AllowEndUserDocking = false,
 				AllowEndUserNestedDocking = false
 			};
-			Controls.Add(dockPanel);
-			Modules.Show(dockPanel, DockState.DockLeft);
+			Controls.Add(DockArea);
+
+			Languages = new LanguageManager();
+			Analyzer = new Analyzer(this);
+
+			Modules = new ModuleManager(this);
+			Modules.SelectionChanged += OnNodeSelected;
+			Modules.History.Navigated += (sender, e) => UpdateHistoryButtons();
+
+			Modules.Show(DockArea, DockState.Document); // Reduce flickering when first show document later
+			Modules.Show(DockArea, DockState.DockLeft);
 
 			toolStripPanel = new ToolStripPanel {
 				Dock = DockStyle.Top
@@ -153,11 +156,12 @@ namespace dnExplorer {
 					UpdateViewContainer(e.Selection.Node, view, content);
 
 					content.Controls.Add(view.ViewControl);
+					Modules.Activate();
 				}
 				newActualViews.Add(view, content);
 			}
 
-			dockPanel.SuspendLayout(true);
+			DockArea.SuspendLayout(true);
 
 			IDockContent activeView = null;
 			if (currentViews.Count > 0)
@@ -167,7 +171,7 @@ namespace dnExplorer {
 
 			foreach (var view in newActualViews) {
 				view.Key.Model = e.Selection;
-				view.Value.Show(dockPanel, DockState.Document);
+				view.Value.Show(DockArea, DockState.Document);
 				if (activeView == null)
 					activeView = view.Value;
 			}
@@ -185,7 +189,7 @@ namespace dnExplorer {
 			if (activeView != null)
 				activeView.DockHandler.PanelPane.ActiveContent = activeView;
 			Modules.Activate();
-			dockPanel.ResumeLayout(true, true);
+			DockArea.ResumeLayout(true, true);
 		}
 
 		void UpdateHistoryButtons() {
@@ -197,8 +201,12 @@ namespace dnExplorer {
 		public string AppName { get; private set; }
 		public ViewLocator Views { get; private set; }
 
-		public ModuleManager Modules { get; set; }
+		public DockPanel DockArea { get; set; }
 
-		public LanguageManager Languages { get; set; }
+		public ModuleManager Modules { get; private set; }
+
+		public LanguageManager Languages { get; private set; }
+
+		public Analyzer Analyzer { get; private set; }
 	}
 }

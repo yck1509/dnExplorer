@@ -27,7 +27,7 @@ namespace dnExplorer.Theme {
 		const int _ImageGapRight = 2;
 		const int _ImageGapBottom = 2;
 		const int _TextGapLeft = 2;
-		const int _TextGapRight = 2;
+		const int _TextGapRight = 5;
 		const int _TabGapTop = 4;
 		const int _TabGapBottom = 2;
 		const int _TabGapLeft = 4;
