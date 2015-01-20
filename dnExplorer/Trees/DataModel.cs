@@ -36,6 +36,14 @@ namespace dnExplorer.Trees {
 			}
 		}
 
+		public virtual bool RecordHistory {
+			get { return true; }
+		}
+
+		public virtual bool ShowViews {
+			get { return true; }
+		}
+
 		public abstract void Refresh(bool refreshChildren);
 
 		public virtual void DrawIcon(Graphics g, Rectangle bound) {

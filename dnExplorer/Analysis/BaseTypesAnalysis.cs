@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using dnlib.DotNet;
 
 namespace dnExplorer.Analysis {
@@ -28,7 +29,7 @@ namespace dnExplorer.Analysis {
 			}
 		}
 
-		public IEnumerable<object> Run(IApp app) {
+		public IEnumerable<object> Run(IApp app, CancellationToken token) {
 			if (typeDef == null) {
 				yield return new AnalysisError("Failed to resolve '" + type.FullName + "'.");
 			}
@@ -40,10 +41,9 @@ namespace dnExplorer.Analysis {
 			}
 		}
 
-		public IAnalysis GetChildAnalysis(object child) {
+		public IEnumerable<IAnalysis> GetChildAnalyses(object child) {
 			if (child is ITypeDefOrRef)
-				return new BaseTypesAnalysis((ITypeDefOrRef)child);
-			return null;
+				yield return new BaseTypesAnalysis((ITypeDefOrRef)child);
 		}
 	}
 }

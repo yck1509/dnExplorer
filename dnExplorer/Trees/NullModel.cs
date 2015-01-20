@@ -35,6 +35,14 @@ namespace dnExplorer.Trees {
 			get { return false; }
 		}
 
+		public bool RecordHistory {
+			get { return false; }
+		}
+
+		public bool ShowViews {
+			get { return false; }
+		}
+
 		public void DrawIcon(Graphics g, Rectangle bounds) {
 		}
 

@@ -139,6 +139,8 @@ namespace dnExplorer {
 			IView[] newViews;
 			if (e.Selection == null)
 				newViews = new IView[0];
+			else if (!e.Selection.ShowViews)
+				return;
 			else
 				newViews = Views.LocateViews(e.Selection).ToArray();
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using dnExplorer.Controls;
@@ -94,48 +95,7 @@ namespace dnExplorer.Views {
 
 		void OnNavigateTarget(object sender, CodeViewNavigateEventArgs e) {
 			if (!e.IsLocal) {
-				if (e.Target is IMemberDef)
-					ViewUtils.ShowMember(Model, (IMemberDef)e.Target);
-				else if (e.Target is IAssembly) {
-					var resolver = App.Modules.Resolver;
-					var assemblyRef = (IAssembly)e.Target;
-					var assemblyDef = App.Modules.Resolver.Resolve(assemblyRef, null);
-					if (assemblyDef != null)
-						ViewUtils.ShowModule(Model, assemblyDef.ManifestModule);
-					else
-						MessageBox.Show("Failed to resolve '" + assemblyRef.FullName + "'.", App.AppName, MessageBoxButtons.OK,
-							MessageBoxIcon.Error);
-				}
-				else if (e.Target is MemberRef) {
-					var memberRef = (MemberRef)e.Target;
-					var memberDef = (IMemberDef)memberRef.Resolve();
-					if (memberDef != null)
-						ViewUtils.ShowMember(Model, memberDef);
-					else
-						MessageBox.Show("Failed to resolve '" + memberRef.FullName + "'.", App.AppName, MessageBoxButtons.OK,
-							MessageBoxIcon.Error);
-				}
-				else if (e.Target is TypeRef) {
-					var typeRef = (TypeRef)e.Target;
-					var typeDef = typeRef.Resolve();
-					if (typeDef != null)
-						ViewUtils.ShowMember(Model, typeDef);
-					else
-						MessageBox.Show("Failed to resolve '" + typeRef.FullName + "'.", App.AppName, MessageBoxButtons.OK,
-							MessageBoxIcon.Error);
-				}
-				else if (e.Target is MethodSpec) {
-					var methodRef = ((MethodSpec)e.Target).Method;
-					var methodDef = methodRef.ResolveMethodDef();
-					if (methodDef != null)
-						ViewUtils.ShowMember(Model, methodDef);
-					else
-						MessageBox.Show("Failed to resolve '" + methodRef.FullName + "'.", App.AppName, MessageBoxButtons.OK,
-							MessageBoxIcon.Error);
-				}
-				else
-					MessageBox.Show("Unsupported navigation target '" + e.Target.GetType().FullName + "'.", App.AppName,
-						MessageBoxButtons.OK, MessageBoxIcon.Error);
+				App.Modules.NavigateTarget(e.Target);
 			}
 			else if (!e.IsDefinition)
 				NavigateLocal(e.Target);
@@ -164,7 +124,8 @@ namespace dnExplorer.Views {
 			gotoMD.Click += GotoMD;
 			ctxMenu.Items.Add(gotoMD);
 
-			var analyze = new ToolStripMenuItem("Analyze");
+			ctxMenu.Items.Add(new ToolStripSeparator());
+			var analyze = new ToolStripMenuItem("Analyze", Resources.GetResource<Image>("Icons.search.png"));
 			analyze.Click += Analyze;
 			ctxMenu.Items.Add(analyze);
 

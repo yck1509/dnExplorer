@@ -103,7 +103,12 @@ namespace dnExplorer.Trees {
 		}
 
 		void SearchNodeGoto(DataTreeNodeX node, Action<DataTreeNodeX> done) {
-			node.Expand();
+			if (node.TreeView != null) {
+				if (node.TreeView.InvokeRequired)
+					node.TreeView.Invoke(new Action(() => node.Expand()));
+				else
+					node.Expand();
+			}
 
 			foreach (var child in node.Nodes)
 				NavigateChild(child as DataTreeNodeX, done, SearchNodeGoto);

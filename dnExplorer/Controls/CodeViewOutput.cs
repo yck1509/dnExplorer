@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using dnlib.DotNet.Emit;
 using ICSharpCode.Decompiler;
 using ICSharpCode.NRefactory;
-using dnlib.DotNet.Emit;
 
 namespace dnExplorer.Controls {
 	public class CodeViewData {

@@ -4,17 +4,21 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using dnExplorer.Models;
 using dnExplorer.Trees;
+using dnExplorer.Views;
 using dnlib.DotNet;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace dnExplorer {
 	public class ModuleManager : DockContent {
+		IApp app;
 		InfoPanel infos;
 		TreeViewX treeView;
 		NavigationHistory history = new NavigationHistory();
 		ModuleResolver resolver;
 
 		public ModuleManager(IApp app) {
+			this.app = app;
+
 			Text = "Modules";
 			Height = 600;
 			CloseButtonVisible = false;
@@ -45,7 +49,11 @@ namespace dnExplorer {
 			history.Navigated += (sender, e) => {
 				navCount++;
 				try {
-					treeView.SelectedNode = history.Current.Node;
+					if (history.Current.Model.Node != null &&
+					    history.Current.Model.Node.TreeView != null)
+						treeView.SelectedNode = history.Current.Model.Node;
+					else
+						NavigateModel(history.Current.Model);
 				}
 				finally {
 					navCount--;
@@ -67,8 +75,8 @@ namespace dnExplorer {
 			else
 				infos.Clear();
 
-			if (newNode != null && navCount == 0)
-				History.Record(newNode);
+			if (newNode != null && navCount == 0 && newNode.Model != null && newNode.Model.RecordHistory)
+				History.Record(newNode.Model);
 
 			if (SelectionChanged != null)
 				SelectionChanged(this, new SelectionChangedEventArgs(newModel));
@@ -80,6 +88,11 @@ namespace dnExplorer {
 				if (selectedNode != null && selectedNode.Model is dnModuleModel)
 					RemoveModule(((dnModuleModel)selectedNode.Model).Module);
 			}
+		}
+
+		void NavigateModel(IDataModel model) {
+			if (model is ObjModel)
+				ViewUtils.ShowMember(treeView, (IMemberDef)((ObjModel)model).Definition);
 		}
 
 		public Task LoadModule(string path) {
@@ -122,6 +135,59 @@ namespace dnExplorer {
 
 		public IEnumerable<ModuleDefMD> GetModules() {
 			return new List<ModuleDefMD>(resolver.Modules);
+		}
+
+		public void NavigateTarget(object target) {
+			if (!InvokeRequired) {
+				// Resolving must done in non-UI thread to avoid deadlock.
+				Task.Factory.StartNew(() => NavigateTarget(target));
+				return;
+			}
+
+			if (target is IMemberDef)
+				ViewUtils.ShowMember(treeView, (IMemberDef)target);
+			else if (target is IAssembly) {
+				var assemblyRef = (IAssembly)target;
+				var assemblyDef = resolver.Resolve(assemblyRef, null);
+				if (assemblyDef != null)
+					ViewUtils.ShowModule(treeView, assemblyDef.ManifestModule);
+				else
+					Error("Failed to resolve '" + assemblyRef.FullName + "'.");
+			}
+			else if (target is MemberRef) {
+				var memberRef = (MemberRef)target;
+				var memberDef = (IMemberDef)memberRef.Resolve();
+				if (memberDef != null)
+					ViewUtils.ShowMember(treeView, memberDef);
+				else
+					Error("Failed to resolve '" + memberRef.FullName + "'.");
+			}
+			else if (target is TypeRef) {
+				var typeRef = (TypeRef)target;
+				var typeDef = typeRef.Resolve();
+				if (typeDef != null)
+					ViewUtils.ShowMember(treeView, typeDef);
+				else
+					Error("Failed to resolve '" + typeRef.FullName + "'.");
+			}
+			else if (target is MethodSpec) {
+				var methodRef = ((MethodSpec)target).Method;
+				var methodDef = methodRef.ResolveMethodDef();
+				if (methodDef != null)
+					ViewUtils.ShowMember(treeView, methodDef);
+				else
+					Error("Failed to resolve '" + methodRef.FullName + "'.");
+			}
+			else
+				Error("Unsupported navigation target '" + target.GetType().FullName + "'.");
+		}
+
+		void Error(string msg) {
+			if (InvokeRequired) {
+				Invoke(new Action<string>(Error), msg);
+				return;
+			}
+			MessageBox.Show(msg, app.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
 		public event EventHandler<SelectionChangedEventArgs> SelectionChanged;

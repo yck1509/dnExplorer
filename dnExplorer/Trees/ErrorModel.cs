@@ -7,7 +7,7 @@ namespace dnExplorer.Trees {
 
 		public ErrorModel(string message) {
 			Message = message;
-			Text = "Error!";
+			Text = message;
 		}
 
 		public override bool HasIcon {

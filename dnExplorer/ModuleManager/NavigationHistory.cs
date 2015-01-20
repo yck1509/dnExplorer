@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using dnExplorer.Trees;
 using dnExplorer.Views;
 
 namespace dnExplorer {
@@ -29,8 +29,8 @@ namespace dnExplorer {
 			get { return current != null && current.Next != null; }
 		}
 
-		public HistoryItem Record(TreeNode node) {
-			var item = new HistoryItem(node);
+		public HistoryItem Record(IDataModel model) {
+			var item = new HistoryItem(model);
 			var newNode = new HistoryNode(item);
 			if (current != null) {
 				current.Next = newNode;
@@ -62,12 +62,12 @@ namespace dnExplorer {
 	}
 
 	public class HistoryItem {
-		internal HistoryItem(TreeNode node) {
-			Node = node;
+		internal HistoryItem(IDataModel model) {
+			Model = model;
 			States = new Dictionary<IView, object>();
 		}
 
-		public TreeNode Node { get; private set; }
+		public IDataModel Model { get; private set; }
 		public Dictionary<IView, object> States { get; private set; }
 	}
 }

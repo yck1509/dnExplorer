@@ -129,6 +129,8 @@ namespace dnExplorer {
 			AssemblyDef cachedResult;
 			if (!LoadedAssemblies.TryGetValue(new AssemblyNameInfo(result), out cachedResult)) {
 				Debug.Assert(!string.IsNullOrEmpty(result.ManifestModule.Location));
+				// Resolving assemblies must be done in non-UI thread, or else Wait() will deadlock.
+				Debug.Assert(Manager.InvokeRequired);
 				Manager.LoadModule(result.ManifestModule.Location).Wait();
 				cachedResult = LoadedAssemblies[new AssemblyNameInfo(result)];
 				ResolveNetModules(cachedResult);

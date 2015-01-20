@@ -6,7 +6,7 @@ using dnlib.Threading;
 
 namespace dnExplorer {
 	public class DisplayNameCreator {
-		static void CreateDisplayName(StringBuilder sb, RecursionCounter recu, TypeSig sig) {
+		static void CreateDisplayName(StringBuilder sb, RecursionCounter recu, TypeSig sig, bool fullName) {
 			if (sig == null) {
 				sb.Append("<<<NULL>>>");
 				return;
@@ -38,21 +38,24 @@ namespace dnExplorer {
 				case ElementType.ValueType:
 				case ElementType.Class:
 					var type = ((TypeDefOrRefSig)sig).TypeDefOrRef;
-					sb.Append(type.Name ?? "<<<NULL>>>");
+					if (fullName)
+						sb.Append(type.ReflectionFullName);
+					else
+						sb.Append(type.Name ?? "<<<NULL>>>");
 					break;
 
 				case ElementType.Ptr:
-					CreateDisplayName(sb, recu, sig.Next);
+					CreateDisplayName(sb, recu, sig.Next, fullName);
 					sb.Append('*');
 					break;
 
 				case ElementType.ByRef:
-					CreateDisplayName(sb, recu, sig.Next);
+					CreateDisplayName(sb, recu, sig.Next, fullName);
 					sb.Append('&');
 					break;
 
 				case ElementType.Array: {
-					CreateDisplayName(sb, recu, sig.Next);
+					CreateDisplayName(sb, recu, sig.Next, fullName);
 					var arraySig = (ArraySig)sig;
 					sb.Append('[');
 					uint rank = arraySig.Rank;
@@ -83,30 +86,30 @@ namespace dnExplorer {
 				}
 
 				case ElementType.SZArray:
-					CreateDisplayName(sb, recu, sig.Next);
+					CreateDisplayName(sb, recu, sig.Next, fullName);
 					sb.Append("[]");
 					break;
 
 				case ElementType.CModReqd:
-					CreateDisplayName(sb, recu, sig.Next);
+					CreateDisplayName(sb, recu, sig.Next, fullName);
 					sb.Append(" modreq(");
 					sb.Append(((ModifierSig)sig).Modifier.Name ?? "<<<NULL>>>");
 					sb.Append(")");
 					break;
 
 				case ElementType.CModOpt:
-					CreateDisplayName(sb, recu, sig.Next);
+					CreateDisplayName(sb, recu, sig.Next, fullName);
 					sb.Append(" modopt(");
 					sb.Append(((ModifierSig)sig).Modifier.Name ?? "<<<NULL>>>");
 					sb.Append(")");
 					break;
 
 				case ElementType.Pinned:
-					CreateDisplayName(sb, recu, sig.Next);
+					CreateDisplayName(sb, recu, sig.Next, fullName);
 					break;
 
 				case ElementType.ValueArray:
-					CreateDisplayName(sb, recu, sig.Next);
+					CreateDisplayName(sb, recu, sig.Next, fullName);
 					var valueArraySig = (ValueArraySig)sig;
 					sb.Append(" ValueArray(");
 					sb.Append(valueArraySig.Size);
@@ -114,7 +117,7 @@ namespace dnExplorer {
 					break;
 
 				case ElementType.Module:
-					CreateDisplayName(sb, recu, sig.Next);
+					CreateDisplayName(sb, recu, sig.Next, fullName);
 					var moduleSig = (ModuleSig)sig;
 					sb.Append(" Module(");
 					sb.Append(moduleSig.Index);
@@ -124,14 +127,14 @@ namespace dnExplorer {
 				case ElementType.GenericInst: {
 					var genericInstSig = (GenericInstSig)sig;
 					var typeGenArgs = genericInstSig.GenericArguments;
-					CreateDisplayName(sb, recu, genericInstSig.GenericType);
+					CreateDisplayName(sb, recu, genericInstSig.GenericType, fullName);
 					sb.Append('<');
 					int i = -1;
 					foreach (var genArg in typeGenArgs.GetSafeEnumerable()) {
 						i++;
 						if (i != 0)
 							sb.Append(", ");
-						CreateDisplayName(sb, recu, genArg);
+						CreateDisplayName(sb, recu, genArg, false);
 					}
 					sb.Append('>');
 				}
@@ -166,10 +169,13 @@ namespace dnExplorer {
 			recu.Decrement();
 		}
 
-		public static string CreateDisplayName(IType type) {
+		public static string CreateDisplayName(IType type, bool fullName = false) {
 			var sb = new StringBuilder();
 			if (type is ExportedType) {
-				sb.Append(FullNameCreator.Name((ExportedType)type, false));
+				if (fullName)
+					sb.Append(FullNameCreator.FullName((ExportedType)type, true));
+				else
+					sb.Append(FullNameCreator.Name((ExportedType)type, true));
 				return sb.ToString();
 			}
 			if (type is TypeSpec)
@@ -179,17 +185,23 @@ namespace dnExplorer {
 				if (type is TypeDefOrRefSig)
 					type = ((TypeDefOrRefSig)type).TypeDefOrRef;
 				else {
-					CreateDisplayName(sb, new RecursionCounter(), (TypeSig)type);
+					CreateDisplayName(sb, new RecursionCounter(), (TypeSig)type, fullName);
 					return sb.ToString();
 				}
 			}
 
 			if (type is TypeRef) {
-				sb.Append(FullNameCreator.Name((TypeRef)type, false));
+				if (fullName)
+					sb.Append(FullNameCreator.FullName((TypeRef)type, true));
+				else
+					sb.Append(FullNameCreator.Name((TypeRef)type, true));
 			}
 			else if (type is TypeDef) {
 				var typeDef = (TypeDef)type;
-				sb.Append(FullNameCreator.Name(typeDef, false));
+				if (fullName)
+					sb.Append(FullNameCreator.FullName(typeDef, true));
+				else
+					sb.Append(FullNameCreator.Name(typeDef, true));
 
 				if (typeDef.HasGenericParameters) {
 					sb.Append('<');
@@ -208,8 +220,13 @@ namespace dnExplorer {
 			return sb.ToString();
 		}
 
-		public static string CreateDisplayName(MethodDef method) {
+		public static string CreateDisplayName(IMethod method, bool fullName = false) {
 			var sb = new StringBuilder();
+
+			if (fullName) {
+				sb.AppendFormat("{0}.", CreateDisplayName(method.DeclaringType, true));
+			}
+
 			if (method.MethodSig == null) {
 				sb.Append(method.Name ?? "<<<NULL>>>");
 			}
@@ -224,14 +241,14 @@ namespace dnExplorer {
 						if (i != 0) {
 							sb.Append(", ");
 						}
-						sb.Append(FullNameCreator.Name(new GenericMVar(i, method), false));
+						sb.Append(FullNameCreator.Name(new GenericMVar(i, method as MethodDef), false));
 					}
 					sb.Append('>');
 				}
 				sb.Append('(');
 				int count = PrintMethodArgList(sb, method.MethodSig.Params, false, false);
 				PrintMethodArgList(sb, method.MethodSig.ParamsAfterSentinel, count > 0, true);
-				if (method.IsConstructor) {
+				if (method.Name == ".ctor" || method.Name == ".cctor") {
 					sb.Append(")");
 				}
 				else {
@@ -265,8 +282,13 @@ namespace dnExplorer {
 			return count;
 		}
 
-		public static string CreateDisplayName(PropertyDef property) {
+		public static string CreateDisplayName(PropertyDef property, bool fullName = false) {
 			var sb = new StringBuilder();
+
+			if (fullName) {
+				sb.AppendFormat("{0}.", CreateDisplayName(property.DeclaringType, true));
+			}
+
 			if (property.PropertySig == null) {
 				sb.Append(property.Name ?? "<<<NULL>>>");
 			}
@@ -285,8 +307,13 @@ namespace dnExplorer {
 			return sb.ToString();
 		}
 
-		public static string CreateDisplayName(EventDef evnt) {
+		public static string CreateDisplayName(EventDef evnt, bool fullName = false) {
 			var sb = new StringBuilder();
+
+			if (fullName) {
+				sb.AppendFormat("{0}.", CreateDisplayName(evnt.DeclaringType, true));
+			}
+
 			if (evnt.EventType == null) {
 				sb.Append(evnt.Name ?? "<<<NULL>>>");
 			}
@@ -298,8 +325,13 @@ namespace dnExplorer {
 			return sb.ToString();
 		}
 
-		public static string CreateDisplayName(FieldDef field) {
+		public static string CreateDisplayName(IField field, bool fullName = false) {
 			var sb = new StringBuilder();
+
+			if (fullName) {
+				sb.AppendFormat("{0}.", CreateDisplayName(field.DeclaringType, true));
+			}
+
 			if (field.FieldSig.Type == null) {
 				sb.Append(field.Name ?? "<<<NULL>>>");
 			}
@@ -311,6 +343,26 @@ namespace dnExplorer {
 				sb.Append(CreateDisplayName(field.FieldSig.Type));
 			}
 			return sb.ToString();
+		}
+
+		public static string CreateFullName(IFullName item) {
+			if (item is MemberRef) {
+				var memberRef = (MemberRef)item;
+				if (memberRef.IsFieldRef)
+					return CreateDisplayName((IField)memberRef, true);
+				return CreateDisplayName((IMethod)memberRef, true);
+			}
+			if (item is IField)
+				return CreateDisplayName((IField)item, true);
+			if (item is IMethod)
+				return CreateDisplayName((IMethod)item, true);
+			if (item is IType)
+				return CreateDisplayName((IType)item, true);
+			if (item is IModule)
+				return ((IModule)item).ScopeName;
+			if (item is IAssembly)
+				return ((IAssembly)item).Name;
+			return item.FullName;
 		}
 	}
 }

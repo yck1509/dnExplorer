@@ -54,6 +54,10 @@ namespace dnExplorer.Views {
 		}
 
 		public static void ShowMember(IDataModel model, IMemberDef member) {
+			ShowMember((TreeViewX)model.Node.TreeView, member);
+		}
+
+		public static void ShowMember(TreeViewX treeView, IMemberDef member) {
 			var declTypes = new HashSet<TypeDef>();
 			var declType = member.DeclaringType;
 			var ns = (member is TypeDef) ? ((TypeDef)member).Namespace : null;
@@ -82,13 +86,17 @@ namespace dnExplorer.Views {
 						m.Event == member
 							? NavigationState.Done
 							: (m.Event.GetAccessors().Contains(member) ? NavigationState.In : NavigationState.Next))
-				.Goto(model);
+				.Goto(treeView);
 		}
 
 		public static void ShowModule(IDataModel model, ModuleDef module) {
+			ShowModule((TreeViewX)model.Node.TreeView, module);
+		}
+
+		public static void ShowModule(TreeViewX treeView, ModuleDef module) {
 			TreeNavigator.Create()
 				.Path<dnModuleModel>(m => m.Module.ModuleDef == module ? NavigationState.Done : NavigationState.Next)
-				.Goto(model);
+				.Goto(treeView);
 		}
 
 		public static TModel GetContextMenuModel<TModel>(this object sender)
@@ -119,7 +127,7 @@ namespace dnExplorer.Views {
 			var node = view.SelectedNode as DataTreeNodeX;
 			if (node != null)
 				return (TModel)node.Model;
-			return (TModel)menu.Tag;
+			return null;
 		}
 	}
 }

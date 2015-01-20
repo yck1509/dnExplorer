@@ -26,6 +26,39 @@ namespace dnExplorer.Analysis {
 		public void Display(IDnlibDef item = null) {
 			treeView.App.DockArea.DockWindows[DockState.DockBottom].BringToFront();
 			Show(treeView.App.DockArea, DockState.DockBottom);
+
+			if (item != null) {
+				if (item is MethodDef)
+					treeView.Nodes.Add(MethodAnalysis.CreateAnalysis((MethodDef)item).ToNode());
+			}
+		}
+
+		public static IAnalysis[] GetChildren(object item) {
+			if (item is IMethod && ((IMethod)item).IsMethod) {
+				var def = ((IMethod)item).ResolveMethodDef();
+				if (def == null)
+					return new IAnalysis[0];
+
+				return new IAnalysis[] {
+					new MethodUsedByAnalysis(def),
+					new MethodUsesAnalysis(def)
+				};
+			}
+			if (item is IField && ((IField)item).IsField) {
+				var def = ((IField)item).ResolveFieldDef();
+				if (def == null)
+					return new IAnalysis[0];
+
+				return new IAnalysis[0];
+			}
+			if (item is ITypeDefOrRef) {
+				var def = ((ITypeDefOrRef)item).ResolveTypeDef();
+				if (def == null)
+					return new IAnalysis[0];
+
+				return new IAnalysis[0];
+			}
+			return new IAnalysis[0];
 		}
 	}
 }

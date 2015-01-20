@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 
 namespace dnExplorer.Trees {
 	public abstract class LazyModel : DataModel {
@@ -22,10 +23,13 @@ namespace dnExplorer.Trees {
 		}
 
 		object sync = new object();
+		CancellationTokenSource cancelSrc;
 		ResponsiveOperation<ICollection<IDataModel>> loadOp;
 
 		protected abstract bool HasChildren { get; }
 		protected abstract bool IsVolatile { get; }
+
+		protected CancellationToken? CancellationToken { get; private set; }
 
 		public override void OnCollapse() {
 			lock (sync) {
@@ -69,6 +73,11 @@ namespace dnExplorer.Trees {
 		}
 
 		ICollection<IDataModel> PopulateChildrenInternal() {
+			lock (sync) {
+				cancelSrc = new CancellationTokenSource();
+				CancellationToken = cancelSrc.Token;
+			}
+
 			ICollection<IDataModel> children;
 			try {
 				children = new List<IDataModel>(PopulateChildren());
@@ -79,6 +88,12 @@ namespace dnExplorer.Trees {
 						string.Format("Error while loading:{0}{1}{0}{0}",
 							Environment.NewLine, ex))
 				};
+			}
+			finally {
+				lock (sync) {
+					cancelSrc = null;
+					CancellationToken = null;
+				}
 			}
 
 			return children;
@@ -114,6 +129,8 @@ namespace dnExplorer.Trees {
 				lock (sync) {
 					if (loadOp != null)
 						loadOp.Cancel();
+					if (cancelSrc != null)
+						cancelSrc.Cancel();
 					Children.Clear();
 					if (HasChildren) {
 						Children.Add(NullModel.Instance);

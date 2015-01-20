@@ -62,6 +62,10 @@
     <Compile Include="Analysis\BaseTypesAnalysis.cs" />
     <Compile Include="Analysis\DerivedTypesAnalysis.cs" />
     <Compile Include="Analysis\IAnalysis.cs" />
+    <Compile Include="Analysis\Method\MethodUsesAnalysis.cs" />
+    <Compile Include="Analysis\Method\MethodAnalysis.cs" />
+    <Compile Include="Analysis\Method\MethodUsedByAnalysis.cs" />
+    <Compile Include="Analysis\ScopedAnalyzer.cs" />
     <Compile Include="Controls\CodeView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -76,6 +80,7 @@
     <Compile Include="Language\ILanguage.cs" />
     <Compile Include="Language\LanguageManager.cs" />
     <Compile Include="Models\Analysis\AnalysisModel.cs" />
+    <Compile Include="Models\Analysis\MultipleAnalysesModel.cs" />
     <Compile Include="Models\ObjModels\ObjModel.cs" />
     <Compile Include="ModuleManager\ModuleManager.cs">
       <SubType>Form</SubType>
@@ -167,6 +172,12 @@
     </Compile>
     <Compile Include="Trees\Utils.cs" />
     <Compile Include="Helpers\Utils.cs" />
+    <Compile Include="Views\Analysis\AnalysisView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Views\Analysis\MultipleAnalysesView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Views\MetaData\MDRowView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -289,6 +300,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <EmbeddedResource Include="Resources\Icons\arrow.png" />
+    <EmbeddedResource Include="Resources\Icons\search.png" />
     <Content Include="Theme\Dockindicator_PaneDiamond.png" />
     <Content Include="Theme\Dockindicator_PaneDiamond_Fill.png" />
     <Content Include="Theme\Dockindicator_PaneDiamond_Hotspot.png" />

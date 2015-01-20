@@ -61,22 +61,21 @@ namespace dnExplorer.Controls {
 			Indicators[INDI_REFERENCE].DrawMode = IndicatorDrawMode.Underlay;
 		}
 
-		CodeViewData data;
-		public CodeViewData Data { get { return data; } }
+		public CodeViewData Data { get; private set; }
 
 		public void Clear() {
 			SetPlainText("");
 		}
 
 		public void SetPlainText(string text) {
-			data = null;
+			Data = null;
 			IsReadOnly = false;
 			Text = text;
 			IsReadOnly = true;
 		}
 
 		public void SetData(CodeViewData data) {
-			this.data = data;
+			this.Data = data;
 			IsReadOnly = false;
 			Text = data.Code;
 			IsReadOnly = true;
@@ -85,25 +84,25 @@ namespace dnExplorer.Controls {
 		protected override void OnStyleNeeded(StyleNeededEventArgs e) {
 			base.OnStyleNeeded(e);
 
-			if (data == null)
+			if (Data == null)
 				return;
 
 			for (int i = e.Range.Start; i < e.Range.End; i++) {
 				CodeViewData.TextType type;
-				if (data.Types.TryGetValue(i, out type))
+				if (Data.Types.TryGetValue(i, out type))
 					GetRange(i, i + type.Length).SetStyle(type.Type);
 			}
 		}
 
 		CodeViewData.TextRef? ResolveReference(ref int pos) {
-			if (data == null)
+			if (Data == null)
 				return null;
 
 			// Assuming no reference ranges overlaps
 			int target = pos;
 			for (; pos >= 0; pos--) {
 				CodeViewData.TextRef textRef;
-				if (data.References.TryGetValue(pos, out textRef)) {
+				if (Data.References.TryGetValue(pos, out textRef)) {
 					if (pos + textRef.Length > target)
 						return textRef;
 					return null;
@@ -113,7 +112,7 @@ namespace dnExplorer.Controls {
 		}
 
 		void UpdateIndicator() {
-			if (data == null)
+			if (Data == null)
 				return;
 
 			foreach (Range r in Indicators[INDI_REFERENCE].SearchAll())
@@ -127,7 +126,7 @@ namespace dnExplorer.Controls {
 
 				for (int i = visibleBegin; i < visibleEnd; i++) {
 					CodeViewData.TextRef textRef;
-					if (data.References.TryGetValue(i, out textRef) &&
+					if (Data.References.TryGetValue(i, out textRef) &&
 					    textRef.Reference.Equals(target.Value.Reference)) {
 						GetRange(i, i + textRef.Length).SetIndicator(INDI_REFERENCE);
 					}

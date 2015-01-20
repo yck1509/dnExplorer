@@ -202,6 +202,7 @@ namespace dnExplorer.Trees {
 			else if (m.Msg == 0x204e) {
 				int code = Marshal.ReadInt32(m.LParam + IntPtr.Size * 2);
 				if (code == -12) {
+					// Do not run custom paint when updating nodes.
 					if (updating > 0 && !updateRedraw)
 						return;
 
@@ -209,6 +210,12 @@ namespace dnExplorer.Trees {
 					var node = TreeNode.FromHandle(this, nodeHnd);
 					if (node != null && !node.IsVisible)
 						return;
+				}
+				else if (code == -5) {
+					// Set SelectedNode before displaying context menu.
+					var node = GetNodeAt(PointToClient(Cursor.Position));
+					if (node != null)
+						SelectedNode = node;
 				}
 			}
 

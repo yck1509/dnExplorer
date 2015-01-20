@@ -1,18 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using dnExplorer.Analysis;
 using dnExplorer.Trees;
+using dnlib.DotNet;
 
 namespace dnExplorer.Models {
 	public class AnalysisModel : LazyModel {
 		IAnalysis analysis;
-		bool root;
+
+		public IFullName Item {
+			get { return analysis.TargetObject; }
+		}
+
+		public bool IsRoot { get; set; }
 
 		public AnalysisModel(IAnalysis analysis, bool root = true) {
 			this.analysis = analysis;
-			this.root = root;
-			Text = root ? analysis.Name : Utils.EscapeString(analysis.TargetObject.FullName, false);
+			IsRoot = root;
+			Text = root ? analysis.Name : Utils.EscapeString(DisplayNameCreator.CreateFullName(analysis.TargetObject), false);
 		}
 
 		protected override bool HasChildren {
@@ -23,18 +30,34 @@ namespace dnExplorer.Models {
 			get { return true; }
 		}
 
-		protected override IEnumerable<IDataModel> PopulateChildren() {
-			if (Node == null)
-				yield break;
+		public override bool RecordHistory {
+			get { return false; }
+		}
 
-			foreach (var item in analysis.Run(((TreeViewX)Node.TreeView).App)) {
+		public override bool ShowViews {
+			get { return false; }
+		}
+
+		protected override IEnumerable<IDataModel> PopulateChildren() {
+			var models = new List<IDataModel>();
+			if (Node == null)
+				return models;
+
+			foreach (var item in analysis.Run(((TreeViewX)Node.TreeView).App, CancellationToken.Value)) {
 				if (item is AnalysisError)
-					yield return new ErrorModel(((AnalysisError)item).Message);
-				else if (item is IDataModel)
-					yield return (IDataModel)item;
-				else
-					yield return new AnalysisModel(analysis.GetChildAnalysis(item), false);
+					models.Add(new ErrorModel(((AnalysisError)item).Message));
+				else {
+					var analyses = analysis.GetChildAnalyses(item).ToArray();
+					if (analyses.Length > 1)
+						models.Add(new MultipleAnalysesModel((IFullName)item, analyses));
+					else if (analyses.Length == 0)
+						models.Add(new ErrorModel(DisplayNameCreator.CreateFullName((IFullName)item)));
+					else
+						models.Add(new AnalysisModel(analyses[0], false));
+				}
 			}
+			models.Sort((a, b) => Comparer<string>.Default.Compare(a.Text, b.Text));
+			return models;
 		}
 
 		public override bool HasIcon {
@@ -42,7 +65,7 @@ namespace dnExplorer.Models {
 		}
 
 		public override void DrawIcon(Graphics g, Rectangle bounds) {
-			if (root) {
+			if (IsRoot) {
 				g.DrawImageUnscaledAndClipped(Resources.GetResource<Image>("Icons.arrow.png"), bounds);
 			}
 			else {

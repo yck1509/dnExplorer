@@ -14,6 +14,9 @@ namespace dnExplorer.Trees {
 		Color ForeColor { get; }
 		string Text { get; }
 
+		bool RecordHistory { get; }
+		bool ShowViews { get; }
+
 		bool HasIcon { get; }
 		void DrawIcon(Graphics g, Rectangle bounds);
 		void Refresh(bool refreshChildren);

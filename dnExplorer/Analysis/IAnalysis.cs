@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using dnlib.DotNet;
 
 namespace dnExplorer.Analysis {
@@ -8,7 +9,7 @@ namespace dnExplorer.Analysis {
 		bool HasResult { get; }
 		IFullName TargetObject { get; }
 
-		IEnumerable<object> Run(IApp app);
-		IAnalysis GetChildAnalysis(object child);
+		IEnumerable<object> Run(IApp app, CancellationToken token);
+		IEnumerable<IAnalysis> GetChildAnalyses(object child);
 	}
 }
