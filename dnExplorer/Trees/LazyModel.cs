@@ -33,8 +33,15 @@ namespace dnExplorer.Trees {
 
 		public override void OnCollapse() {
 			lock (sync) {
-				if (loadOp != null)
+				if (loadOp != null) {
+					if (cancelSrc != null)
+						cancelSrc.Cancel();
+					loadOp.Cancel();
+
+					Children.Clear();
+					Children.Add(NullModel.Instance);
 					return;
+				}
 
 				if (Children.Count > 0 && (
 					(IsVolatile && Children[0] != NullModel.Instance) ||

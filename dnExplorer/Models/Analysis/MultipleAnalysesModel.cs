@@ -18,7 +18,7 @@ namespace dnExplorer.Models {
 		}
 
 		protected override bool HasChildren {
-			get { return true; }
+			get { return analyses.Length > 0; }
 		}
 
 		protected override bool IsVolatile {

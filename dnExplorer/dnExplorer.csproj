@@ -61,11 +61,17 @@
     </Compile>
     <Compile Include="Analysis\BaseTypesAnalysis.cs" />
     <Compile Include="Analysis\DerivedTypesAnalysis.cs" />
+    <Compile Include="Analysis\Field\FieldAssignedByAnalysis.cs" />
+    <Compile Include="Analysis\Field\FieldUsedByAnalysis.cs" />
     <Compile Include="Analysis\IAnalysis.cs" />
     <Compile Include="Analysis\Method\MethodUsesAnalysis.cs" />
-    <Compile Include="Analysis\Method\MethodAnalysis.cs" />
+    <Compile Include="Analysis\AnalyzerAnalysis.cs" />
     <Compile Include="Analysis\Method\MethodUsedByAnalysis.cs" />
+    <Compile Include="Analysis\Module\ModulePInvokeAnalysis.cs" />
+    <Compile Include="Analysis\Module\ModuleReferencesAnalysis.cs" />
     <Compile Include="Analysis\ScopedAnalyzer.cs" />
+    <Compile Include="Analysis\Type\TypeInstantiatedByAnalysis.cs" />
+    <Compile Include="Analysis\Type\TypeUsedByAnalysis.cs" />
     <Compile Include="Controls\CodeView.cs">
       <SubType>Component</SubType>
     </Compile>

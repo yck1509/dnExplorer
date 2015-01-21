@@ -4,9 +4,9 @@ using System.Threading;
 using dnlib.DotNet;
 
 namespace dnExplorer.Analysis {
-	public class MethodUsedByAnalysis : AnalyzerAnalysis<MethodDef> {
-		public MethodUsedByAnalysis(MethodDef targetMethod)
-			: base(targetMethod) {
+	public class FieldUsedByAnalysis : AnalyzerAnalysis<FieldDef> {
+		public FieldUsedByAnalysis(FieldDef targetField)
+			: base(targetField) {
 		}
 
 		public override string Name {
@@ -24,7 +24,7 @@ namespace dnExplorer.Analysis {
 					continue;
 
 				foreach (var instr in method.Body.Instructions)
-					if (instr.Operand is IMethod && comparer.Equals((IMethod)instr.Operand, Item)) {
+					if (instr.Operand is IField && comparer.Equals((IField)instr.Operand, Item)) {
 						yield return method;
 						break;
 					}

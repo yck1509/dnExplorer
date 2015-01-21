@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Threading;
 using dnlib.DotNet;
+using dnlib.DotNet.Emit;
 
 namespace dnExplorer.Analysis {
-	public class MethodUsedByAnalysis : AnalyzerAnalysis<MethodDef> {
-		public MethodUsedByAnalysis(MethodDef targetMethod)
-			: base(targetMethod) {
+	public class FieldAssignedByAnalysis : AnalyzerAnalysis<FieldDef> {
+		public FieldAssignedByAnalysis(FieldDef targetField)
+			: base(targetField) {
 		}
 
 		public override string Name {
-			get { return "Used By"; }
+			get { return "Assigned By"; }
 		}
 
 		public override IEnumerable<object> Run(IApp app, CancellationToken token) {
@@ -23,11 +24,22 @@ namespace dnExplorer.Analysis {
 				if (!method.HasBody)
 					continue;
 
-				foreach (var instr in method.Body.Instructions)
-					if (instr.Operand is IMethod && comparer.Equals((IMethod)instr.Operand, Item)) {
+				foreach (var instr in method.Body.Instructions) {
+					switch (instr.OpCode.Code) {
+						case Code.Stfld:
+						case Code.Stsfld:
+						case Code.Ldflda: // Taking address of field -> potentially assign indirectly
+						case Code.Ldsflda:
+							break;
+
+						default:
+							continue;
+					}
+					if (instr.Operand is IField && comparer.Equals((IField)instr.Operand, Item)) {
 						yield return method;
 						break;
 					}
+				}
 			}
 		}
 	}

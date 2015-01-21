@@ -4,15 +4,9 @@ using System.Threading;
 using dnlib.DotNet;
 
 namespace dnExplorer.Analysis {
-	public class MethodUsesAnalysis : MethodAnalysis {
-		MethodDef targetMethod;
-
-		public MethodUsesAnalysis(MethodDef targetMethod) {
-			this.targetMethod = targetMethod;
-		}
-
-		public override IFullName TargetObject {
-			get { return targetMethod; }
+	public class MethodUsesAnalysis : AnalyzerAnalysis<MethodDef> {
+		public MethodUsesAnalysis(MethodDef targetMethod)
+			: base(targetMethod) {
 		}
 
 		public override string Name {
@@ -21,10 +15,10 @@ namespace dnExplorer.Analysis {
 
 		public override IEnumerable<object> Run(IApp app, CancellationToken token) {
 			var result = new HashSet<object>();
-			if (!targetMethod.HasBody)
+			if (!Item.HasBody)
 				return result;
 
-			foreach (var instr in targetMethod.Body.Instructions) {
+			foreach (var instr in Item.Body.Instructions) {
 				if (instr.Operand is IMethod) {
 					var def = ((IMethod)instr.Operand).ResolveMethodDef();
 					if (def == null)

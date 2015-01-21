@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using dnExplorer.Models;
 using dnExplorer.Trees;
 using dnlib.DotNet;
 using WeifenLuo.WinFormsUI.Docking;
@@ -28,8 +29,10 @@ namespace dnExplorer.Analysis {
 			Show(treeView.App.DockArea, DockState.DockBottom);
 
 			if (item != null) {
-				if (item is MethodDef)
-					treeView.Nodes.Add(MethodAnalysis.CreateAnalysis((MethodDef)item).ToNode());
+				if (item is ModuleDef && ((ModuleDef)item).Assembly != null)
+					item = ((ModuleDef)item).Assembly;
+
+				treeView.Nodes.Add(new MultipleAnalysesModel(item, GetChildren(item)).ToNode());
 			}
 		}
 
@@ -49,16 +52,38 @@ namespace dnExplorer.Analysis {
 				if (def == null)
 					return new IAnalysis[0];
 
-				return new IAnalysis[0];
+				return new IAnalysis[] {
+					new FieldUsedByAnalysis(def),
+					new FieldAssignedByAnalysis(def)
+				};
 			}
 			if (item is ITypeDefOrRef) {
 				var def = ((ITypeDefOrRef)item).ResolveTypeDef();
 				if (def == null)
 					return new IAnalysis[0];
 
-				return new IAnalysis[0];
+				return new IAnalysis[] {
+					new TypeUsedByAnalysis(def),
+					new TypeInstantiatedByAnalysis(def)
+				};
+			}
+			if (item is AssemblyDef) {
+				return GetChildren(((AssemblyDef)item).ManifestModule);
+			}
+			if (item is ModuleDefMD) {
+				return new IAnalysis[] {
+					new ModuleReferencesAnalysis((ModuleDefMD)item),
+					new ModulePInvokeAnalysis((ModuleDefMD)item)
+				};
 			}
 			return new IAnalysis[0];
+		}
+
+		protected override void OnDockStateChanged(EventArgs e) {
+			base.OnDockStateChanged(e);
+
+			if (DockState == DockState.Hidden)
+				treeView.Nodes.Clear();
 		}
 	}
 }

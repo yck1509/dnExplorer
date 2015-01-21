@@ -48,12 +48,10 @@ namespace dnExplorer.Models {
 					models.Add(new ErrorModel(((AnalysisError)item).Message));
 				else {
 					var analyses = analysis.GetChildAnalyses(item).ToArray();
-					if (analyses.Length > 1)
-						models.Add(new MultipleAnalysesModel((IFullName)item, analyses));
-					else if (analyses.Length == 0)
-						models.Add(new ErrorModel(DisplayNameCreator.CreateFullName((IFullName)item)));
-					else
+					if (analyses.Length == 1)
 						models.Add(new AnalysisModel(analyses[0], false));
+					else
+						models.Add(new MultipleAnalysesModel((IFullName)item, analyses));
 				}
 			}
 			models.Sort((a, b) => Comparer<string>.Default.Compare(a.Text, b.Text));
