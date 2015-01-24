@@ -55,7 +55,7 @@ namespace dnExplorer.Models {
 		}
 
 		string IHasInfo.Header {
-			get { return Utils.EscapeString(Event.FullName, false); }
+			get { return Utils.EscapeString(DisplayNameCreator.CreateFullName(Event), false); }
 		}
 
 		IEnumerable<KeyValuePair<string, string>> IHasInfo.GetInfos() {

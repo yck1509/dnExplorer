@@ -94,7 +94,7 @@ namespace dnExplorer.Controls {
 			}
 		}
 
-		CodeViewData.TextRef? ResolveReference(ref int pos) {
+		public CodeViewData.TextRef? ResolveReference(ref int pos) {
 			if (Data == null)
 				return null;
 

@@ -15,6 +15,9 @@ namespace dnExplorer.Views {
 		public ObjCodeView() {
 			view = new CodeView();
 			view.Navigate += OnNavigateTarget;
+			view.NativeInterface.SetMouseDwellTime(200);
+			view.DwellStart += DwellStart;
+			view.MouseMove += MouseMoved;
 			Controls.Add(view);
 		}
 
@@ -110,6 +113,47 @@ namespace dnExplorer.Views {
 			}
 			MessageBox.Show("Cannot find definition of '" + target + "'.", App.AppName, MessageBoxButtons.OK,
 				MessageBoxIcon.Error);
+		}
+
+		int? hoverPos;
+		ToolTip toolTip = new ToolTip { UseFading = false, ShowAlways = false };
+
+		void DwellStart(object sender, ScintillaMouseEventArgs e) {
+			if (view.Data == null || hoverPos != null) return;
+
+			int txtPos = view.PositionFromPointClose(e.X, e.Y);
+			CodeViewData.TextRef? textRef;
+			if (txtPos != -1 && (textRef = view.ResolveReference(ref txtPos)) != null && textRef.Value.Reference is IFullName) {
+				var line = view.Lines.FromPosition(txtPos);
+
+				var text = DisplayNameCreator.CreateFullName((IFullName)textRef.Value.Reference);
+				text = Utils.EscapeString(text, false);
+
+				var pt = PointToClient(Cursor.Position);
+				pt.X += 16;
+				pt.Y += 10;
+
+				toolTip.Show(text, this, pt);
+				hoverPos = txtPos;
+
+				view.Capture = true;
+			}
+		}
+
+		void MouseMoved(object sender, MouseEventArgs e) {
+			if (hoverPos != null) {
+				var pt = view.PointToClient(PointToScreen(e.Location));
+				int txtPos = view.PositionFromPointClose(pt.X, pt.Y);
+				CodeViewData.TextRef? textRef;
+				if (txtPos != -1 && (textRef = view.ResolveReference(ref txtPos)) != null) {
+					if (txtPos == hoverPos)
+						return;
+				}
+
+				toolTip.Hide(this);
+				hoverPos = null;
+				view.Capture = false;
+			}
 		}
 
 		ContextMenuStrip ctxMenu;
