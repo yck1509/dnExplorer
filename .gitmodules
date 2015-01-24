@@ -1,9 +1,9 @@
 [submodule "dnlib"]
 	path = dnlib
 	url = https://github.com/yck1509/dnlib.git
-[submodule "dockpanelsuite"]
-	path = dockpanelsuite
-	url = https://github.com/dockpanelsuite/dockpanelsuite.git
 [submodule "ICSharpCode.Decompiler"]
 	path = ICSharpCode.Decompiler
 	url = https://github.com/yck1509/ICSharpCode.Decompiler.git
+[submodule "dockpanelsuite"]
+	path = dockpanelsuite
+	url = https://github.com/yck1509/dockpanelsuite.git
