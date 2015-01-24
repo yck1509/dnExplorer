@@ -38,9 +38,13 @@ namespace dnExplorer.Analysis {
 				if (!hasRef)
 					continue;
 
-				checker.UserType = module.GlobalType;
-				if (checker.CanAccess(type) ?? true)
+				if (type.Module == module)
 					yield return module;
+				else {
+					checker.UserType = module.GlobalType;
+					if (checker.CanAccess(type) ?? true)
+						yield return module;
+				}
 			}
 		}
 
