@@ -84,7 +84,9 @@ namespace dnExplorer.Trees {
 				case NavigationState.In:
 					break;
 				case NavigationState.Done:
-					done(node);
+					node.TreeView.Invoke(new Action(() => {
+						done(node);
+					}));
 					return;
 			}
 
