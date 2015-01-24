@@ -17,6 +17,7 @@ namespace dnExplorer.Analysis {
 				Dock = DockStyle.Fill,
 				BorderStyle = BorderStyle.None
 			};
+			treeView.KeyDown += OnTreeViewKeyDown;
 			Controls.Add(treeView);
 
 			app.DockArea.DockWindows[DockState.DockBottom].BringToFront();
@@ -77,6 +78,14 @@ namespace dnExplorer.Analysis {
 				};
 			}
 			return new IAnalysis[0];
+		}
+
+		void OnTreeViewKeyDown(object sender, KeyEventArgs e) {
+			if (e.KeyCode == Keys.Delete) {
+				var selectedNode = treeView.SelectedNode;
+				if (selectedNode != null && selectedNode.Parent == null)
+					treeView.Nodes.Remove(selectedNode);
+			}
 		}
 
 		protected override void OnDockStateChanged(EventArgs e) {
