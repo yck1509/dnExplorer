@@ -1,8 +1,8 @@
 dnExplorer is a simple viewer of .NET modules.
 
-Reading of .NET modules is supported by dnlib library, licensed under MIT license.
-Decompilation is provided by ICSharpCode.Decompiler library, licensed under MIT license.
-Docking user interface is provided by WeifenLuo.WinFormsUI.Docking library, licensed under MIT license.
+Reading of .NET modules is supported by dnlib library, licensed under MIT license.  
+Decompilation is provided by ICSharpCode.Decompiler library, licensed under MIT license.  
+Docking user interface is provided by WeifenLuo.WinFormsUI.Docking library, licensed under MIT license.  
 
 dnExplorer itself is licensed under MIT license.
 ```
